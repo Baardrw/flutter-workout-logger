@@ -1,16 +1,26 @@
-# pu_frontend
+# Folder guide
 
-A new Flutter project.
+## android, ios and build 
+These folders will never be used, they are automatically maintained by flutter
 
-## Getting Started
+## assets
+Folder for assets such as images, fonts, etc etc.
 
-This project is a starting point for a Flutter application.
+## lib
+This is where code is written
 
-A few resources to get you started if this is your first Flutter project:
+### main.dart
+This is the root file in the app widget tree
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### models
+This folder is for non ui related classes, such as data classes and service oriented classes that dont directly control the ui
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### widgets
+This folder is for custom widgets, this can range all from cards to entire pages in the UI
+
+## test
+This folder is for testing
+
+---
+
+
