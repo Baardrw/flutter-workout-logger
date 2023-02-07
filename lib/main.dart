@@ -1,16 +1,21 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
+import 'package:pu_frontend/screens/login.dart';
 
+import 'db.dart';
 import 'models/counter.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp();
+
+  runApp(MyApp());
 }
 
 // This is the router that will be used by the MaterialApp.router to navigate between pages.
@@ -32,7 +37,8 @@ GoRouter router() {
 
 // root level widget main purpose is to provide lower widgets with app state
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  final db = DataBaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -46,62 +52,6 @@ class MyApp extends StatelessWidget {
         title: 'Demo',
         routerConfig: router(),
         theme: appTheme,
-      ),
-    );
-  }
-}
-
-class DemoPage extends StatelessWidget {
-  const DemoPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(80.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Welcome',
-                style: Theme.of(context).textTheme.displayLarge,
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Username',
-                ),
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Password',
-                ),
-                obscureText: true,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  context.pushReplacement('/demo2');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.yellow,
-                ),
-                child: const Text('ENTER'),
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              Consumer<Counter>(builder: (context, counter, child) {
-                return Text(
-                  'Counter: ${counter.count}',
-                  style: Theme.of(context).textTheme.displayLarge,
-                );
-              })
-            ],
-          ),
-        ),
       ),
     );
   }
