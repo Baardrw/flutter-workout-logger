@@ -4,28 +4,36 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/firebase_options.dart';
 import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
 import 'package:pu_frontend/screens/login.dart';
+import 'package:pu_frontend/services/auth_service.dart';
+import 'package:pu_frontend/widgets/auth_wrapper.dart';
 
-import 'db.dart';
 import 'models/counter.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-// This is the router that will be used by the MaterialApp.router to navigate between pages.
+/// This is the router that will be used by the MaterialApp.router to navigate between pages.
+///
+/// defaults to the authwrapper page, which will redirect to the login page if the user is not logged in.
 GoRouter router() {
   return GoRouter(
-    initialLocation: '/demo',
+    initialLocation: '/',
     routes: [
       GoRoute(
+        path: '/',
+        builder: (context, state) => const AuthWrapper(),
+      ),
+      GoRoute(
         path: '/demo',
-        builder: (context, state) => const DemoPage(),
+        builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
         path: '/demo2',
@@ -37,8 +45,7 @@ GoRouter router() {
 
 // root level widget main purpose is to provide lower widgets with app state
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
-  final db = DataBaseService();
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +53,10 @@ class MyApp extends StatelessWidget {
       // All providers are created here, and can provide data to all child widgets.
 
       providers: [
-        ChangeNotifierProvider(create: (_) => Counter()),
+        Provider<AuthService>(create: (_) => AuthService()),
       ],
       child: MaterialApp.router(
-        title: 'Demo',
+        title: 'Trening App',
         routerConfig: router(),
         theme: appTheme,
       ),
