@@ -2,20 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/models/counter.dart';
+import 'package:pu_frontend/services/auth_service.dart';
 
-class DemoPage extends StatefulWidget {
-  const DemoPage({super.key});
+import '../models/user.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<DemoPage> createState() => _DemoPageState();
+  State<LoginPage> createState() => _DemoPageState();
 }
 
-class _DemoPageState extends State<DemoPage> {
-  final TextEditingController _usernameController = TextEditingController();
+class _DemoPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final AuthService _authService = Provider.of<AuthService>(context);
+
     return Scaffold(
       body: Center(
         child: Container(
@@ -28,7 +33,7 @@ class _DemoPageState extends State<DemoPage> {
                 style: Theme.of(context).textTheme.displayLarge,
               ),
               TextFormField(
-                controller: _usernameController,
+                controller: _emailController,
                 decoration: const InputDecoration(
                   hintText: 'Username',
                 ),
@@ -44,23 +49,23 @@ class _DemoPageState extends State<DemoPage> {
                 height: 24,
               ),
               ElevatedButton(
-                onPressed: () {
-                  context.pushReplacement('/demo2');
+                onPressed: () async {
+                  await _authService
+                      .signIn(_emailController.text, _passwordController.text)
+                      .onError((error, stackTrace) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Invalid Credentials'),
+                      duration: Duration(seconds: 3),
+                    ));
+                  });
+
+                  // If this line of code is reached then the user has failed to log in
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.yellow,
                 ),
                 child: const Text('ENTER'),
               ),
-              const SizedBox(
-                height: 24,
-              ),
-              Consumer<Counter>(builder: (context, counter, child) {
-                return Text(
-                  'Counter: ${counter.count}',
-                  style: Theme.of(context).textTheme.displayLarge,
-                );
-              })
             ],
           ),
         ),
