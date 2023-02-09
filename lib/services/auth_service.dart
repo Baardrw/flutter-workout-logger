@@ -10,7 +10,7 @@ class AuthService {
     if (user == null) {
       return null;
     }
-    return User(user.uid, user.email);
+    return User(user.uid, user.email, user.displayName);
   }
 
   /// Used by AuthWrapper to determine if user is logged in

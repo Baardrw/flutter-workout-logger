@@ -11,8 +11,6 @@ import 'package:pu_frontend/screens/login.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/widgets/auth_wrapper.dart';
 
-import 'models/counter.dart';
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

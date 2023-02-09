@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:pu_frontend/models/counter.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 
 import '../models/user.dart';
@@ -40,9 +39,7 @@ class _DemoPageState extends State<LoginPage> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
-                  hintText: 'Password',
-                ),
+                decoration: const InputDecoration(hintText: 'Password'),
                 obscureText: true,
               ),
               const SizedBox(
