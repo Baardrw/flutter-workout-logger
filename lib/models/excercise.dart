@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
+// TODO: encapsulation
+
 enum ExcerciseType {
   cardio,
   strength,
@@ -92,6 +94,10 @@ class Excercise {
         bodyPart = BodyPart.none.fromString(json['bodyPart'] as String),
         name = json['name'] as String,
         description = json['description'] as String;
+
+  toString() {
+    return 'Excercise: $name, $type, $bodyPart, $description';
+  }
 }
 
 class Log {

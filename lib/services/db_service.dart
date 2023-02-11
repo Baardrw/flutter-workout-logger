@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/models/user.dart';
@@ -5,43 +7,60 @@ import 'package:pu_frontend/services/auth_service.dart';
 
 class DatabaseService {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  AuthService _authService = AuthService();
+
+  final userRef =
+      FirebaseFirestore.instance.collection('users').withConverter<User>(
+            fromFirestore: (snapshot, _) => User.fromJson(snapshot.data()!),
+            toFirestore: (user, _) => user.toJson(),
+          );
+
+  final excerciseRef = FirebaseFirestore.instance
+      .collection('excercises')
+      .withConverter(
+        fromFirestore: (snapshot, _) => Excercise.fromJson(snapshot.data()!),
+        toFirestore: (excercise, _) => excercise.toJson(),
+      );
+
+  Future<User?> getUser(String uid) async {
+    return await userRef.doc(uid).get().then((value) => value.data());
+  }
+
+  Future<void> updateUser(User user) async {
+    return await userRef.doc(user.uid).set(user);
+  }
+
+  Future<void> deleteUser(String uid) async {
+    return await userRef.doc(uid).delete();
+  }
 
   Future<void> addUser(User user) async {
-    await _firestore.collection('users').doc(user.uid).set(user.toJson());
+    return await userRef.doc(user.uid).set(user);
   }
 
-  Future<void> removeUser(String uid) async {
-    await _firestore.collection('users').doc(uid).delete();
-  }
-
-  Future<void> editUser(User user) async {
-    await _firestore.collection('users').doc(user.uid).update(user.toJson());
-  }
-
-  Stream<List<User>> get users {
-    return _firestore.collection('users').snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return User.fromJson(doc.data());
-      }).toList();
-    });
+  Future<List<User>> get users {
+    return userRef
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
   }
 
   Future<void> addExcercise(Excercise excercise) async {
-    await _firestore
-        .collection('excercises')
-        .doc(excercise.name)
-        .set(excercise.toJson());
+    return await excerciseRef.doc(excercise.name).set(excercise);
   }
 
-  Future<void> removeExcercise(String name) async {
-    await _firestore.collection('excercises').doc(name).delete();
+  Future<void> updateExcercise(Excercise excercise) async {
+    return await excerciseRef.doc(excercise.name).set(excercise);
   }
 
-  Future<void> editExcercise(Excercise excercise) async {
-    await _firestore
-        .collection('excercises')
-        .doc(excercise.name)
-        .update(excercise.toJson());
+  Future<Excercise?> getExcercise(String name) async {
+    return await excerciseRef.doc(name).get().then((value) => value.data());
+  }
+
+  Future<List<Excercise>> get excercises {
+    print("Getting excercises");
+    var ex = excerciseRef
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
+    print("Got excercises");
+    return ex;
   }
 }
