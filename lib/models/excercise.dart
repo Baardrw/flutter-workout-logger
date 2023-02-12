@@ -3,69 +3,6 @@ import 'package:flutter/foundation.dart';
 
 // TODO: encapsulation
 
-enum ExcerciseType {
-  cardio,
-  strength,
-  none,
-}
-
-enum BodyPart {
-  chest,
-  back,
-  shoulders,
-  arms,
-  legs,
-  abs,
-  full,
-  none,
-}
-
-extension ExcerciseString on ExcerciseType {
-  String toShortString() {
-    return this.toString().split('.').last;
-  }
-
-  ExcerciseType fromString(String type) {
-    switch (type) {
-      case 'cardio':
-        return ExcerciseType.cardio;
-      case 'strength':
-        return ExcerciseType.strength;
-      default:
-        throw Exception('Invalid excercise type');
-    }
-  }
-}
-
-extension BodyString on BodyPart {
-  String toShortString() {
-    return this.toString().split('.').last;
-  }
-
-  BodyPart fromString(String part) {
-    switch (part) {
-      case 'chest':
-        return BodyPart.chest;
-      case 'back':
-        return BodyPart.back;
-      case 'shoulders':
-        return BodyPart.shoulders;
-      case 'arms':
-        return BodyPart.arms;
-      case 'legs':
-        return BodyPart.legs;
-      case 'abs':
-        return BodyPart.abs;
-      case 'full':
-        return BodyPart.full;
-      case 'none':
-        return BodyPart.none;
-      default:
-        throw Exception('Invalid body part');
-    }
-  }
-}
-
 class Excercise {
   /// Excercise class that defines an excercise
   final String name;
@@ -135,4 +72,73 @@ class Log {
         excerciseName = json['excerciseName'] as String,
         distance = json['distance'] as int?,
         duration = json['duration'] as int?;
+}
+
+enum ExcerciseType {
+  cardio,
+  strength,
+  none,
+}
+
+enum BodyPart {
+  chest,
+  back,
+  shoulders,
+  arms,
+  legs,
+  abs,
+  full,
+  triceps,
+  biceps,
+  none,
+}
+
+extension ExcerciseString on ExcerciseType {
+  String toShortString() {
+    return this.toString().split('.').last;
+  }
+
+  ExcerciseType fromString(String type) {
+    switch (type) {
+      case 'cardio':
+        return ExcerciseType.cardio;
+      case 'strength':
+        return ExcerciseType.strength;
+      default:
+        throw Exception('Invalid excercise type');
+    }
+  }
+}
+
+extension BodyString on BodyPart {
+  String toShortString() {
+    return this.toString().split('.').last;
+  }
+
+  BodyPart fromString(String part) {
+    switch (part) {
+      case 'chest':
+        return BodyPart.chest;
+      case 'back':
+        return BodyPart.back;
+      case 'shoulders':
+        return BodyPart.shoulders;
+      case 'arms':
+        return BodyPart.arms;
+      case 'legs':
+        return BodyPart.legs;
+      case 'abs':
+        return BodyPart.abs;
+      case 'full':
+        return BodyPart.full;
+      case 'triceps':
+        return BodyPart.triceps;
+      case 'biceps':
+        return BodyPart.biceps;
+      case 'none':
+        return BodyPart.none;
+      default:
+        throw Exception('Invalid body part');
+    }
+  }
 }

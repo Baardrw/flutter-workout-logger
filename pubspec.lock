@@ -15,6 +15,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.13"
+  alphabet_scroll_view:
+    dependency: "direct main"
+    description:
+      name: alphabet_scroll_view
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.2"
   analyzer:
     dependency: transitive
     description:
