@@ -5,8 +5,9 @@ import 'package:provider/provider.dart';
 
 import '../models/excercise.dart';
 import '../services/db_service.dart';
-import '../widgets/add_excercise_button.dart';
-import '../widgets/excercise_tile.dart';
+import '../widgets/excercise_progression_widgets/add_excercise_button.dart';
+import '../widgets/excercise_progression_widgets/excercise_scroller.dart';
+import '../widgets/excercise_progression_widgets/excercise_tile.dart';
 import 'excercise_history.dart';
 
 class ExcerciseProgression extends StatefulWidget {
@@ -54,36 +55,6 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
                   future: Provider.of<DatabaseService>(context).excercises);
             },
           )),
-    );
-  }
-}
-
-class ExcerciseScroller extends StatelessWidget {
-  List<Excercise> excercises;
-  ExcerciseScroller(this.excercises);
-
-  @override
-  Widget build(BuildContext context) {
-    return AlphabetScrollView(
-      list: excercises.map((e) => AlphaModel(e.name)).toList(),
-      itemExtent: 50,
-      alignment: LetterAlignment.right,
-      itemBuilder: (BuildContext, int, String) {
-        return GestureDetector(
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    ExcerciseHistory(excercise: excercises[int]),
-              )),
-          child: Card(
-            elevation: 8,
-            child: ExcerciseTile(excercise: excercises[int]),
-          ),
-        );
-      },
-      selectedTextStyle: const TextStyle(color: Colors.black),
-      unselectedTextStyle: const TextStyle(color: Colors.grey),
     );
   }
 }

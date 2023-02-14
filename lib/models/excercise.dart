@@ -32,6 +32,7 @@ class Excercise {
         name = json['name'] as String,
         description = json['description'] as String;
 
+  @override
   toString() {
     return 'Excercise: $name, $type, $bodyPart, $description';
   }
@@ -42,6 +43,7 @@ class Log {
   final int? reps;
   final int? distance;
   final int? duration;
+  // Date is key for prog
   final DateTime date;
   final String excerciseName;
 

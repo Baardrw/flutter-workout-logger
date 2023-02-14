@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
-import '../models/excercise.dart';
+import '../../models/excercise.dart';
 
 class AddExcerciseButton extends StatelessWidget {
   const AddExcerciseButton({
