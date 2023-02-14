@@ -7,11 +7,12 @@ import 'package:provider/provider.dart';
 import 'package:pu_frontend/firebase_options.dart';
 import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
-import 'package:pu_frontend/screens/login.dart';
+import 'package:pu_frontend/screens/excercise_progression.dart';
+import 'package:pu_frontend/screens/login_test.dart';
+import 'package:pu_frontend/screens/singup_test.dart';
 import 'package:pu_frontend/services/auth_service.dart';
+import 'package:pu_frontend/services/db_service.dart';
 import 'package:pu_frontend/widgets/auth_wrapper.dart';
-
-import 'models/counter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +26,7 @@ Future<void> main() async {
 /// defaults to the authwrapper page, which will redirect to the login page if the user is not logged in.
 GoRouter router() {
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/ExcerciseProgression',
     routes: [
       GoRoute(
         path: '/',
@@ -38,6 +39,14 @@ GoRouter router() {
       GoRoute(
         path: '/demo2',
         builder: (context, state) => const DemoHome(),
+      ),
+      GoRoute(
+        path: '/singupdemo',
+        builder: (context, state) => const signUp(),
+      ),
+      GoRoute(
+        path: '/ExcerciseProgression',
+        builder: (context, state) => const ExcerciseProgression(),
       ),
     ],
   );
@@ -54,6 +63,7 @@ class MyApp extends StatelessWidget {
 
       providers: [
         Provider<AuthService>(create: (_) => AuthService()),
+        Provider<DatabaseService>(create: (_) => DatabaseService())
       ],
       child: MaterialApp.router(
         title: 'Trening App',

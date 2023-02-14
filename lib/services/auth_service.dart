@@ -1,21 +1,30 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:pu_frontend/models/user.dart';
+import 'package:pu_frontend/services/db_service.dart';
 
 class AuthService {
   /// Service class for authentication
 
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
+  final DatabaseService _dbService = DatabaseService();
 
   User? _getUserFromFirebase(auth.User? user) {
     if (user == null) {
       return null;
     }
-    return User(user.uid, user.email);
+
+    // TODO : find a way to get the actual user display name here
+
+    return User(user.uid, user.email, user.displayName);
   }
 
   /// Used by AuthWrapper to determine if user is logged in
   Stream<User?>? get user {
     return _firebaseAuth.authStateChanges().map(_getUserFromFirebase);
+  }
+
+  Future<User?> get currentUser {
+    return _dbService.getUser(_firebaseAuth.currentUser!.uid);
   }
 
   /// Called to sign in user
@@ -28,12 +37,14 @@ class AuthService {
     return _getUserFromFirebase(credential.user);
   }
 
-  /// Called to sign up user
-  Future<User?> signUp(String email, String password) async {
+  /// Called to sign up user also adds user to firestore
+  Future<User?> signUp(String email, String password, String name) async {
     final credential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
+
+    _dbService.addUser(User(credential.user!.uid, email, name));
 
     return _getUserFromFirebase(credential.user);
   }
