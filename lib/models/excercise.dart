@@ -56,6 +56,10 @@ class Log {
     this.duration,
   );
 
+  String get id {
+    return date.microsecondsSinceEpoch.toString();
+  }
+
   Map<String, Object?> toJson() {
     return {
       'weight': weight,

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -30,26 +32,18 @@ class _TestHomeState extends State<TestHome> {
         children: [
           ElevatedButton(
               onPressed: () {
-                _authService.signOut();
+                _dbService.addLog(
+                    'Bench Press',
+                    Log(
+                        Random.secure().nextInt(100),
+                        Random.secure().nextInt(10),
+                        DateTime.now(),
+                        'Bench Press',
+                        0,
+                        0),
+                    _authService.uid);
               },
-              child: const Text('Sign Out')),
-          FutureBuilder(
-              builder: (context, snapshot) {
-                return Text("Future: ${snapshot.data}");
-              },
-              future: _dbService.users),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _dbService.addExcercise(excercise);
-                });
-              },
-              child: const Text('Add Excercise')),
-          FutureBuilder(
-              builder: (context, snapshot) {
-                return Text("Future: ${snapshot.data?.length}");
-              },
-              future: _dbService.excercises),
+              child: Text('Add bench log')),
         ],
       ),
     );

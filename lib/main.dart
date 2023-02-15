@@ -22,7 +22,7 @@ Future<void> main() async {
 }
 
 /// This is the router that will be used by the MaterialApp.router to navigate between pages.
-///
+
 /// defaults to the authwrapper page, which will redirect to the login page if the user is not logged in.
 GoRouter router() {
   return GoRouter(
