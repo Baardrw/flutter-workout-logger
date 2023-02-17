@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/screens/excercise_progression.dart';
 import 'package:pu_frontend/screens/login_test.dart';
 
 import '../models/user.dart';
@@ -22,7 +23,7 @@ class AuthWrapper extends StatelessWidget {
             if (user == null) {
               return const LoginPage();
             }
-            return const DemoHome();
+            return const ExcerciseProgression();
           }
           return const Scaffold(
             body: Center(

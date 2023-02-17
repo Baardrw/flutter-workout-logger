@@ -107,6 +107,7 @@ class DatabaseService {
         .collection('users')
         .doc(uid)
         .collection(excerciseName)
+        .orderBy('date', descending: false)
         .get()
         .then((value) => value.docs
             .map((e) => Log.fromJson(e.data()))
@@ -138,5 +139,14 @@ class DatabaseService {
         .get()
         .then((value) =>
             value.docs.map((e) => Log.fromJson(e.data())).toList().first);
+  }
+
+  Future<bool> logExists(String excerciseName, String uid) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .get()
+        .then((value) => value.size > 0);
   }
 }

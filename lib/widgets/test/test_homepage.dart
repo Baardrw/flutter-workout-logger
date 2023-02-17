@@ -31,17 +31,16 @@ class _TestHomeState extends State<TestHome> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(
-              onPressed: () {
-                _dbService.addLog(
+              onPressed: () async {
+                Log log = Log(
+                    100,
+                    1,
+                    DateTime.now(),
                     'Bench Press',
-                    Log(
-                        Random.secure().nextInt(100),
-                        Random.secure().nextInt(10),
-                        DateTime.now(),
-                        'Bench Press',
-                        0,
-                        0),
-                    _authService.uid);
+                    Random.secure().nextInt(10000),
+                    Random.secure().nextInt(180));
+
+                await _dbService.addLog('Bench Press', log, _authService.uid);
               },
               child: Text('Add bench log')),
         ],
