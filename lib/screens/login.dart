@@ -59,6 +59,7 @@ class LoginState extends State<LoginPage> {
             //Login button
             OutlinedButton(
               onPressed: () async {
+                print(_emailController.text + _passwordController.text);
                 User? user = await _authService
                     .signIn(_emailController.text, _passwordController.text)
                     .onError((error, stackTrace) {
