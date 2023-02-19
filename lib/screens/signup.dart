@@ -76,7 +76,13 @@ class SignUpState extends State<signUp> {
                     duration: Duration(seconds: 3),
                   ));
                 });
+                if (user != null) {
+                    User? user = await _authService
+                    .signIn(_emailController.text, _passwordController.text);
+                  }
+                context.go("/");
                 print('user: $user');
+
                 // If this line of code is reached then the user has failed to log in
               },
               style: OutlinedButton.styleFrom(

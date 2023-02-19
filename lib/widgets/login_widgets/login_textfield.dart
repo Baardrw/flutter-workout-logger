@@ -20,6 +20,7 @@ class LoginTextfield extends StatelessWidget {
         right: 15.0,
       ),
       child: TextField(
+        controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
           enabledBorder: const OutlineInputBorder(
