@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:popup_card/popup_card.dart';
+import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
 
 class AddWorkoudButton extends StatelessWidget {
   const AddWorkoudButton({

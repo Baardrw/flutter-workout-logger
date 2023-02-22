@@ -5,6 +5,8 @@ import '../widgets/workout_widgets/workout_card_widget.dart';
 import '../widgets/workout_widgets/workouts_view_widget.dart';
 import '../widgets/workout_widgets/program_card_widget.dart';
 import '../widgets/workout_widgets/programs_view_widget.dart';
+import '../widgets/excercise_progression_widgets/excercise_tile.dart';
+import '../models/excercise.dart';
 import '../main.dart';
 
 class Log_workout extends StatelessWidget {
@@ -12,17 +14,16 @@ class Log_workout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Excercise ex1 = new Excercise(
+        type: ExcerciseType.strength,
+        bodyPart: BodyPart.chest,
+        name: 'Pushups');
     return Scaffold(
       appBar: AppBar(backgroundColor: const Color.fromARGB(255, 51, 100, 140)),
-      body: Center(
-        child: GestureDetector(
-          onTap: () => context.push('/workouts'),
-          child: Container(
-            height: 200,
-            width: 200,
-            child: Text('Her registrerer man økten'),
-          ),
-        ),
+      body: Column(
+        children: [
+          // ExcerciseTile(excercise: excercise)
+        ],
       ),
     );
   }

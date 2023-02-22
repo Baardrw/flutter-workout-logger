@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:popup_card/popup_card.dart';
+import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
 import 'package:pu_frontend/widgets/workout_widgets/program_card_widget.dart';
 import 'package:pu_frontend/widgets/workout_widgets/show_workout_button.dart';
 import 'package:pu_frontend/widgets/workout_widgets/workout_card_widget.dart';
