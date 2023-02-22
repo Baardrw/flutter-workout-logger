@@ -8,6 +8,7 @@ import '../services/db_service.dart';
 import '../widgets/excercise_progression_widgets/add_excercise_button.dart';
 import '../widgets/excercise_progression_widgets/excercise_scroller.dart';
 import '../widgets/excercise_progression_widgets/excercise_tile.dart';
+import 'bottom_bar.dart';
 import 'excercise_history.dart';
 
 class ExcerciseProgression extends StatefulWidget {
@@ -21,6 +22,7 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
   @override
   Widget build(BuildContext context) {
     final DatabaseService dbservice = Provider.of<DatabaseService>(context);
+    BottomBar bottomBar = BottomBar(1);
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -61,6 +63,7 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
                   future: dbservice.excercises);
             },
           )),
+      bottomNavigationBar: bottomBar.getBar(context),
     );
   }
 }

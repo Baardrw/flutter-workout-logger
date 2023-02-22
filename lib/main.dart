@@ -39,7 +39,7 @@ GoRouter router() {
         builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
-        path: '/demo2',
+        path: '/Home',
         builder: (context, state) => const DemoHome(),
       ),
       GoRoute(
