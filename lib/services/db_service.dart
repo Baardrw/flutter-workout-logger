@@ -94,6 +94,8 @@ class DatabaseService {
   }
 
   Future<void> deleteLog(String excerciseName, String logId, String uid) async {
+    print("deleting log: $logId");
+
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)

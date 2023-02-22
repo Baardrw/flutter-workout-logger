@@ -6,8 +6,9 @@ import 'package:intl/intl.dart';
 import '../../models/excercise.dart';
 
 class CardioTile extends StatelessWidget {
-  const CardioTile({super.key, required this.log});
+  const CardioTile({super.key, required this.log, required this.onDelete});
   final Log? log;
+  final Function(Log log) onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +20,15 @@ class CardioTile extends StatelessWidget {
       return Card(
         elevation: 8,
         child: ListTile(
-          title: Text('${speed.toStringAsFixed(2)} km/h'),
-          subtitle: Text('${log?.distance} m, ${log?.duration} mins'),
-          leading: Text(DateFormat.yMd().format(log!.date)),
-        ),
+            title: Text('${speed.toStringAsFixed(2)} km/h'),
+            subtitle: Text('${log?.distance} m, ${log?.duration} mins'),
+            leading: Text(DateFormat.yMd().format(log!.date)),
+            trailing: IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                onDelete(log!);
+              },
+            )),
       );
     }
   }

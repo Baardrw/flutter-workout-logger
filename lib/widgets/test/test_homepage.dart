@@ -33,8 +33,8 @@ class _TestHomeState extends State<TestHome> {
           ElevatedButton(
               onPressed: () async {
                 Log log = Log(
-                    100,
-                    1,
+                    Random.secure().nextInt(100),
+                    Random.secure().nextInt(20),
                     DateTime.now(),
                     'Bench Press',
                     Random.secure().nextInt(10000),

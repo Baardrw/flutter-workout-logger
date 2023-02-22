@@ -32,7 +32,7 @@ class ExcerciseScroller extends StatelessWidget {
               ));
               return;
             }
-
+            // Logs for the chosedn excercise exists
             List<Log> logs =
                 await Provider.of<DatabaseService>(context, listen: false)
                     .getLogs(excercises[int].name,

@@ -87,8 +87,14 @@ class _ExcerciseHistoryState extends State<ExcerciseHistory> {
               child: ListView.builder(
                 itemCount: logs.length,
                 itemBuilder: ((context, index) => excerciseIsCardio
-                    ? CardioTile(log: logs[index])
-                    : WeightTile(log: logs[index])),
+                    ? CardioTile(
+                        log: logs[index],
+                        onDelete: deleteLog,
+                      )
+                    : WeightTile(
+                        log: logs[index],
+                        onDelete: deleteLog,
+                      )),
               ),
             )
             // List of logs for the excercise
@@ -100,6 +106,18 @@ class _ExcerciseHistoryState extends State<ExcerciseHistory> {
     return logs
         .reduce((curr, next) => curr.weight! > next.weight! ? curr : next)
         .weight;
+  }
+
+  Future<void> deleteLog(Log log) async {
+    setState(() {
+      logs.remove(log);
+    });
+
+    DatabaseService _dbService =
+        Provider.of<DatabaseService>(context, listen: false);
+    AuthService _authService = Provider.of<AuthService>(context, listen: false);
+
+    await _dbService.deleteLog(widget.excercise.name, log.id, _authService.uid);
   }
 
   void sort() {

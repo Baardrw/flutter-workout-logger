@@ -57,7 +57,8 @@ class Log {
   );
 
   String get id {
-    return date.microsecondsSinceEpoch.toString();
+    // Flutter encodes dates differently than firebase, flutter looses the last 3 digits
+    return date.microsecondsSinceEpoch.toString().substring(0, 13);
   }
 
   Map<String, Object?> toJson() {
