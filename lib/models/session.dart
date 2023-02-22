@@ -18,6 +18,13 @@ class Session {
         excercises = (json['excercises'] as List)
             .map((e) => Excercise.fromJson(e as Map<String, Object?>))
             .toList();
+
+  Map<String, Object?> toJson() {
+    return {
+      'name': name,
+      'excercises': excercises.map((e) => e.toJson()).toList(),
+    };
+  }
   }
 
 
