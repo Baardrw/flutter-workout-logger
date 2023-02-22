@@ -74,4 +74,81 @@ class DatabaseService {
   Future<bool> excerciseExists(String name) async {
     return await _excerciseRef.doc(name).get().then((value) => value.exists);
   }
+
+  Future<void> addLog(String excerciseName, Log log, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .doc(log.id)
+        .set(log.toJson());
+  }
+
+  Future<void> updateLog(String excerciseName, Log log, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .doc(log.id)
+        .set(log.toJson());
+  }
+
+  Future<void> deleteLog(String excerciseName, String logId, String uid) async {
+    print("deleting log: $logId");
+
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .doc(logId)
+        .delete();
+  }
+
+  Future<List<Log>> getLogs(String excerciseName, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .orderBy('date', descending: false)
+        .get()
+        .then((value) => value.docs
+            .map((e) => Log.fromJson(e.data()))
+            .toList()
+            .reversed
+            .toList());
+  }
+
+  Future<Log> getWeightLiftingPersonalRecord(
+      String excerciseName, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .orderBy('weight', descending: true)
+        .limit(1)
+        .get()
+        .then((value) =>
+            value.docs.map((e) => Log.fromJson(e.data())).toList().first);
+  }
+
+  Future<Log> getCardioPersonalRecord(String excerciseName, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .orderBy('distance', descending: true)
+        .limit(1)
+        .get()
+        .then((value) =>
+            value.docs.map((e) => Log.fromJson(e.data())).toList().first);
+  }
+
+  Future<bool> logExists(String excerciseName, String uid) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .get()
+        .then((value) => value.size > 0);
+  }
 }
