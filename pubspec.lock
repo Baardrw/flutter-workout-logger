@@ -352,6 +352,14 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.1"
+  popup_card:
+    dependency: "direct main"
+    description:
+      name: popup_card
+      sha256: "515a1a059559358d5184f6961ebebcbd2e9a0f52bcbf77f3279e0bb0b0f66621"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   provider:
     dependency: "direct main"
     description:
@@ -519,5 +527,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.18.6 <3.0.0"
+  dart: ">=2.18.6 <4.0.0"
   flutter: ">=3.3.0"
