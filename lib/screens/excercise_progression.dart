@@ -12,7 +12,13 @@ import 'bottom_bar.dart';
 import 'excercise_history.dart';
 
 class ExcerciseProgression extends StatefulWidget {
-  const ExcerciseProgression({super.key});
+  const ExcerciseProgression({
+    super.key,
+    this.tile,
+    this.gestureDetectorOnTap,
+  });
+  final String? tile;
+  final Function(Excercise)? gestureDetectorOnTap;
 
   @override
   State<ExcerciseProgression> createState() => _ExcerciseProgressionState();
@@ -35,14 +41,16 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
               SliverAppBar(
                 expandedHeight: 100.0,
                 floating: false,
+                foregroundColor: Colors.black,
                 pinned: true,
                 stretch: true,
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 flexibleSpace: FlexibleSpaceBar(
                     titlePadding: const EdgeInsets.only(left: 10),
                     collapseMode: CollapseMode.pin,
-                    title: Text("Excercises",
-                        style: Theme.of(context).textTheme.displayLarge)),
+                    title: Text(widget.tile ?? "Excercises",
+                        style: Theme.of(context).textTheme.displayLarge),
+                    stretchModes: [StretchMode.zoomBackground]),
               ),
             ];
           }),
@@ -55,7 +63,9 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
                   builder: ((context, snapshot) {
                     if (snapshot.hasData) {
                       return ExcerciseScroller(
-                          snapshot.data as List<Excercise>);
+                        snapshot.data as List<Excercise>,
+                        gestureDetectorOnTap: widget.gestureDetectorOnTap,
+                      );
                     } else {
                       return const Center(child: CircularProgressIndicator());
                     }

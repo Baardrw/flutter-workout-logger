@@ -4,11 +4,17 @@ import 'package:provider/provider.dart';
 import '../../models/excercise.dart';
 import '../../services/db_service.dart';
 
+/// Tile that displays the name and body part of an excercise
+/// used in the add_workout_button to display the excercises that
+/// are added
 class ExcerciseTile extends StatelessWidget {
   const ExcerciseTile({
     Key? key,
     required this.excercise,
+    required this.workoutProgram,
   }) : super(key: key);
+
+  final bool workoutProgram;
 
   final Excercise excercise;
   final AssetImage _strengthIcon =
@@ -54,15 +60,17 @@ class ExcerciseTile extends StatelessWidget {
         Expanded(
           child: Container(),
         ),
-        IconButton(
-            onPressed: () {
-              Provider.of<DatabaseService>(context, listen: false)
-                  .deleteExcercise(excercise);
-            },
-            icon: const Icon(
-              Icons.delete,
-              color: Colors.blueGrey,
-            )),
+        workoutProgram
+            ? const SizedBox()
+            : IconButton(
+                onPressed: () {
+                  Provider.of<DatabaseService>(context, listen: false)
+                      .deleteExcercise(excercise);
+                },
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.blueGrey,
+                )),
         const SizedBox(width: 10),
       ],
     );

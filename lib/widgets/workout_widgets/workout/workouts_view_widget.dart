@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:pu_frontend/widgets/workout_widgets/workout_card_widget.dart';
-import 'package:pu_frontend/widgets/workout_widgets/add_workout_button.dart';
-import 'package:pu_frontend/widgets/workout_widgets/show_workout_button.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/add_workout_button.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/show_workout_button.dart';
 
 class WorkoutsView extends StatelessWidget {
   const WorkoutsView({super.key});

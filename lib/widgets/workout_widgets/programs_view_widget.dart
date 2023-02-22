@@ -32,7 +32,7 @@ class ProgramsView extends StatelessWidget {
       body: Center(
         child: ListView(
           padding: const EdgeInsets.all(12.0),
-          children: <Widget>[
+          children: const <Widget>[
             ShowProgramButton(test: pc1, string: ID1),
             SizedBox(height: 10),
             ShowProgramButton(test: pc2, string: ID2),
