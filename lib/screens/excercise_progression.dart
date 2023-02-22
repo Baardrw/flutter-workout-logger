@@ -20,12 +20,16 @@ class ExcerciseProgression extends StatefulWidget {
 class _ExcerciseProgressionState extends State<ExcerciseProgression> {
   @override
   Widget build(BuildContext context) {
+    final DatabaseService dbservice = Provider.of<DatabaseService>(context);
+
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: const AddExcerciseButton(),
       body: NestedScrollView(
           headerSliverBuilder: ((context, innerBoxIsScrolled) {
             return [
+              // Sliver bar holding title, only for stylistic purposes
+              // TODO : add search bar
               SliverAppBar(
                 expandedHeight: 100.0,
                 floating: false,
@@ -40,8 +44,10 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
               ),
             ];
           }),
+          // holds the ExcerciseScroller, in a stream builder and future builder
+          // the stream builder listens to the db if it is updated scroller
           body: StreamBuilder(
-            stream: Provider.of<DatabaseService>(context).excerciseStream,
+            stream: dbservice.excerciseStream,
             builder: (context, snapshot) {
               return FutureBuilder(
                   builder: ((context, snapshot) {
@@ -52,7 +58,7 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
                       return const Center(child: CircularProgressIndicator());
                     }
                   }),
-                  future: Provider.of<DatabaseService>(context).excercises);
+                  future: dbservice.excercises);
             },
           )),
     );

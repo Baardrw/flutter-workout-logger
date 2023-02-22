@@ -26,17 +26,20 @@ class SignUpState extends State<signUp> {
       body: Center(
         child: Column(
           children: [
-            const SizedBox(height: 250),
-            
+            Expanded(
+              child: Container(),
+            ),
+
             //"Velkommen" text
             const Text(
               "Velkommen",
-              style: TextStyle(
-                fontSize: 42
-              ),),
-            
-            const SizedBox(height: 50,),
-            
+              style: TextStyle(fontSize: 42),
+            ),
+
+            const SizedBox(
+              height: 50,
+            ),
+
             //Text field username input
             LoginTextfield(
               hintText: "Fullt navn",
@@ -44,7 +47,9 @@ class SignUpState extends State<signUp> {
               controller: _nameController,
             ),
 
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
 
             //Text field username input
             LoginTextfield(
@@ -53,7 +58,9 @@ class SignUpState extends State<signUp> {
               controller: _emailController,
             ),
 
-            const SizedBox(height: 10,),
+            const SizedBox(
+              height: 10,
+            ),
 
             //Text field password input
             LoginTextfield(
@@ -62,65 +69,62 @@ class SignUpState extends State<signUp> {
               controller: _passwordController,
             ),
 
-            const SizedBox(height: 30,),
+            const SizedBox(
+              height: 30,
+            ),
 
             //Register button
             OutlinedButton(
-              onPressed: () async {
-                User? user = await _authService
-                    .signUp(_emailController.text, _passwordController.text,
-                        _nameController.text)
-                    .onError((error, stackTrace) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Invalid Credentials'),
-                    duration: Duration(seconds: 3),
-                  ));
-                });
-                if (user != null) {
-                    User? user = await _authService
-                    .signIn(_emailController.text, _passwordController.text);
+                onPressed: () async {
+                  User? user = await _authService
+                      .signUp(_emailController.text, _passwordController.text,
+                          _nameController.text)
+                      .onError((error, stackTrace) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Invalid Credentials'),
+                      duration: Duration(seconds: 3),
+                    ));
+                  });
+                  if (user != null) {
+                    User? user = await _authService.signIn(
+                        _emailController.text, _passwordController.text);
                   }
-                context.go("/");
-                print('user: $user');
+                  context.go("/");
+                  print('user: $user');
 
-                // If this line of code is reached then the user has failed to log in
-              },
-              style: OutlinedButton.styleFrom(
-                backgroundColor: Colors.black,
-                padding: const EdgeInsets.all(20.0),
-                fixedSize: const Size(300, 80),
-                shape: const StadiumBorder()
-              ),
-              child: const Text(
-                "Registrer",
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white
-                ),
-              )
+                  // If this line of code is reached then the user has failed to log in
+                },
+                style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    padding: const EdgeInsets.all(20.0),
+                    fixedSize: const Size(300, 80),
+                    shape: const StadiumBorder()),
+                child: const Text(
+                  "Registrer",
+                  style: TextStyle(fontSize: 30, color: Colors.white),
+                )),
+
+            Expanded(
+              child: Container(),
             ),
-
-            const SizedBox(height: 200,),
 
             //Login button
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              const Text("Har du allerede bruker?"),
-              OutlinedButton(
-                onPressed: () => context.go("/demo"), //TODO: Update path name
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(
-                    color: Colors.transparent,
-                  ),
-              ), 
-              child: const Text(
-                "Logg inn",
-                style: TextStyle(
-                  color: Colors.blue
-                ),
-              )
-              )
+                const Text("Har du allerede bruker?"),
+                OutlinedButton(
+                    onPressed: () =>
+                        context.go("/login"), //TODO: Update path name
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(
+                        color: Colors.transparent,
+                      ),
+                    ),
+                    child: const Text(
+                      "Logg inn",
+                      style: TextStyle(color: Colors.blue),
+                    ))
               ],
             ),
           ],
