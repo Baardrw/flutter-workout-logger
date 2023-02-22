@@ -29,8 +29,8 @@ class DatabaseService {
     return await _userRef.doc(user.uid).set(user);
   }
 
-  Future<void> deleteUser(String uid) async {
-    return await _userRef.doc(uid).delete();
+  Future<void> deleteUser(User user) async {
+    return await _userRef.doc(user.uid).delete();
   }
 
   Future<void> addUser(User user) async {
@@ -49,6 +49,10 @@ class DatabaseService {
 
   Future<void> updateExcercise(Excercise excercise) async {
     return await _excerciseRef.doc(excercise.name).set(excercise);
+  }
+
+  Future<void> deleteExcercise(Excercise excercise) async {
+    return await _excerciseRef.doc(excercise.name).delete();
   }
 
   Future<Excercise?> getExcercise(String name) async {
@@ -73,5 +77,82 @@ class DatabaseService {
 
   Future<bool> excerciseExists(String name) async {
     return await _excerciseRef.doc(name).get().then((value) => value.exists);
+  }
+
+  Future<void> addLog(Log log, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(log.excerciseName)
+        .doc(log.id)
+        .set(log.toJson());
+  }
+
+  Future<void> updateLog(Log log, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(log.excerciseName)
+        .doc(log.id)
+        .set(log.toJson());
+  }
+
+  Future<void> deleteLog(Log log, String uid) async {
+    print("deleting log: ${log.id}");
+
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(log.excerciseName)
+        .doc(log.id)
+        .delete();
+  }
+
+  Future<List<Log>> getLogs(String excerciseName, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .orderBy('date', descending: false)
+        .get()
+        .then((value) => value.docs
+            .map((e) => Log.fromJson(e.data()))
+            .toList()
+            .reversed
+            .toList());
+  }
+
+  Future<Log> getWeightLiftingPersonalRecord(
+      String excerciseName, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .orderBy('weight', descending: true)
+        .limit(1)
+        .get()
+        .then((value) =>
+            value.docs.map((e) => Log.fromJson(e.data())).toList().first);
+  }
+
+  Future<Log> getCardioPersonalRecord(String excerciseName, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .orderBy('distance', descending: true)
+        .limit(1)
+        .get()
+        .then((value) =>
+            value.docs.map((e) => Log.fromJson(e.data())).toList().first);
+  }
+
+  Future<bool> logExists(String excerciseName, String uid) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(excerciseName)
+        .get()
+        .then((value) => value.size > 0);
   }
 }

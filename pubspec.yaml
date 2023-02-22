@@ -44,6 +44,9 @@ dependencies:
   alphabet_scroll_view: ^0.3.2
   salomon_bottom_bar: ^3.3.1
 
+  intl: ^0.17.0
+  fl_chart: ^0.60.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

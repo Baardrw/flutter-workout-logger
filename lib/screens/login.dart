@@ -21,97 +21,96 @@ class LoginState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final AuthService _authService = Provider.of<AuthService>(context);
-    
+
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            
-            const SizedBox(height: 250),
-            
-            //"Logg inn"-text
-            const Text(
-              "Logify",
-              style: TextStyle(
-                fontSize: 42
-              ),),
-            
-            const SizedBox(height: 50,),
-            
-            //Text field username input
-            LoginTextfield(
-              hintText: "Brukernavn",
-              obscureText: false,
-              controller: _emailController,
-            ),
+        body: Center(
+            child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        //"Logg inn"-text
+        Expanded(
+          child: Container(),
+        ),
 
-            const SizedBox(height: 10,),
+        const Text(
+          "Logify",
+          style: TextStyle(fontSize: 42),
+        ),
 
-            //Text field password input
-            LoginTextfield(
-              hintText: "Passord",
-              obscureText: true,
-              controller: _passwordController,
-            ),
+        const SizedBox(
+          height: 50,
+        ),
 
-            const SizedBox(height: 30,),
+        //Text field username input
+        LoginTextfield(
+          hintText: "Brukernavn",
+          obscureText: false,
+          controller: _emailController,
+        ),
 
-            //Login button
-            OutlinedButton(
-              onPressed: () async {
-                print(_emailController.text + _passwordController.text);
-                User? user = await _authService
-                    .signIn(_emailController.text, _passwordController.text)
-                    .onError((error, stackTrace) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Invalid Credentials'),
-                    duration: Duration(seconds: 3),
-                  ));
-                });
-                print('user: $user');
-                // If this line of code is reached then the user has failed to log in
-              },
-              style: OutlinedButton.styleFrom(
+        const SizedBox(
+          height: 10,
+        ),
+
+        //Text field password input
+        LoginTextfield(
+          hintText: "Passord",
+          obscureText: true,
+          controller: _passwordController,
+        ),
+
+        const SizedBox(
+          height: 30,
+        ),
+
+        //Login button
+        OutlinedButton(
+            onPressed: () async {
+              print(_emailController.text + _passwordController.text);
+              User? user = await _authService
+                  .signIn(_emailController.text, _passwordController.text)
+                  .onError((error, stackTrace) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Invalid Credentials'),
+                  duration: Duration(seconds: 3),
+                ));
+              });
+              print('user: $user');
+              // If this line of code is reached then the user has failed to log in
+            },
+            style: OutlinedButton.styleFrom(
                 backgroundColor: Colors.black,
                 padding: const EdgeInsets.all(20.0),
                 fixedSize: const Size(300, 80),
-                shape: const StadiumBorder()
-              ),
-              child: const Text(
-                "Logg inn",
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white
-                ),
-              )
-            ),
+                shape: const StadiumBorder()),
+            child: const Text(
+              "Logg inn",
+              style: TextStyle(fontSize: 30, color: Colors.white),
+            )),
 
-            const SizedBox(height: 270,),
+        Expanded(
+          child: Container(),
+        ),
 
-            //Register user button
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              const Text("Har du ikke bruker?"),
-              OutlinedButton(
-                onPressed: () => context.go("/SignUp"), //Update path
+        //Register user button
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("Har du ikke bruker?"),
+            OutlinedButton(
+                onPressed: () => context.go("/signup"), //Update path
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(
                     color: Colors.transparent,
                   ),
-              ), 
-              child: const Text(
-                "Registrer her",
-                style: TextStyle(
-                  color: Colors.blue
                 ),
-              )
-              )
-              ],
-            ),
+                child: const Text(
+                  "Registrer her",
+                  style: TextStyle(color: Colors.blue),
+                ))
           ],
-        )
-      )
-    );
+        ),
+      ],
+    )));
   }
 }
