@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/excercise.dart';
+import '../../services/db_service.dart';
 
 class ExcerciseTile extends StatelessWidget {
   const ExcerciseTile({
@@ -48,7 +50,20 @@ class ExcerciseTile extends StatelessWidget {
             Text(excercise.bodyPart.toShortString(),
                 style: Theme.of(context).textTheme.labelLarge),
           ],
-        )
+        ),
+        Expanded(
+          child: Container(),
+        ),
+        IconButton(
+            onPressed: () {
+              Provider.of<DatabaseService>(context, listen: false)
+                  .deleteExcercise(excercise);
+            },
+            icon: const Icon(
+              Icons.delete,
+              color: Colors.blueGrey,
+            )),
+        const SizedBox(width: 10),
       ],
     );
   }
