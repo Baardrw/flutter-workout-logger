@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:alphabet_scroll_view/alphabet_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -19,12 +21,12 @@ class ExcerciseScroller extends StatelessWidget {
       list: excercises.map((e) => AlphaModel(e.name)).toList(),
       itemExtent: 50,
       alignment: LetterAlignment.right,
-      itemBuilder: (BuildContext, int, String) {
+      itemBuilder: (BuildContext _, int index, String __) {
         return GestureDetector(
           onTap: () async {
             // Checks if the excercise has logs in the database
             if (!await Provider.of<DatabaseService>(context, listen: false)
-                .logExists(excercises[int].name,
+                .logExists(excercises[index].name,
                     Provider.of<AuthService>(context, listen: false).uid)) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text('No logs for this excercise'),
@@ -32,20 +34,21 @@ class ExcerciseScroller extends StatelessWidget {
               ));
               return;
             }
-            // Logs for the chosedn excercise exists
+            // Logs for the chosen excercise are fetched
             List<Log> logs =
                 await Provider.of<DatabaseService>(context, listen: false)
-                    .getLogs(excercises[int].name,
+                    .getLogs(excercises[index].name,
                         Provider.of<AuthService>(context, listen: false).uid);
 
-            // if it does, navigate to the excercise history screen
+            // The user is navigated to the excercise history screen where the logs are displayed
+            // ignore: use_build_context_synchronously
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return ExcerciseHistory(excercise: excercises[int], logs: logs);
+              return ExcerciseHistory(excercise: excercises[index], logs: logs);
             }));
           },
           child: Card(
             elevation: 8,
-            child: ExcerciseTile(excercise: excercises[int]),
+            child: ExcerciseTile(excercise: excercises[index]),
           ),
         );
       },
