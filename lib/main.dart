@@ -33,7 +33,7 @@ GoRouter router() {
         builder: (context, state) => const AuthWrapper(),
       ),
       GoRoute(
-        path: '/demo',
+        path: '/login',
         builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
@@ -41,7 +41,7 @@ GoRouter router() {
         builder: (context, state) => const DemoHome(),
       ),
       GoRoute(
-        path: '/signupdemo',
+        path: '/signup',
         builder: (context, state) => const signUp(),
       ),
       GoRoute(

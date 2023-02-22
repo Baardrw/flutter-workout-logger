@@ -4,6 +4,7 @@ import 'package:pu_frontend/screens/login.dart';
 
 import '../models/user.dart';
 import '../screens/demohome.dart';
+import '../screens/excercise_progression.dart';
 import '../services/auth_service.dart';
 
 /// AuthWrapper is a widget that will listen to the AuthService user stream and direct

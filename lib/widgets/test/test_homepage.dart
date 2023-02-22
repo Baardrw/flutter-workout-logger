@@ -43,6 +43,12 @@ class _TestHomeState extends State<TestHome> {
                 await _dbService.addLog('Bench Press', log, _authService.uid);
               },
               child: Text('Add bench log')),
+          ElevatedButton(
+            onPressed: () {
+              _authService.signOut();
+            },
+            child: Text('logout'),
+          ),
         ],
       ),
     );
