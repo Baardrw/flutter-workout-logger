@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/workout_widgets/workout_card_widget.dart';
-import '../widgets/workout_widgets/workouts_view_widget.dart';
+import '../widgets/workout_widgets/workout/workout_card_widget.dart';
+import '../widgets/workout_widgets/workout/workouts_view_widget.dart';
 import '../widgets/workout_widgets/program_card_widget.dart';
 import '../widgets/workout_widgets/programs_view_widget.dart';
 

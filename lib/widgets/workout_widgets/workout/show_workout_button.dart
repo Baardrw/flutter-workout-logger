@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
-import 'package:pu_frontend/widgets/workout_widgets/workout_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_card_widget.dart';
 
 class ShowWorkoutButton extends StatelessWidget {
   final WorkoutCard test;

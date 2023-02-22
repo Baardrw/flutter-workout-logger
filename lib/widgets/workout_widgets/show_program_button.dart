@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
 import 'package:pu_frontend/widgets/workout_widgets/program_card_widget.dart';
-import 'package:pu_frontend/widgets/workout_widgets/show_workout_button.dart';
-import 'package:pu_frontend/widgets/workout_widgets/workout_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/show_workout_button.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_card_widget.dart';
 
 class ShowProgramButton extends StatelessWidget {
   final ProgramCard test;
