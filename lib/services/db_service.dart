@@ -29,8 +29,8 @@ class DatabaseService {
     return await _userRef.doc(user.uid).set(user);
   }
 
-  Future<void> deleteUser(String uid) async {
-    return await _userRef.doc(uid).delete();
+  Future<void> deleteUser(User user) async {
+    return await _userRef.doc(user.uid).delete();
   }
 
   Future<void> addUser(User user) async {
@@ -49,6 +49,10 @@ class DatabaseService {
 
   Future<void> updateExcercise(Excercise excercise) async {
     return await _excerciseRef.doc(excercise.name).set(excercise);
+  }
+
+  Future<void> deleteExcercise(Excercise excercise) async {
+    return await _excerciseRef.doc(excercise.name).delete();
   }
 
   Future<Excercise?> getExcercise(String name) async {
@@ -75,32 +79,32 @@ class DatabaseService {
     return await _excerciseRef.doc(name).get().then((value) => value.exists);
   }
 
-  Future<void> addLog(String excerciseName, Log log, String uid) async {
+  Future<void> addLog(Log log, String uid) async {
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
-        .collection(excerciseName)
+        .collection(log.excerciseName)
         .doc(log.id)
         .set(log.toJson());
   }
 
-  Future<void> updateLog(String excerciseName, Log log, String uid) async {
+  Future<void> updateLog(Log log, String uid) async {
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
-        .collection(excerciseName)
+        .collection(log.excerciseName)
         .doc(log.id)
         .set(log.toJson());
   }
 
-  Future<void> deleteLog(String excerciseName, String logId, String uid) async {
-    print("deleting log: $logId");
+  Future<void> deleteLog(Log log, String uid) async {
+    print("deleting log: ${log.id}");
 
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
-        .collection(excerciseName)
-        .doc(logId)
+        .collection(log.excerciseName)
+        .doc(log.id)
         .delete();
   }
 

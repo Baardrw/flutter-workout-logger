@@ -40,7 +40,7 @@ class _TestHomeState extends State<TestHome> {
                     Random.secure().nextInt(10000),
                     Random.secure().nextInt(180));
 
-                await _dbService.addLog('Bench Press', log, _authService.uid);
+                await _dbService.addLog(log, _authService.uid);
               },
               child: Text('Add bench log')),
           ElevatedButton(
