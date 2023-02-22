@@ -108,7 +108,7 @@ class SignUpState extends State<signUp> {
               children: [
               const Text("Har du allerede bruker?"),
               OutlinedButton(
-                onPressed: () => context.go("/demo"), //TODO: Update path name
+                onPressed: () => context.go("/LogIn"), //TODO: Update path name
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(
                     color: Colors.transparent,

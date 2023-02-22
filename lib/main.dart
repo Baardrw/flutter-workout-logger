@@ -26,22 +26,22 @@ Future<void> main() async {
 /// defaults to the authwrapper page, which will redirect to the login page if the user is not logged in.
 GoRouter router() {
   return GoRouter(
-    initialLocation: '/demo',
+    initialLocation: '/Home',
     routes: [
       GoRoute(
         path: '/',
         builder: (context, state) => const AuthWrapper(),
       ),
       GoRoute(
-        path: '/demo',
+        path: '/LogIn',
         builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
-        path: '/demo2',
+        path: '/Home',
         builder: (context, state) => const DemoHome(),
       ),
       GoRoute(
-        path: '/signupdemo',
+        path: '/SignUp',
         builder: (context, state) => const signUp(),
       ),
       GoRoute(

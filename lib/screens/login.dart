@@ -94,7 +94,7 @@ class LoginState extends State<LoginPage> {
               children: [
               const Text("Har du ikke bruker?"),
               OutlinedButton(
-                onPressed: () => context.go("/signupdemo"), //Update path
+                onPressed: () => context.go("/SignUp"), //Update path
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(
                     color: Colors.transparent,
