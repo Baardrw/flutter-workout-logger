@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/firebase_options.dart';
+import 'package:pu_frontend/screens/demoViews.dart';
+import 'package:pu_frontend/screens/log_workout.dart';
 import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
 import 'package:pu_frontend/screens/excercise_progression.dart';
 import 'package:pu_frontend/screens/login.dart';
 import 'package:pu_frontend/screens/signup.dart';
+import 'package:pu_frontend/screens/workouts.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 import 'package:pu_frontend/widgets/auth_wrapper.dart';
@@ -26,7 +29,7 @@ Future<void> main() async {
 /// defaults to the authwrapper page, which will redirect to the login page if the user is not logged in.
 GoRouter router() {
   return GoRouter(
-    initialLocation: '/demo',
+    initialLocation: '/workouts',
     routes: [
       GoRoute(
         path: '/',
@@ -47,6 +50,14 @@ GoRouter router() {
       GoRoute(
         path: '/ExcerciseProgression',
         builder: (context, state) => const ExcerciseProgression(),
+      ),
+      GoRoute(
+        path: '/workouts',
+        builder: (context, state) => const Workouts(),
+      ),
+      GoRoute(
+        path: '/logWorkout',
+        builder: (context, state) => const Log_workout(),
       ),
     ],
   );
