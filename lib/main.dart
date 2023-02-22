@@ -8,8 +8,8 @@ import 'package:pu_frontend/firebase_options.dart';
 import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
 import 'package:pu_frontend/screens/excercise_progression.dart';
-import 'package:pu_frontend/screens/login_test.dart';
-import 'package:pu_frontend/screens/singup_test.dart';
+import 'package:pu_frontend/screens/login.dart';
+import 'package:pu_frontend/screens/signup.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 import 'package:pu_frontend/widgets/auth_wrapper.dart';
@@ -41,7 +41,7 @@ GoRouter router() {
         builder: (context, state) => const DemoHome(),
       ),
       GoRoute(
-        path: '/singupdemo',
+        path: '/signupdemo',
         builder: (context, state) => const signUp(),
       ),
       GoRoute(
@@ -66,6 +66,7 @@ class MyApp extends StatelessWidget {
         Provider<DatabaseService>(create: (_) => DatabaseService())
       ],
       child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
         title: 'Trening App',
         routerConfig: router(),
         theme: appTheme,
