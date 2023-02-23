@@ -50,8 +50,8 @@ class WorkoutContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 350,
-      height: 600,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height * 0.75,
       child: ListView(
         padding: const EdgeInsets.all(20.0),
         children: <Widget>[
