@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
+import 'package:go_router/go_router.dart';
 
 class TestHome extends StatefulWidget {
   const TestHome({super.key});
@@ -44,8 +45,9 @@ class _TestHomeState extends State<TestHome> {
               },
               child: Text('Add bench log')),
           ElevatedButton(
-            onPressed: () {
-              _authService.signOut();
+            onPressed: () async {
+              await _authService.signOut();
+              context.go("/");
             },
             child: Text('logout'),
           ),

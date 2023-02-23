@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/screens/login.dart';
+import 'package:pu_frontend/screens/workouts.dart';
 
 import '../models/user.dart';
 import '../screens/demohome.dart';
@@ -23,7 +24,7 @@ class AuthWrapper extends StatelessWidget {
             if (user == null) {
               return const LoginPage();
             }
-            return const ExcerciseProgression();
+            return const Workouts();
           }
           return const Scaffold(
             body: Center(
