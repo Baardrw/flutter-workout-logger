@@ -3,8 +3,8 @@ import 'package:pu_frontend/screens/bottom_bar.dart';
 
 import '../widgets/workout_widgets/workout/workout_card_widget.dart';
 import '../widgets/workout_widgets/workout/workouts_view_widget.dart';
-import '../widgets/workout_widgets/program_card_widget.dart';
-import '../widgets/workout_widgets/programs_view_widget.dart';
+import '../widgets/workout_widgets/program/program_card_widget.dart';
+import '../widgets/workout_widgets/program/programs_view_widget.dart';
 
 class Workouts extends StatelessWidget {
   const Workouts({super.key});
@@ -51,7 +51,7 @@ class Workouts extends StatelessWidget {
             //   selectedItemColor: const Color.fromARGB(255, 51, 100, 140),
             // ),
           )),
-    bottomNavigationBar: bottomBar.getBar(context),
+      bottomNavigationBar: bottomBar.getBar(context),
     );
   }
 }

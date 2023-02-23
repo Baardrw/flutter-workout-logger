@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pu_frontend/models/session.dart';
 
-import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
-import 'package:pu_frontend/widgets/workout_widgets/program_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/program/popup_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/program/program_card_widget.dart';
 import 'package:pu_frontend/widgets/workout_widgets/workout/show_workout_button.dart';
 import 'package:pu_frontend/widgets/workout_widgets/workout/workout_card_widget.dart';
 
@@ -42,7 +43,14 @@ class ProgramContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const WorkoutCard workout1 = WorkoutCard();
+    Session test = Session(
+        date: DateTime.now(),
+        description: 'test',
+        name: 'Test',
+        timeEstimate: '60',
+        excercises: ["Bench Press", "'Pushups"]);
+
+    WorkoutCard workout1 = WorkoutCard(test);
     const String ID20 = 'ID20';
     return Container(
       width: 350,
@@ -58,7 +66,7 @@ class ProgramContent extends StatelessWidget {
           // ShowWorkoutButton(test: workout1, string: ID20),
           GestureDetector(
             onTap: () => context.push('/logWorkout'),
-            child: WorkoutCard(),
+            child: WorkoutCard(test),
           ),
           SizedBox(height: 40),
           Text('Tirsdag'),

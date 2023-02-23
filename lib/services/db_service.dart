@@ -165,35 +165,55 @@ class DatabaseService {
         .then((value) => value.size > 0);
   }
 
-  Future<void> addSession(Session session) async {
-    return await _sessionRef.doc(session.id).set(session);
+  Future<void> addSession(Session session, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(session.id)
+        .set(session.toJson());
   }
 
-  Future<void> updateSession(Session session) async {
-    return await _sessionRef.doc(session.id).set(session);
+  Future<void> updateSession(Session session, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(session.id)
+        .set(session.toJson());
   }
 
-  Future<Session?> getSession(String id) async {
-    return await _sessionRef.doc(id).get().then((value) => value.data());
+  Future<void> deleteSession(Session session, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(session.id)
+        .delete();
   }
 
-  Future<List<Session>> get sessions async {
-    List<Session> ex = await _sessionRef
+  Future<List<Session>> getSessions(String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .orderBy('date', descending: true)
         .get()
-        .then((value) => value.docs.map((e) => e.data()).toList());
-
-    ex.sort((a, b) => b.date.compareTo(a.date));
-
-    return ex;
+        .then((value) => value.docs
+            .map((e) => Session.fromJson(e.data()))
+            .toList()
+            .reversed
+            .toList());
   }
 
-  Stream<Session> get sessionStream {
-    return _sessionRef.snapshots().map((event) {
-      return event.docs.map((e) => e.data()).toList().first;
+  Stream<Session> getSessionStream(String uid) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .snapshots()
+        .map((event) {
+      return event.docs.map((e) => Session.fromJson(e.data())).toList().first;
     });
-  }
-
-  Future<bool> sessionExists(String id) async {
-    return await _sessionRef.doc(id).get().then((value) => value.exists);
   }
 }
