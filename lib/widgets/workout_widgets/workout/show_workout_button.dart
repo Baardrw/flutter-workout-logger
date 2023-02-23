@@ -21,12 +21,12 @@ class ShowWorkoutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupItemLauncher(
       tag: string,
-      outerPadding: EdgeInsets.all(0),
+      outerPadding: const EdgeInsets.all(0),
       child: test,
       popUp: PopUpItem(
         // paddingOuter: EdgeInsets.all(0), // Padding outside of the card
-        padding: EdgeInsets.all(8), // Padding inside of the card
-        color: Color.fromARGB(255, 232, 232, 232), // Color of the card
+        padding: const EdgeInsets.all(8), // Padding inside of the card
+        color: const Color.fromARGB(255, 232, 232, 232), // Color of the card
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(32)), // Shape of the card
         elevation: 2, // Elevation of the card
@@ -55,25 +55,25 @@ class WorkoutContent extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(20.0),
         children: <Widget>[
-          SizedBox(height: 10),
-          Text(
+          const SizedBox(height: 10),
+          const Text(
             'Tittel',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
           ),
-          Divider(
+          const Divider(
             color: Colors.blueGrey,
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(15))),
             child: Column(
-              children: [
+              children: const [
                 Text(
                   'Beskrivelse',
                   textAlign: TextAlign.center,
@@ -87,26 +87,26 @@ class WorkoutContent extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Excercise_log_card(ex1: ex1),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Excercise_log_card(ex1: ex2),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           ElevatedButton(
             // Knapp for å registrere en ny logg/instans av økten
             style: ElevatedButton.styleFrom(
-              primary: Color.fromARGB(255, 51, 100, 140),
+              primary: const Color.fromARGB(255, 51, 100, 140),
             ),
             onPressed: () => context.push('/logWorkout'),
-            child: Text('Registrer ny økt'),
+            child: const Text('Registrer ny økt'),
           ),
-          SizedBox(height: 30),
-          Divider(
+          const SizedBox(height: 30),
+          const Divider(
             color: Colors.blueGrey,
             thickness: 5,
           ),
-          SizedBox(height: 30),
-          Center(
+          const SizedBox(height: 30),
+          const Center(
             child: Text(
               'Tidligere logger',
               style: TextStyle(
@@ -115,23 +115,23 @@ class WorkoutContent extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(15))),
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               width: MediaQuery.of(context).size.width,
-              child: Center(child: Text('23.01.2023'))),
-          SizedBox(height: 30),
+              child: const Center(child: Text('23.01.2023'))),
+          const SizedBox(height: 30),
           Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(15))),
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               width: MediaQuery.of(context).size.width,
-              child: Center(child: Text('12.12.2022'))),
-          SizedBox(height: 30),
+              child: const Center(child: Text('12.12.2022'))),
+          const SizedBox(height: 30),
         ],
       ),
     );
@@ -149,10 +149,10 @@ class Excercise_log_card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(15))),
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       width: MediaQuery.of(context).size.width * 0.95,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(
@@ -162,10 +162,10 @@ class Excercise_log_card extends StatelessWidget {
             ElevatedButton(
               // Knapp for å registrere en ny logg/instans av økten
               style: ElevatedButton.styleFrom(
-                primary: Color.fromARGB(255, 51, 100, 140),
+                primary: const Color.fromARGB(255, 51, 100, 140),
               ),
               onPressed: () => context.push('/ExcerciseProgression'),
-              child: Icon(Icons.bar_chart),
+              child: const Icon(Icons.bar_chart),
             ),
           ],
         ),
@@ -173,13 +173,13 @@ class Excercise_log_card extends StatelessWidget {
           color: Color.fromARGB(255, 190, 190, 190),
           thickness: 3,
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         const Text(
           'Beskrivelse beskrivelse\nhvordan hvordan',
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
       ]),
