@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:pu_frontend/models/session.dart';
 
-import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/program/popup_card_widget.dart';
 import 'package:pu_frontend/widgets/workout_widgets/workout/workout_card_widget.dart';
 
 import '../../../models/excercise.dart';
+import '../../../screens/excercise_history.dart';
+import '../../../services/auth_service.dart';
+import '../../../services/db_service.dart';
 import '../../excercise_progression_widgets/excercise_tile.dart';
 
 class ShowWorkoutButton extends StatelessWidget {
-  final WorkoutCard test;
+  final WorkoutCard card;
   final String string;
 
   const ShowWorkoutButton({
-    required this.test,
+    required this.card,
     required this.string,
     Key? key,
   }) : super(key: key);
@@ -22,7 +27,6 @@ class ShowWorkoutButton extends StatelessWidget {
     return PopupItemLauncher(
       tag: string,
       outerPadding: const EdgeInsets.all(0),
-      child: test,
       popUp: PopUpItem(
         // paddingOuter: EdgeInsets.all(0), // Padding outside of the card
         padding: const EdgeInsets.all(8), // Padding inside of the card
@@ -31,18 +35,22 @@ class ShowWorkoutButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(32)), // Shape of the card
         elevation: 2, // Elevation of the card
         tag: string, // MUST BE THE SAME AS IN `PopupItemLauncher`
-        child: WorkoutContent(),
-      ), // Your custom child widget.
+        child: WorkoutContent(card.session),
+      ),
+      child: card, // Your custom child widget.
     );
   }
 }
 
 class WorkoutContent extends StatelessWidget {
-  WorkoutContent({
+  WorkoutContent(
+    this.session, {
     Key? key,
   }) : super(key: key);
 
-  Excercise ex1 = Excercise(
+  final Session session;
+
+  Excercise excercise = Excercise(
       type: ExcerciseType.strength, bodyPart: BodyPart.chest, name: 'Pushups');
   Excercise ex2 = Excercise(
       type: ExcerciseType.strength, bodyPart: BodyPart.chest, name: 'Pullups');
@@ -56,11 +64,15 @@ class WorkoutContent extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         children: <Widget>[
           const SizedBox(height: 10),
-          const Text(
-            'Tittel',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              session.name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
             ),
           ),
           const Divider(
@@ -73,9 +85,9 @@ class WorkoutContent extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(15))),
             child: Column(
-              children: const [
-                Text(
-                  'Beskrivelse',
+              children: [
+                const Text(
+                  'Description',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
@@ -83,15 +95,34 @@ class WorkoutContent extends StatelessWidget {
                 ),
                 SizedBox(height: 12),
                 Text(
-                    'Beskrivelse beskrivelse\nHer skal du pushe maks og virkelig gi jernet. Start med 3x10 pushups, ta 2 min pause, osv'),
+                  session.description,
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 30),
-          Excercise_log_card(ex1: ex1),
-          const SizedBox(height: 30),
-          Excercise_log_card(ex1: ex2),
-          const SizedBox(height: 30),
+          SizedBox(height: 20),
+          // Excercise Log cards:
+          FutureBuilder(
+              builder: ((context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                List<Excercise?> excercises = snapshot.data as List<Excercise?>;
+                List<Widget> logCards = excercises
+                    .where((element) => element != null)
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: ExcerciseLogCard(excercise: e!),
+                        ))
+                    .toList();
+
+                return Column(
+                  children: logCards,
+                );
+              }),
+              future: session.getExcercisesAsExcercise()),
+          SizedBox(height: 20),
           ElevatedButton(
             // Knapp for å registrere en ny logg/instans av økten
             style: ElevatedButton.styleFrom(
@@ -138,33 +169,34 @@ class WorkoutContent extends StatelessWidget {
   }
 }
 
-class Excercise_log_card extends StatelessWidget {
-  const Excercise_log_card({
+class ExcerciseLogCard extends StatelessWidget {
+  const ExcerciseLogCard({
     super.key,
-    required this.ex1,
+    required this.excercise,
   });
 
-  final Excercise ex1;
+  final Excercise excercise;
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(15))),
-      padding: const EdgeInsets.all(20),
       width: MediaQuery.of(context).size.width * 0.95,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(
           children: [
-            Container(height: 40, child: Text(ex1.name)),
+            Container(height: 40, child: Text(excercise.name)),
             Expanded(child: Container()),
             ElevatedButton(
               // Knapp for å registrere en ny logg/instans av økten
               style: ElevatedButton.styleFrom(
                 primary: const Color.fromARGB(255, 51, 100, 140),
               ),
-              onPressed: () => context.push('/ExcerciseProgression'),
+              onPressed: () async =>
+                  await _showExcerciseHistory(context, excercise),
               child: const Icon(Icons.bar_chart),
             ),
           ],
@@ -184,5 +216,28 @@ class Excercise_log_card extends StatelessWidget {
         ),
       ]),
     );
+  }
+
+  Future<void> _showExcerciseHistory(
+      BuildContext context, Excercise excercise) async {
+    // Checks if the excercise has logs in the database
+    if (!await Provider.of<DatabaseService>(context, listen: false).logExists(
+        excercise.name, Provider.of<AuthService>(context, listen: false).uid)) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('No logs for this excercise'),
+        duration: Duration(seconds: 3),
+      ));
+      return;
+    }
+    // Logs for the chosen excercise are fetched
+    List<Log> logs = await Provider.of<DatabaseService>(context, listen: false)
+        .getLogs(excercise.name,
+            Provider.of<AuthService>(context, listen: false).uid);
+
+    // The user is navigated to the excercise history screen where the logs are displayed
+    // ignore: use_build_context_synchronously
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ExcerciseHistory(excercise: excercise, logs: logs);
+    }));
   }
 }

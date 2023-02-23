@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:pu_frontend/models/session.dart';
 import 'package:pu_frontend/screens/excercise_progression.dart';
+import 'package:pu_frontend/services/auth_service.dart';
+import 'package:pu_frontend/services/db_service.dart';
 
-import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/program/popup_card_widget.dart';
 
 import '../../../models/excercise.dart';
 import 'workout_program_tile.dart';
@@ -135,7 +139,7 @@ class _WorkoutProgramListState extends State<WorkoutProgramList> {
         children: [...excercises],
       )),
       IconButton(
-          onPressed: () {
+          onPressed: () async {
             _handleProgramFinished();
             Navigator.pop(context);
           },
@@ -147,9 +151,9 @@ class _WorkoutProgramListState extends State<WorkoutProgramList> {
     ]);
   }
 
-  void _handleProgramFinished() {
-    List<Excercise> program_excercises =
-        excercises.map((e) => e.excercise).toList();
+  void _handleProgramFinished() async {
+    List<String> program_excercises =
+        excercises.map((e) => e.excercise.name).toList();
 
     String programName = _programNameController.text;
     String programDescription = _programDescriptionController.text;
@@ -165,7 +169,15 @@ class _WorkoutProgramListState extends State<WorkoutProgramList> {
       timeEstimate = '60';
     }
 
-    // TODO: push these to database as a new program
+    Session push = Session(
+        name: programName,
+        date: DateTime.now(),
+        description: programDescription,
+        timeEstimate: timeEstimate,
+        excercises: program_excercises);
+
+    await Provider.of<DatabaseService>(context, listen: false)
+        .addSession(push, Provider.of<AuthService>(context, listen: false).uid);
   }
 
   void addExcercise(Excercise excercise) {

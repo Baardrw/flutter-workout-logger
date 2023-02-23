@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/program/popup_card_widget.dart';
 
 class AddProgramButton extends StatelessWidget {
   const AddProgramButton({

@@ -5,6 +5,8 @@ import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/models/user.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 
+import '../models/session.dart';
+
 class DatabaseService {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -154,5 +156,57 @@ class DatabaseService {
         .collection(excerciseName)
         .get()
         .then((value) => value.size > 0);
+  }
+
+  Future<void> addSession(Session session, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(session.id)
+        .set(session.toJson());
+  }
+
+  Future<void> updateSession(Session session, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(session.id)
+        .set(session.toJson());
+  }
+
+  Future<void> deleteSession(Session session, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(session.id)
+        .delete();
+  }
+
+  Future<List<Session>> getSessions(String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .orderBy('date', descending: true)
+        .get()
+        .then((value) => value.docs
+            .map((e) => Session.fromJson(e.data()))
+            .toList()
+            .reversed
+            .toList());
+  }
+
+  Stream<Session> getSessionStream(String uid) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .snapshots()
+        .map((event) {
+      return event.docs.map((e) => Session.fromJson(e.data())).toList().first;
+    });
   }
 }
