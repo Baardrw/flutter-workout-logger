@@ -19,7 +19,7 @@ class ExcerciseTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         FittedBox(
           fit: BoxFit.fill,
@@ -37,17 +37,19 @@ class ExcerciseTile extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 20),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              excercise.name,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            Text(excercise.bodyPart.toShortString(),
-                style: Theme.of(context).textTheme.labelLarge),
-          ],
+        FittedBox(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                excercise.name,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Text(excercise.bodyPart.toShortString(),
+                  style: Theme.of(context).textTheme.labelLarge),
+            ],
+          ),
         )
       ],
     );

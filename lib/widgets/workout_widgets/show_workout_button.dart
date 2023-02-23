@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
 import 'package:pu_frontend/widgets/workout_widgets/workout_card_widget.dart';
 
+import '../../models/excercise.dart';
+import '../excercise_progression_widgets/excercise_tile.dart';
+
 class ShowWorkoutButton extends StatelessWidget {
   final WorkoutCard test;
   final String string;
@@ -23,7 +26,7 @@ class ShowWorkoutButton extends StatelessWidget {
       popUp: PopUpItem(
         // paddingOuter: EdgeInsets.all(0), // Padding outside of the card
         padding: EdgeInsets.all(8), // Padding inside of the card
-        color: Colors.white, // Color of the card
+        color: Color.fromARGB(255, 232, 232, 232), // Color of the card
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(32)), // Shape of the card
         elevation: 2, // Elevation of the card
@@ -35,28 +38,62 @@ class ShowWorkoutButton extends StatelessWidget {
 }
 
 class WorkoutContent extends StatelessWidget {
-  const WorkoutContent({
+  WorkoutContent({
     Key? key,
   }) : super(key: key);
+
+  Excercise ex1 = Excercise(
+      type: ExcerciseType.strength, bodyPart: BodyPart.chest, name: 'Pushups');
+  Excercise ex2 = Excercise(
+      type: ExcerciseType.strength, bodyPart: BodyPart.chest, name: 'Pullups');
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 350,
-      height: 500,
+      height: 600,
       child: ListView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(20.0),
         children: <Widget>[
           SizedBox(height: 10),
-          Text('Tittel'),
+          Text(
+            'Tittel',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
           Divider(
             color: Colors.blueGrey,
           ),
+          SizedBox(height: 20),
+          Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(15))),
+            child: Column(
+              children: [
+                Text(
+                  'Beskrivelse',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                SizedBox(height: 12),
+                Text(
+                    'Beskrivelse beskrivelse\nHer skal du pushe maks og virkelig gi jernet. Start med 3x10 pushups, ta 2 min pause, osv'),
+              ],
+            ),
+          ),
           SizedBox(height: 30),
-          Text('Beskrivelse osv osv osv'),
-          SizedBox(height: 300),
-          Text('Knapp for å opprette en ny instans/økt'),
+          Excercise_log_card(ex1: ex1),
+          SizedBox(height: 30),
+          Excercise_log_card(ex1: ex2),
+          SizedBox(height: 30),
           ElevatedButton(
+            // Knapp for å registrere en ny logg/instans av økten
             style: ElevatedButton.styleFrom(
               primary: Color.fromARGB(255, 51, 100, 140),
             ),
@@ -69,13 +106,83 @@ class WorkoutContent extends StatelessWidget {
             thickness: 5,
           ),
           SizedBox(height: 30),
-          Text('Her kommer tidligere gjennomførte økter'),
+          Center(
+            child: Text(
+              'Tidligere logger',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
           SizedBox(height: 30),
-          Text('23.01.2023'),
+          Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
+              padding: EdgeInsets.all(20),
+              width: MediaQuery.of(context).size.width,
+              child: Center(child: Text('23.01.2023'))),
           SizedBox(height: 30),
-          Text('12.12.2022')
+          Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
+              padding: EdgeInsets.all(20),
+              width: MediaQuery.of(context).size.width,
+              child: Center(child: Text('12.12.2022'))),
+          SizedBox(height: 30),
         ],
       ),
+    );
+  }
+}
+
+class Excercise_log_card extends StatelessWidget {
+  const Excercise_log_card({
+    super.key,
+    required this.ex1,
+  });
+
+  final Excercise ex1;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(15))),
+      padding: EdgeInsets.all(20),
+      width: MediaQuery.of(context).size.width * 0.95,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(
+          children: [
+            Container(height: 40, child: ExcerciseTile(excercise: ex1)),
+            Expanded(child: Container()),
+            ElevatedButton(
+              // Knapp for å registrere en ny logg/instans av økten
+              style: ElevatedButton.styleFrom(
+                primary: Color.fromARGB(255, 51, 100, 140),
+              ),
+              onPressed: () => context.push('/ExcerciseProgression'),
+              child: Icon(Icons.bar_chart),
+            ),
+          ],
+        ),
+        const Divider(
+          color: Color.fromARGB(255, 190, 190, 190),
+          thickness: 3,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        const Text(
+          'Beskrivelse beskrivelse\nhvordan hvordan',
+        ),
+        SizedBox(
+          height: 10,
+        ),
+      ]),
     );
   }
 }
