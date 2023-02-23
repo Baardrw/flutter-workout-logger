@@ -47,7 +47,6 @@ class _ExcerciseHistoryState extends State<ExcerciseHistory> {
     final bool excerciseIsCardio =
         widget.excercise.type == ExcerciseType.cardio;
 
-    print('rebuilding');
     return Scaffold(
         appBar: AppBar(title: Text('${widget.excercise.name} History')),
         body: Column(

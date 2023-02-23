@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import '../widgets/workout_widgets/workout/workout_card_widget.dart';
 import '../widgets/workout_widgets/workout/workouts_view_widget.dart';
-import '../widgets/workout_widgets/program_card_widget.dart';
-import '../widgets/workout_widgets/programs_view_widget.dart';
+import '../widgets/workout_widgets/program/program_card_widget.dart';
+import '../widgets/workout_widgets/program/programs_view_widget.dart';
 import '../widgets/excercise_progression_widgets/excercise_tile.dart';
 import '../models/excercise.dart';
 import '../main.dart';
