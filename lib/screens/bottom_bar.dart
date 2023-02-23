@@ -4,7 +4,7 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class BottomBar {
   int _selectedIndex = 0;
-  final _paths = ["Home", "ExcerciseProgression", "NewExercise", "Search", "Profile"];
+  final _paths = ["Home", "ExcerciseProgression", "workouts", "Search", "Profile"];
 
   final _navBarItems = [
   SalomonBottomBarItem(
@@ -18,8 +18,8 @@ class BottomBar {
     selectedColor: Colors.blue,
   ),
   SalomonBottomBarItem(
-    icon: const Icon(IconData(0xe050, fontFamily: 'MaterialIcons')),
-    title: const Text("Ny økt"),
+    icon: const Icon(Icons.calendar_today),
+    title: const Text("Trening"),
     selectedColor: Colors.blue,
   ),
   SalomonBottomBarItem(

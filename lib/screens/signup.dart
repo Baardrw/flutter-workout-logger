@@ -53,7 +53,7 @@ class SignUpState extends State<signUp> {
 
             //Text field username input
             LoginTextfield(
-              hintText: "Brukernavn",
+              hintText: "E-mail",
               obscureText: false,
               controller: _emailController,
             ),
@@ -81,15 +81,15 @@ class SignUpState extends State<signUp> {
                           _nameController.text)
                       .onError((error, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Invalid Credentials'),
+                      content: Text('Beklager, ugyldig E-mail eller passord'),
                       duration: Duration(seconds: 3),
                     ));
                   });
                   if (user != null) {
                     User? user = await _authService.signIn(
                         _emailController.text, _passwordController.text);
+                        context.go("/");
                   }
-                  context.go("/");
                   print('user: $user');
 
                   // If this line of code is reached then the user has failed to log in
@@ -112,7 +112,7 @@ class SignUpState extends State<signUp> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Har du allerede bruker?"),
+                const Text("Har du allerede en bruker?"),
                 OutlinedButton(
                     onPressed: () =>
                         context.go("/login"), //TODO: Update path name

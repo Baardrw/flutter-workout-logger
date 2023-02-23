@@ -43,7 +43,7 @@ class LoginState extends State<LoginPage> {
 
         //Text field username input
         LoginTextfield(
-          hintText: "Brukernavn",
+          hintText: "E-mail",
           obscureText: false,
           controller: _emailController,
         ),
@@ -71,7 +71,7 @@ class LoginState extends State<LoginPage> {
                   .signIn(_emailController.text, _passwordController.text)
                   .onError((error, stackTrace) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Invalid Credentials'),
+                  content: Text('Beklager, passordet er feil'),
                   duration: Duration(seconds: 3),
                 ));
               });
@@ -96,7 +96,7 @@ class LoginState extends State<LoginPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Har du ikke bruker?"),
+            const Text("Har du ikke en bruker?"),
             OutlinedButton(
                 onPressed: () => context.go("/signup"), //Update path
                 style: OutlinedButton.styleFrom(
@@ -105,7 +105,7 @@ class LoginState extends State<LoginPage> {
                   ),
                 ),
                 child: const Text(
-                  "Registrer her",
+                  "Registrer deg",
                   style: TextStyle(color: Colors.blue),
                 ))
           ],

@@ -10,6 +10,8 @@ import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
 import 'package:pu_frontend/screens/excercise_progression.dart';
 import 'package:pu_frontend/screens/login.dart';
+import 'package:pu_frontend/screens/profile.dart';
+import 'package:pu_frontend/screens/search.dart';
 import 'package:pu_frontend/screens/signup.dart';
 import 'package:pu_frontend/screens/workouts.dart';
 import 'package:pu_frontend/services/auth_service.dart';
@@ -58,6 +60,14 @@ GoRouter router() {
         path: '/logWorkout',
         builder: (context, state) => const Log_workout(),
       ),
+      GoRoute(
+        path: '/Search',
+        builder: (context, state) => const SearchPage(),
+      ),
+      GoRoute(
+        path: '/Profile',
+        builder: (context, state) => const ProfilePage(),
+      ),
     ],
   );
 }
@@ -68,18 +78,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      // All providers are created here, and can provide data to all child widgets.
-
-      providers: [
-        Provider<AuthService>(create: (_) => AuthService()),
-        Provider<DatabaseService>(create: (_) => DatabaseService())
-      ],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: 'Trening App',
-        routerConfig: router(),
-        theme: appTheme,
+    return Center(
+      child: MultiProvider(
+        // All providers are created here, and can provide data to all child widgets.
+    
+        providers: [
+          Provider<AuthService>(create: (_) => AuthService()),
+          Provider<DatabaseService>(create: (_) => DatabaseService())
+        ],
+        child: MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          title: 'Trening App',
+          routerConfig: router(),
+          theme: appTheme,
+        ),
       ),
     );
   }
