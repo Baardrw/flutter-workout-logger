@@ -5,11 +5,13 @@ class Session {
 
   final String name;
   final List<Excercise>? excercises;
+  final int? timeEstimate;
   final DateTime date;
 
   Session({
     required this.name,
     this.excercises,
+    this.timeEstimate,
     required this.date,
   });
 
@@ -17,6 +19,7 @@ class Session {
     return Session(
       name: name,
       excercises: excercises,
+      timeEstimate: timeEstimate,
       date: date,
     );
   }
@@ -26,12 +29,14 @@ class Session {
         excercises = (json['excercises'] as List<dynamic>?)
             ?.map((e) => Excercise.fromJson(e as Map<String, Object?>))
             .toList(),
+        timeEstimate = json['timeEstimate'] as int?,
         date = DateTime.parse(json['date'] as String);
 
   Map<String, Object?> toJson() {
     return {
       'name': name,
       'excercises': excercises?.map((e) => e.toJson()).toList(),
+      'timeEstimate': timeEstimate,
       'date': date.toIso8601String(),
     };
   }

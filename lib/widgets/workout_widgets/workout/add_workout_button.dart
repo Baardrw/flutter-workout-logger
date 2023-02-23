@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pu_frontend/screens/excercise_progression.dart';
 
 import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
 
 import '../../../models/excercise.dart';
+import '../../../models/session.dart';
+import '../../../services/db_service.dart';
 import 'workout_program_tile.dart';
 
 class AddWorkoudButton extends StatelessWidget {
@@ -54,7 +57,7 @@ class _WorkoutProgramListState extends State<WorkoutProgramList> {
   final List<WorkoutProgramTile> excercises = [];
   final TextEditingController _programNameController = TextEditingController();
   final TextEditingController _programDescriptionController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _timeEstimateController = TextEditingController();
 
   @override
@@ -115,9 +118,9 @@ class _WorkoutProgramListState extends State<WorkoutProgramList> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ExcerciseProgression(
-                          tile: "Pick an Excercise, or Add One",
-                          gestureDetectorOnTap: addExcercise,
-                        )));
+                      tile: "Pick an Excercise, or Add One",
+                      gestureDetectorOnTap: addExcercise,
+                    )));
           },
           icon: const Icon(
             Icons.add,
@@ -127,13 +130,13 @@ class _WorkoutProgramListState extends State<WorkoutProgramList> {
       ),
       Expanded(
           child: ListView(
-        padding: EdgeInsets.zero,
-        physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics()),
-        shrinkWrap: true,
-        // Excercises are dynamically added to the list using the gestureDetectorOnTap callback
-        children: [...excercises],
-      )),
+            padding: EdgeInsets.zero,
+            physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics()),
+            shrinkWrap: true,
+            // Excercises are dynamically added to the list using the gestureDetectorOnTap callback
+            children: [...excercises],
+          )),
       IconButton(
           onPressed: () {
             _handleProgramFinished();
@@ -149,7 +152,7 @@ class _WorkoutProgramListState extends State<WorkoutProgramList> {
 
   void _handleProgramFinished() {
     List<Excercise> program_excercises =
-        excercises.map((e) => e.excercise).toList();
+    excercises.map((e) => e.excercise).toList();
 
     String programName = _programNameController.text;
     String programDescription = _programDescriptionController.text;
@@ -165,7 +168,8 @@ class _WorkoutProgramListState extends State<WorkoutProgramList> {
       timeEstimate = '60';
     }
 
-    // TODO: push these to database as a new program
+    //TODO add session to database
+    _pushSession(programName, program_excercises, timeEstimate, context);
   }
 
   void addExcercise(Excercise excercise) {
@@ -173,7 +177,7 @@ class _WorkoutProgramListState extends State<WorkoutProgramList> {
     if (excercises
         .map(
           (e) => e.excercise.name,
-        )
+    )
         .contains(excercise.name)) {
       return;
     }
@@ -182,4 +186,20 @@ class _WorkoutProgramListState extends State<WorkoutProgramList> {
     });
     print('Excercises: ${excercises.length}');
   }
+
+  //Push session with name timeestimate and list of excerises to database
+  Future<bool> _pushSession(String name, List<Excercise> excercises, String timeEstimate, BuildContext context) async {
+    DatabaseService db = Provider.of<DatabaseService>(context, listen: false);
+
+    Session session = Session(
+      name: name,
+      date : DateTime.now(),
+      timeEstimate: int.parse(timeEstimate),
+      excercises: excercises,
+    );
+
+    await db.addSession(session);
+    return true;
+  }
+
 }
