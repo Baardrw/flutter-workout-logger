@@ -5,6 +5,8 @@ import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/models/user.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 
+import '../models/session.dart';
+
 class DatabaseService {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -19,6 +21,13 @@ class DatabaseService {
       .withConverter(
         fromFirestore: (snapshot, _) => Excercise.fromJson(snapshot.data()!),
         toFirestore: (excercise, _) => excercise.toJson(),
+      );
+
+  final _sessionRef = FirebaseFirestore.instance
+      .collection('sessions')
+      .withConverter(
+        fromFirestore: (snapshot, _) => Session.fromJson(snapshot.data()!),
+        toFirestore: (session, _) => session.toJson(),
       );
 
   Future<User?> getUser(String uid) async {
@@ -73,5 +82,37 @@ class DatabaseService {
 
   Future<bool> excerciseExists(String name) async {
     return await _excerciseRef.doc(name).get().then((value) => value.exists);
+  }
+
+  Future<void> addSession(Session session) async {
+    return await _sessionRef.doc(session.id).set(session);
+  }
+
+  Future<void> updateSession(Session session) async {
+    return await _sessionRef.doc(session.id).set(session);
+  }
+
+  Future<Session?> getSession(String id) async {
+    return await _sessionRef.doc(id).get().then((value) => value.data());
+  }
+
+  Future<List<Session>> get sessions async {
+    List<Session> ex = await _sessionRef
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
+
+    ex.sort((a, b) => b.date.compareTo(a.date));
+
+    return ex;
+  }
+
+  Stream<Session> get sessionStream {
+    return _sessionRef.snapshots().map((event) {
+      return event.docs.map((e) => e.data()).toList().first;
+    });
+  }
+
+  Future<bool> sessionExists(String id) async {
+    return await _sessionRef.doc(id).get().then((value) => value.exists);
   }
 }
