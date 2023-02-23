@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
 import 'package:pu_frontend/widgets/workout_widgets/workout/workout_card_widget.dart';
 
-import '../../models/excercise.dart';
-import '../excercise_progression_widgets/excercise_tile.dart';
+import '../../../models/excercise.dart';
+import '../../excercise_progression_widgets/excercise_tile.dart';
 
 class ShowWorkoutButton extends StatelessWidget {
   final WorkoutCard test;
@@ -157,7 +157,7 @@ class Excercise_log_card extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(
           children: [
-            Container(height: 40, child: ExcerciseTile(excercise: ex1)),
+            Container(height: 40, child: Text(ex1.name)),
             Expanded(child: Container()),
             ElevatedButton(
               // Knapp for å registrere en ny logg/instans av økten

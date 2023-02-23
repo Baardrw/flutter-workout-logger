@@ -14,29 +14,29 @@ class Log_workout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Excercise ex1 = new Excercise(
+    Excercise ex1 = Excercise(
         type: ExcerciseType.strength,
         bodyPart: BodyPart.chest,
         name: 'Pushups');
-    Repetition rep1 = Repetition();
-    Repetition rep2 = Repetition();
-    Repetition rep3 = Repetition();
+    Repetition rep1 = const Repetition();
+    Repetition rep2 = const Repetition();
+    Repetition rep3 = const Repetition();
     List<Repetition> repetitions = [rep1, rep2, rep3];
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 225, 225, 225),
+      backgroundColor: const Color.fromARGB(255, 225, 225, 225),
       appBar: AppBar(backgroundColor: const Color.fromARGB(255, 51, 100, 140)),
       body: Center(
         child: ListView(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           children: [
             Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(15))),
               child: Column(
                 children: [
-                  Text(
+                  const Text(
                     'Beskrivelse av økten / tittel',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -44,14 +44,14 @@ class Log_workout extends StatelessWidget {
                       fontSize: 20,
                     ),
                   ),
-                  SizedBox(height: 12),
-                  Text(
+                  const SizedBox(height: 12),
+                  const Text(
                       'Beskrivelse beskrivelse\nHer skal du pushe maks og virkelig gi jernet. Start med 3x10 pushups, ta 2 min pause, osv'),
                 ],
               ),
             ),
-            SizedBox(height: 40),
-            Text(
+            const SizedBox(height: 40),
+            const Text(
               'Øvelser',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -59,7 +59,7 @@ class Log_workout extends StatelessWidget {
                 fontSize: 20,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Excercise_log_card(ex1: ex1),
           ],
         ),
@@ -79,58 +79,61 @@ class Excercise_log_card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(15))),
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       width: MediaQuery.of(context).size.width * 0.9,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        ExcerciseTile(excercise: ex1),
+        ExcerciseTile(
+          excercise: ex1,
+          workoutProgram: true,
+        ),
         const Divider(
           color: Color.fromARGB(255, 190, 190, 190),
           thickness: 3,
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         const Text(
           'Beskrivelse beskrivelse\nhvordan hvordan',
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         const Divider(
           color: Color.fromARGB(255, 190, 190, 190),
           thickness: 3,
         ),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
         Row(
           children: [
-            Text('Set'),
+            const Text('Set'),
             SizedBox(width: MediaQuery.of(context).size.width * 0.09),
-            Text('Forrige'),
+            const Text('Forrige'),
             SizedBox(width: MediaQuery.of(context).size.width * 0.17),
-            Text('Reps'),
+            const Text('Reps'),
             SizedBox(width: MediaQuery.of(context).size.width * 0.2),
-            Text('kg')
+            const Text('kg')
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 12,
         ),
-        Repetition(),
-        SizedBox(
+        const Repetition(),
+        const SizedBox(
           height: 20,
         ),
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: Color.fromARGB(255, 51, 100, 140),
+              primary: const Color.fromARGB(255, 51, 100, 140),
             ),
-            onPressed: () => SetList(),
-            child: Text('Ny rep'),
+            onPressed: () => const SetList(),
+            child: const Text('Ny rep'),
           ),
         ),
       ]),
@@ -210,7 +213,7 @@ class _SetList extends State<SetList> {
   void addSet(Excercise excercise) {
     print('Adding excercise: ${excercise.name}');
     setState(() {
-      repetitions.add(Repetition());
+      repetitions.add(const Repetition());
     });
   }
 }
