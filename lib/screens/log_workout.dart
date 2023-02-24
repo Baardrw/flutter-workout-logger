@@ -1,219 +1,462 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:pu_frontend/services/db_service.dart';
 
+import '../services/auth_service.dart';
 import '../widgets/workout_widgets/workout/workout_card_widget.dart';
 import '../widgets/workout_widgets/workout/workouts_view_widget.dart';
 import '../widgets/workout_widgets/program/program_card_widget.dart';
 import '../widgets/workout_widgets/program/programs_view_widget.dart';
 import '../widgets/excercise_progression_widgets/excercise_tile.dart';
 import '../models/excercise.dart';
+import '../models/session.dart';
 import '../main.dart';
 
-class Log_workout extends StatelessWidget {
-  const Log_workout({super.key});
+class Repetition extends StatelessWidget {
+  final Excercise excercise;
+  final int set;
+  final int forrigeRep;
+  final int forrigeWeight;
+
+  final TextEditingController repsController = TextEditingController();
+  final TextEditingController weightController = TextEditingController();
+
+  Repetition({
+    super.key,
+    required this.excercise,
+    required this.set,
+    required this.forrigeRep,
+    required this.forrigeWeight,
+  });
 
   @override
   Widget build(BuildContext context) {
-    Excercise ex1 = Excercise(
-        type: ExcerciseType.strength,
-        bodyPart: BodyPart.chest,
-        name: 'Pushups');
-    Repetition rep1 = const Repetition();
-    Repetition rep2 = const Repetition();
-    Repetition rep3 = const Repetition();
-    List<Repetition> repetitions = [rep1, rep2, rep3];
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 225, 225, 225),
-      appBar: AppBar(backgroundColor: const Color.fromARGB(255, 51, 100, 140)),
-      body: Center(
-        child: ListView(
-          padding: const EdgeInsets.all(12),
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
-              child: Column(
-                children: [
-                  const Text(
-                    'Beskrivelse av økten / tittel',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                      'Beskrivelse beskrivelse\nHer skal du pushe maks og virkelig gi jernet. Start med 3x10 pushups, ta 2 min pause, osv'),
-                ],
+    String last = "${forrigeRep.toString()} x ${forrigeWeight.toString()}kg";
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(set.toString()),
+          SizedBox(
+            width: 37,
+          ),
+          Text(last),
+          SizedBox(
+            width: 35,
+          ),
+          SizedBox(
+            height: 44,
+            width: 65,
+            child: TextField(
+              controller: repsController,
+              keyboardType: TextInputType.number,
+              style: TextStyle(fontSize: 15.0, height: 2.0),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Reps',
               ),
             ),
-            const SizedBox(height: 40),
-            const Text(
-              'Øvelser',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          Text('X'),
+          SizedBox(
+            width: 8,
+          ),
+          SizedBox(
+            height: 44,
+            width: 65,
+            child: TextField(
+              controller: weightController,
+              keyboardType: TextInputType.number,
+              style: TextStyle(fontSize: 15.0, height: 2.0),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'kg',
               ),
             ),
-            const SizedBox(height: 12),
-            Excercise_log_card(ex1: ex1),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class Excercise_log_card extends StatelessWidget {
-  const Excercise_log_card({
+class StatelessRepetition extends StatelessWidget {
+  StatelessRepetition({
     super.key,
-    required this.ex1,
+    required this.reps,
+    required this.weight,
+    required this.set,
   });
 
-  final Excercise ex1;
+  final int reps;
+  final int weight;
+  final int set;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(15))),
-      padding: const EdgeInsets.all(20),
-      width: MediaQuery.of(context).size.width * 0.9,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        ExcerciseTile(
-          excercise: ex1,
-          workoutProgram: true,
-        ),
-        const Divider(
-          color: Color.fromARGB(255, 190, 190, 190),
-          thickness: 3,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        const Text(
-          'Beskrivelse beskrivelse\nhvordan hvordan',
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        const Divider(
-          color: Color.fromARGB(255, 190, 190, 190),
-          thickness: 3,
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Row(
-          children: [
-            const Text('Set'),
-            SizedBox(width: MediaQuery.of(context).size.width * 0.09),
-            const Text('Forrige'),
-            SizedBox(width: MediaQuery.of(context).size.width * 0.17),
-            const Text('Reps'),
-            SizedBox(width: MediaQuery.of(context).size.width * 0.2),
-            const Text('kg')
-          ],
-        ),
-        const SizedBox(
-          height: 12,
-        ),
-        const Repetition(),
-        const SizedBox(
-          height: 20,
-        ),
-        Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: const Color.fromARGB(255, 51, 100, 140),
-            ),
-            onPressed: () => const SetList(),
-            child: const Text('Ny rep'),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(set.toString()),
+          SizedBox(
+            width: 45,
           ),
-        ),
-      ]),
-    );
-  }
-}
-
-class Repetition extends StatelessWidget {
-  const Repetition({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [
-        Text('1'),
-        SizedBox(
-          width: 40,
-        ),
-        Text('12 x 35kg'),
-        SizedBox(
-          width: 40,
-        ),
-        SizedBox(
-          height: 50,
-          width: 70,
-          child: TextField(
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Reps',
-            ),
+          SizedBox(
+            width: 45,
           ),
-        ),
-        SizedBox(
-          width: 10,
-        ),
-        Text('X'),
-        SizedBox(
-          width: 10,
-        ),
-        SizedBox(
-          height: 50,
-          width: 70,
-          child: TextField(
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'kg',
-            ),
+          Text(reps.toString()),
+          SizedBox(
+            width: 4,
           ),
-        ),
-      ],
+          Text('X'),
+          SizedBox(
+            width: 4,
+          ),
+          Text(weight.toString()),
+        ],
+      ),
     );
   }
 }
 
 class SetList extends StatefulWidget {
-  const SetList({super.key});
+  const SetList({
+    super.key,
+    required this.sessionID,
+  });
+
+  final String? sessionID;
 
   @override
-  State<SetList> createState() => _SetList();
+  State<SetList> createState() => _SetList(sessionID: sessionID);
 }
 
 class _SetList extends State<SetList> {
   final List<Repetition> repetitions = [];
 
+  _SetList({
+    required this.sessionID,
+  });
+
+  final String? sessionID;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [const SizedBox()]);
+    return Scaffold(
+        backgroundColor: Color.fromARGB(255, 225, 225, 225),
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 51, 100, 140),
+          title: Text('Loggfør økt'),
+        ),
+        body: Center(
+            child: ListView(padding: EdgeInsets.all(12), children: [
+          getSessionInfo(sessionID: sessionID),
+          SizedBox(height: 20),
+          Text(
+            'Øvelser',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          SizedBox(height: 12),
+          // LogCard(sessionID: sessionID),
+          getSessionList(sessionID: sessionID),
+          SizedBox(height: 15),
+        ])));
+  }
+}
+
+void saveRep(
+    Excercise excercise, Repetition repetition, BuildContext context) async {
+  String repsString = repetition.repsController.text;
+  String weightString = repetition.weightController.text;
+
+  if (repsString.isEmpty) {
+    repsString = '0';
+  }
+  if (weightString.isEmpty) {
+    weightString = '0';
   }
 
-  void addSet(Excercise excercise) {
-    print('Adding excercise: ${excercise.name}');
+  int reps = int.parse(repsString);
+  int weight = int.parse(weightString);
+
+  Log push = Log(weight, reps, DateTime.now(), excercise.name, 0, 0);
+
+  await Provider.of<DatabaseService>(context, listen: false)
+      .addLog(push, Provider.of<AuthService>(context, listen: false).uid);
+}
+
+class getSessionInfo extends StatelessWidget {
+  final String? sessionID;
+
+  const getSessionInfo({
+    super.key,
+    required this.sessionID,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    DatabaseService db = Provider.of<DatabaseService>(context);
+    AuthService authService = Provider.of<AuthService>(context, listen: false);
+
+    String ID = '';
+    Session session = Session(
+        name: 'Default',
+        date: DateTime.now(),
+        description: 'Default',
+        timeEstimate: 'Default');
+
+    return Container(
+      child: StreamBuilder(
+          builder: (context, snapshot) {
+            return FutureBuilder(
+                builder: (context, snapshot) {
+                  List<Session>? sessions = snapshot.data;
+                  for (var i = 0; i < sessions!.length; i++) {
+                    if (sessions[i].id == sessionID) {
+                      ID = sessions[i].id;
+                      session = sessions[i];
+                      print(ID);
+                      return Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15))),
+                        child: Column(
+                          children: [
+                            Text(
+                              session.name,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                              ),
+                            ),
+                            SizedBox(height: 12),
+                            Text(session.timeEstimate),
+                            SizedBox(height: 12),
+                            Text(session.description),
+                          ],
+                        ),
+                      );
+                    }
+                  }
+                  return Container(
+                    child: Text('Container'),
+                  );
+                },
+                future: db.getSessions(authService.uid));
+          },
+          stream: db.getSessionStream(authService.uid)),
+    );
+  }
+}
+
+class getSessionList extends StatelessWidget {
+  final String? sessionID;
+
+  const getSessionList({
+    super.key,
+    required this.sessionID,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    DatabaseService db = Provider.of<DatabaseService>(context);
+    AuthService authService = Provider.of<AuthService>(context, listen: false);
+
+    String ID = '';
+    Session session = Session(
+        name: 'Default',
+        date: DateTime.now(),
+        description: 'Default',
+        timeEstimate: 'Default');
+
+    return Container(
+      child: StreamBuilder(
+          builder: (context, snapshot) {
+            return FutureBuilder(
+                builder: (context, snapshot) {
+                  List<Session>? sessions = snapshot.data;
+                  for (var i = 0; i < sessions!.length; i++) {
+                    if (sessions[i].id == sessionID) {
+                      ID = sessions[i].id;
+                      session = sessions[i];
+                      print(ID);
+                      return FutureBuilder(
+                          builder: ((context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+
+                            List<Excercise?> excercises =
+                                snapshot.data as List<Excercise?>;
+                            List<Widget> logCards = excercises
+                                .where((element) => element != null)
+                                .map((e) => Container(
+                                      child: LogCard(excercise: e!),
+                                    ))
+                                .toList();
+                            print(logCards);
+
+                            return Column(
+                              children: logCards,
+                            );
+                          }),
+                          future: session.getExcercisesAsExcercise());
+                    }
+                  }
+                  return Container(
+                    child: Text('Container'),
+                  );
+                },
+                future: db.getSessions(authService.uid));
+          },
+          stream: db.getSessionStream(authService.uid)),
+    );
+  }
+}
+
+class LogCard extends StatefulWidget {
+  final Excercise excercise;
+
+  const LogCard({
+    super.key,
+    required this.excercise,
+  });
+
+  @override
+  State<LogCard> createState() => _LogCardState(excercise: excercise);
+}
+
+class _LogCardState extends State<LogCard> {
+  _LogCardState({
+    required this.excercise,
+  });
+
+  final List<StatelessRepetition> repetitions = [];
+  final Excercise excercise;
+  int set = 1;
+  int lastRep = 0;
+  int lastWeight = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final Repetition repetition = Repetition(
+      excercise: excercise,
+      set: set,
+      forrigeRep: lastRep,
+      forrigeWeight: lastWeight,
+    );
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(15))),
+          padding: EdgeInsets.all(20),
+          width: MediaQuery.of(context).size.width * 0.9,
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(
+              excercise.name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            const Divider(
+              color: Color.fromARGB(255, 190, 190, 190),
+              thickness: 3,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              excercise.description,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            const Divider(
+              color: Color.fromARGB(255, 190, 190, 190),
+              thickness: 3,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              children: [
+                Text('Set'),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.09),
+                Text('Forrige'),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.155),
+                Text('Reps'),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.165),
+                Text('kg')
+              ],
+            ),
+            SizedBox(
+              height: 12,
+            ),
+            Column(
+              children: [...repetitions, repetition],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Color.fromARGB(255, 51, 100, 140),
+                ),
+                onPressed: () {
+                  addSet(repetition);
+                  saveRep(excercise, repetition, context);
+                },
+                child: Text('Lagre'),
+              ),
+            ),
+          ]),
+        ),
+        SizedBox(
+          height: 20,
+        ),
+      ],
+    );
+  }
+
+  void addSet(repetition) {
+    String repsString = repetition.repsController.text;
+    String weightString = repetition.weightController.text;
+
+    if (repsString.isEmpty) {
+      repsString = '0';
+    }
+    if (weightString.isEmpty) {
+      weightString = '0';
+    }
+
+    int reps = int.parse(repsString);
+    int weight = int.parse(weightString);
     setState(() {
-      repetitions.add(const Repetition());
+      repetitions
+          .add(StatelessRepetition(reps: reps, weight: weight, set: set));
+      set++;
+      lastRep = reps;
+      lastWeight = weight;
     });
   }
 }
