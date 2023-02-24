@@ -19,10 +19,13 @@ class AddProgramButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(32)), // Shape of the card
         elevation: 2, // Elevation of the card
         tag: 'test', // MUST BE THE SAME AS IN `PopupItemLauncher`
-        child: Container(
-          width: 350,
-          height: 550,
-          child: Text('Opprette et helt nytt program'),
+        child: Center(
+          child: Container(
+            padding: EdgeInsets.all(50),
+            width: 350,
+            height: 550,
+            child: Text('Opprette et helt nytt program'),
+          ),
         ), // Your custom child widget.
       ),
       child: Material(

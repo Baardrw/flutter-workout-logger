@@ -24,7 +24,10 @@ class _TestHomeState extends State<TestHome> {
     final AuthService _authService = Provider.of<AuthService>(context);
     final DatabaseService _dbService = DatabaseService();
     Excercise excercise = Excercise(
-        bodyPart: BodyPart.abs, name: 'test4', type: ExcerciseType.cardio);
+        bodyPart: BodyPart.abs,
+        name: 'test4',
+        type: ExcerciseType.cardio,
+        description: 'beskrivelse');
 
     return Container(
       padding: const EdgeInsets.all(80.0),

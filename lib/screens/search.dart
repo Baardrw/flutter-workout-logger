@@ -7,10 +7,17 @@ class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BottomBar bottomBar = BottomBar(3);
-    
+
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Søk'),
+        backgroundColor: const Color.fromARGB(255, 51, 100, 140),
+      ),
       body: const Center(
-        child: Text("Søk", textAlign: TextAlign.center,),
+        child: Text(
+          "Søk",
+          textAlign: TextAlign.center,
+        ),
       ),
       bottomNavigationBar: bottomBar.getBar(context),
     );

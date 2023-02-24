@@ -50,11 +50,6 @@ class WorkoutContent extends StatelessWidget {
 
   final Session session;
 
-  Excercise excercise = Excercise(
-      type: ExcerciseType.strength, bodyPart: BodyPart.chest, name: 'Pushups');
-  Excercise ex2 = Excercise(
-      type: ExcerciseType.strength, bodyPart: BodyPart.chest, name: 'Pullups');
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -87,7 +82,7 @@ class WorkoutContent extends StatelessWidget {
             child: Column(
               children: [
                 const Text(
-                  'Description',
+                  'Beskrivelse',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
@@ -128,7 +123,14 @@ class WorkoutContent extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               primary: const Color.fromARGB(255, 51, 100, 140),
             ),
-            onPressed: () => context.push('/logWorkout'),
+            onPressed: () {
+              Session sessionLog = session;
+              String? tester = session.id;
+              context.pushNamed(
+                'logNew',
+                params: {'param1': tester},
+              );
+            },
             child: const Text('Registrer ny økt'),
           ),
           const SizedBox(height: 30),
@@ -147,21 +149,16 @@ class WorkoutContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 30),
-          Container(
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
-              padding: const EdgeInsets.all(20),
-              width: MediaQuery.of(context).size.width,
-              child: const Center(child: Text('23.01.2023'))),
-          const SizedBox(height: 30),
-          Container(
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
-              padding: const EdgeInsets.all(20),
-              width: MediaQuery.of(context).size.width,
-              child: const Center(child: Text('12.12.2022'))),
+          GestureDetector(
+            onTap: () => context.push('/loggedWorkout'),
+            child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(15))),
+                padding: const EdgeInsets.all(20),
+                width: MediaQuery.of(context).size.width,
+                child: const Center(child: Text('23.01.2023'))),
+          ),
           const SizedBox(height: 30),
         ],
       ),
@@ -188,16 +185,28 @@ class ExcerciseLogCard extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(
           children: [
-            Container(height: 40, child: Text(excercise.name)),
+            Container(
+                height: 40,
+                child: Center(
+                  child: Text(
+                    excercise.name,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                )),
             Expanded(child: Container()),
-            ElevatedButton(
-              // Knapp for å registrere en ny logg/instans av økten
-              style: ElevatedButton.styleFrom(
-                primary: const Color.fromARGB(255, 51, 100, 140),
-              ),
-              onPressed: () async =>
-                  await _showExcerciseHistory(context, excercise),
-              child: const Icon(Icons.bar_chart),
+            Container(
+              height: 30,
+              width: 30,
+              child: ElevatedButton(
+                  // Knapp for å registrere en ny logg/instans av økten
+                  style: ElevatedButton.styleFrom(
+                      primary: Color.fromARGB(255, 51, 100, 140),
+                      padding: EdgeInsets.all(1)),
+                  onPressed: () => context.push('/ExcerciseProgression'),
+                  child: Icon(
+                    Icons.bar_chart,
+                    size: 15,
+                  )),
             ),
           ],
         ),
@@ -208,8 +217,8 @@ class ExcerciseLogCard extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        const Text(
-          'Beskrivelse beskrivelse\nhvordan hvordan',
+        Text(
+          excercise.description,
         ),
         const SizedBox(
           height: 10,
