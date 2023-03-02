@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
-import 'package:pu_frontend/widgets/workout_widgets/workout/workout_card_widget.dart';
-import 'package:pu_frontend/widgets/workout_widgets/workout/add_workout_button.dart';
-import 'package:pu_frontend/widgets/workout_widgets/workout/show_workout_button.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_screen_button_content.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/add_workout_pop_up.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_pop_up.dart';
 
 import '../../../models/session.dart';
 

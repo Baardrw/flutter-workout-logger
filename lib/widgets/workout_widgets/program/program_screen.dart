@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
-import 'package:pu_frontend/widgets/workout_widgets/program/add_program_button.dart';
+import 'package:pu_frontend/widgets/workout_widgets/program/program_screen_button.dart';
 
-import 'package:pu_frontend/widgets/workout_widgets/program/program_card_widget.dart';
-import 'package:pu_frontend/widgets/workout_widgets/program/show_program_button.dart';
+import 'package:pu_frontend/widgets/workout_widgets/program/program_screen_button_content.dart';
+import 'package:pu_frontend/widgets/workout_widgets/program/program_pop_up_content.dart';
 
 class ProgramsView extends StatelessWidget {
   const ProgramsView({super.key});

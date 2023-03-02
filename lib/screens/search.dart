@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pu_frontend/screens/bottom_bar.dart';
+import 'package:pu_frontend/common/bottom_bar.dart';
 
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});

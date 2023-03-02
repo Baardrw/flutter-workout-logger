@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/models/session.dart';
 
-import 'package:pu_frontend/widgets/workout_widgets/program/popup_card_widget.dart';
-import 'package:pu_frontend/widgets/workout_widgets/workout/workout_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_screen_button_content.dart';
 
 import '../../../models/excercise.dart';
 import '../../../screens/excercise_history.dart';

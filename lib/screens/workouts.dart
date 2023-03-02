@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pu_frontend/screens/bottom_bar.dart';
+import 'package:pu_frontend/common/bottom_bar.dart';
 
-import '../widgets/workout_widgets/workout/workout_card_widget.dart';
+import '../widgets/workout_widgets/workout/workout_screen_button_content.dart';
 import '../widgets/workout_widgets/workout/workouts_view_widget.dart';
-import '../widgets/workout_widgets/program/program_card_widget.dart';
-import '../widgets/workout_widgets/program/programs_view_widget.dart';
+import '../widgets/workout_widgets/program/program_screen_button_content.dart';
+import '../widgets/workout_widgets/program/program_screen.dart';
 
 class Workouts extends StatelessWidget {
   const Workouts({super.key});
