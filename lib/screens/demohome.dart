@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pu_frontend/widgets/test/test_homepage.dart';
 
-import 'bottom_bar.dart';
+import '../common/bottom_bar.dart';
 
 class DemoHome extends StatelessWidget {
   const DemoHome({super.key});

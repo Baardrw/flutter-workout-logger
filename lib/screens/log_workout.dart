@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 import '../services/auth_service.dart';
-import '../widgets/workout_widgets/workout/workout_card_widget.dart';
 import '../widgets/workout_widgets/workout/workouts_view_widget.dart';
 import '../widgets/workout_widgets/program/program_screen_button_content.dart';
 import '../widgets/workout_widgets/program/program_screen.dart';
