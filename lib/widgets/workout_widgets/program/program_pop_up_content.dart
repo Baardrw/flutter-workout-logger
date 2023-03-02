@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pu_frontend/models/session.dart';
 
-import 'package:pu_frontend/widgets/workout_widgets/program/popup_card_widget.dart';
-import 'package:pu_frontend/widgets/workout_widgets/program/program_card_widget.dart';
-import 'package:pu_frontend/widgets/workout_widgets/workout/show_workout_button.dart';
-import 'package:pu_frontend/widgets/workout_widgets/workout/workout_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/program/program_screen_button_content.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_pop_up.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_screen_button_content.dart';
 
 class ShowProgramButton extends StatelessWidget {
   final ProgramCard test;

@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
     return Center(
       child: MultiProvider(
         // All providers are created here, and can provide data to all child widgets.
-    
+
         providers: [
           Provider<AuthService>(create: (_) => AuthService()),
           Provider<DatabaseService>(create: (_) => DatabaseService())

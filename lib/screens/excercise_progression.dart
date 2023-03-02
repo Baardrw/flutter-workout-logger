@@ -6,9 +6,9 @@ import 'package:provider/provider.dart';
 import '../models/excercise.dart';
 import '../services/db_service.dart';
 import '../widgets/excercise_progression_widgets/add_excercise_button.dart';
-import '../widgets/excercise_progression_widgets/excercise_scroller.dart';
+import '../widgets/excercise_progression_widgets/excercise_list_view.dart';
 import '../widgets/excercise_progression_widgets/excercise_tile.dart';
-import 'bottom_bar.dart';
+import '../common/bottom_bar.dart';
 import 'excercise_history.dart';
 
 class ExcerciseProgression extends StatefulWidget {

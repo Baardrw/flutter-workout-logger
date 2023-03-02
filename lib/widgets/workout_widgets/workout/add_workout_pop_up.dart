@@ -5,7 +5,7 @@ import 'package:pu_frontend/screens/excercise_progression.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
-import 'package:pu_frontend/widgets/workout_widgets/program/popup_card_widget.dart';
+import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
 
 import '../../../models/excercise.dart';
 import 'workout_program_tile.dart';
