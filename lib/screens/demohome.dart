@@ -15,7 +15,7 @@ class DemoHome extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 51, 100, 140),
       ),
       body: const Center(
-        child: Text('Hjem'),
+        child: TestHome(),
         // child: TestHome(),
       ),
       bottomNavigationBar: bottomBar.getBar(context),

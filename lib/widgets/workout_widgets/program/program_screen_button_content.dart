@@ -94,43 +94,46 @@ class WeekBar extends StatelessWidget {
         CircleAvatar(
           backgroundColor: mon ? active : inActive,
           radius: 15,
-          child: Text('M'),
+          child: Text(
+            'M',
+            style: TextStyle(color: !mon ? active : inActive),
+          ),
         ),
         SizedBox(width: 11),
         CircleAvatar(
           backgroundColor: tue ? active : inActive,
           radius: 15,
-          child: Text('T'),
+          child: Text('T', style: TextStyle(color: !tue ? active : inActive)),
         ),
         SizedBox(width: 11),
         CircleAvatar(
           backgroundColor: wed ? active : inActive,
           radius: 15,
-          child: Text('O'),
+          child: Text('O', style: TextStyle(color: !wed ? active : inActive)),
         ),
         SizedBox(width: 11),
         CircleAvatar(
           backgroundColor: thu ? active : inActive,
           radius: 15,
-          child: Text('T'),
+          child: Text('T', style: TextStyle(color: !thu ? active : inActive)),
         ),
         SizedBox(width: 11),
         CircleAvatar(
           backgroundColor: fri ? active : inActive,
           radius: 15,
-          child: Text('F'),
+          child: Text('F', style: TextStyle(color: !fri ? active : inActive)),
         ),
         SizedBox(width: 11),
         CircleAvatar(
           backgroundColor: sat ? active : inActive,
           radius: 15,
-          child: Text('L'),
+          child: Text('L', style: TextStyle(color: !sat ? active : inActive)),
         ),
         SizedBox(width: 11),
         CircleAvatar(
           backgroundColor: sun ? active : inActive,
           radius: 15,
-          child: Text('S'),
+          child: Text('S', style: TextStyle(color: !sun ? active : inActive)),
         ),
       ],
     );

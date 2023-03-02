@@ -52,7 +52,7 @@ class WorkoutContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 350,
       height: 600,
       child: ListView(
@@ -64,7 +64,7 @@ class WorkoutContent extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               session.name,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -88,14 +88,14 @@ class WorkoutContent extends StatelessWidget {
                     fontSize: 20,
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
                   session.description,
                 ),
               ],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           // Excercise Log cards:
           FutureBuilder(
               builder: ((context, snapshot) {
@@ -117,7 +117,7 @@ class WorkoutContent extends StatelessWidget {
                 );
               }),
               future: session.getExcercisesAsExcercise()),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             // Knapp for å registrere en ny logg/instans av økten
             style: ElevatedButton.styleFrom(
@@ -185,25 +185,26 @@ class ExcerciseLogCard extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(
           children: [
-            Container(
+            SizedBox(
                 height: 40,
                 child: Center(
                   child: Text(
                     excercise.name,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 )),
             Expanded(child: Container()),
-            Container(
+            SizedBox(
               height: 30,
               width: 30,
               child: ElevatedButton(
                   // Knapp for å registrere en ny logg/instans av økten
                   style: ElevatedButton.styleFrom(
-                      primary: Color.fromARGB(255, 51, 100, 140),
-                      padding: EdgeInsets.all(1)),
-                  onPressed: () => context.push('/ExcerciseProgression'),
-                  child: Icon(
+                      primary: const Color.fromARGB(255, 51, 100, 140),
+                      padding: const EdgeInsets.all(1)),
+                  onPressed: () => _showExcerciseHistory(context, excercise),
+                  child: const Icon(
                     Icons.bar_chart,
                     size: 15,
                   )),
