@@ -9,6 +9,10 @@ class ProfilePage extends StatelessWidget {
     BottomBar bottomBar = BottomBar(4);
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profil'),
+        backgroundColor: const Color.fromARGB(255, 51, 100, 140),
+      ),
       body: const Center(
         child: Text(
           "Profil",

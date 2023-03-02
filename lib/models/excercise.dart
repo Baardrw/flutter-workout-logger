@@ -14,7 +14,7 @@ class Excercise {
     required this.type,
     required this.bodyPart,
     required this.name,
-    this.description = '',
+    required this.description,
   });
 
   Map<String, Object?> toJson() {

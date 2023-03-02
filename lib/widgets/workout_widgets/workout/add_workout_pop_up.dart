@@ -28,10 +28,10 @@ class AddWorkoudButton extends StatelessWidget {
           elevation: 2, // Elevation of the card
           tag: 'test', // MUST BE THE SAME AS IN `PopupItemLauncher`
           child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.9,
+            height: MediaQuery.of(context).size.height * 0.75,
             width: MediaQuery.of(context).size.width * 0.9,
             child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.9,
+                height: MediaQuery.of(context).size.height * 0.75,
                 child: const WorkoutProgramList()),
           )),
       child: Material(

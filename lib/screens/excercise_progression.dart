@@ -33,13 +33,17 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: const AddExcerciseButton(),
+      appBar: AppBar(
+        title: const Text('Øvelser'),
+        backgroundColor: const Color.fromARGB(255, 51, 100, 140),
+      ),
       body: NestedScrollView(
           headerSliverBuilder: ((context, innerBoxIsScrolled) {
             return [
               // Sliver bar holding title, only for stylistic purposes
               // TODO : add search bar
               SliverAppBar(
-                expandedHeight: 100.0,
+                expandedHeight: 10.0,
                 floating: false,
                 foregroundColor: Colors.black,
                 pinned: true,
@@ -48,8 +52,8 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
                 flexibleSpace: FlexibleSpaceBar(
                     titlePadding: const EdgeInsets.only(left: 10),
                     collapseMode: CollapseMode.pin,
-                    title: Text(widget.tile ?? "Excercises",
-                        style: Theme.of(context).textTheme.displayLarge),
+                    // title: Text(widget.tile ?? "Excercises",
+                    //     style: Theme.of(context).textTheme.displayLarge),
                     stretchModes: [StretchMode.zoomBackground]),
               ),
             ];

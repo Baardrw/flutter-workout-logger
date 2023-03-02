@@ -9,6 +9,7 @@ import 'package:pu_frontend/screens/log_workout.dart';
 import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
 import 'package:pu_frontend/screens/excercise_progression.dart';
+import 'package:pu_frontend/screens/logged_workout.dart';
 import 'package:pu_frontend/screens/login.dart';
 import 'package:pu_frontend/screens/profile.dart';
 import 'package:pu_frontend/screens/search.dart';
@@ -30,7 +31,7 @@ Future<void> main() async {
 /// defaults to the authwrapper page, which will redirect to the login page if the user is not logged in.
 GoRouter router() {
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/Home',
     routes: [
       GoRoute(
         path: '/',
@@ -57,8 +58,11 @@ GoRouter router() {
         builder: (context, state) => const Workouts(),
       ),
       GoRoute(
-        path: '/logWorkout',
-        builder: (context, state) => const Log_workout(),
+        path: '/logNew/:param1',
+        name: 'logNew',
+        builder: (context, state) => SetList(
+          sessionID: state.params['param1'],
+        ),
       ),
       GoRoute(
         path: '/Search',
@@ -67,6 +71,10 @@ GoRouter router() {
       GoRoute(
         path: '/Profile',
         builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
+        path: '/loggedWorkout',
+        builder: (context, state) => const LoggedWorkout(),
       ),
     ],
   );

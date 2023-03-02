@@ -65,7 +65,7 @@ class ProgramContent extends StatelessWidget {
           ),
           // ShowWorkoutButton(test: workout1, string: ID20),
           GestureDetector(
-            onTap: () => context.push('/logWorkout'),
+            onTap: () => context.pushNamed('/logNew'),
             child: WorkoutCard(test),
           ),
           SizedBox(height: 40),
