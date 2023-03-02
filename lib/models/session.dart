@@ -52,3 +52,35 @@ class Session {
     return excerciseList;
   }
 }
+
+class SessionInstance {
+  final List<String>? excercises;
+  final String sessionId;
+  final DateTime sessionInstanceId;
+
+  SessionInstance({
+    required this.sessionId,
+    required this.sessionInstanceId,
+    this.excercises,
+  });
+
+  SessionInstance.fromJson(Map<String, Object?> json)
+      : sessionId = json['sessionId'] as String,
+        excercises = (json['excercises'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
+        sessionInstanceId = DateTime.parse(json['sessionInstanceId'] as String);
+
+  Map<String, Object?> toJson() {
+    return {
+      'sessionId': sessionId,
+      'excercises': excercises,
+      'sessionInstanceId': id,
+    };
+  }
+
+  String get id {
+    // Flutter encodes dates differently than firebase, flutter looses the last 3 digits
+    return sessionInstanceId.microsecondsSinceEpoch.toString().substring(0, 13);
+  }
+}

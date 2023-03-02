@@ -3,8 +3,8 @@ import 'package:pu_frontend/models/session.dart';
 import 'excercise.dart';
 
 class Program {
-
   final String name;
+  // These lists result in a lot of redundant storage TODO : Change
   final List<Excercise>? excercises;
   final List<Session>? sessions;
 
