@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/common/appstate.dart';
 import 'package:pu_frontend/models/session.dart';
 
 import 'package:pu_frontend/widgets/workout_widgets/popup_card_widget.dart';
@@ -52,6 +54,8 @@ class WorkoutContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DatabaseService dbInstanceForSessions = DatabaseService();
+
     return SizedBox(
       width: 350,
       height: 600,
@@ -116,7 +120,7 @@ class WorkoutContent extends StatelessWidget {
                   children: logCards,
                 );
               }),
-              future: session.getExcercisesAsExcercise()),
+              future: session.getExcerciseObjects()),
           const SizedBox(height: 20),
           ElevatedButton(
             // Knapp for å registrere en ny logg/instans av økten
@@ -124,12 +128,86 @@ class WorkoutContent extends StatelessWidget {
               primary: const Color.fromARGB(255, 51, 100, 140),
             ),
             onPressed: () {
-              Session sessionLog = session;
-              String? tester = session.id;
-              context.pushNamed(
-                'logNew',
-                params: {'param1': tester},
-              );
+              SessionInstance? sessionInstance =
+                  Provider.of<AppState>(context, listen: false).sessionInstance;
+
+              if (sessionInstance != null) {
+                // show a dialog that allows the user to finisht the workout or delete it
+
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Du har allerede en økt i gang'),
+                    content: const Text(
+                        'Du må fullføre, fortsette eller avbryte den økten før du kan starte en ny.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          // Re routes the user to the workout page, allowing the user to
+                          // continue the workout
+                          context.pop(); // closes the dialog
+
+                          context.pushNamed(
+                            'logNew',
+                            params: {'param1': session.id},
+                            extra: sessionInstance,
+                          );
+                        },
+                        child: const Text('Fortsett'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Saves session as completed
+                          Provider.of<DatabaseService>(context, listen: false)
+                              .updateSessionInstance(
+                            sessionInstance,
+                            Provider.of<AuthService>(context, listen: false)
+                                .uid,
+                          );
+
+                          Provider.of<AppState>(context, listen: false)
+                              .sessionInstance = null;
+
+                          context.pop(); // closes the dialog
+
+                          context.pushNamed(
+                            'logNew',
+                            params: {'param1': session.id},
+                          );
+                        },
+                        child: const Text('Fullfør'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Deletes sessionInstance
+                          Provider.of<DatabaseService>(context, listen: false)
+                              .deleteSessionInstance(
+                            sessionInstance,
+                            Provider.of<AuthService>(context, listen: false)
+                                .uid,
+                          );
+
+                          Provider.of<AppState>(context, listen: false)
+                              .sessionInstance = null;
+
+                          context.pop(); // closes the dialog
+
+                          context.pushNamed(
+                            'logNew',
+                            params: {'param1': session.id},
+                          );
+                        },
+                        child: const Text('Avbryt'),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                context.pushNamed(
+                  'logNew',
+                  params: {'param1': session.id},
+                );
+              }
             },
             child: const Text('Registrer ny økt'),
           ),
@@ -149,19 +227,69 @@ class WorkoutContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 30),
-          GestureDetector(
-            onTap: () => context.push('/loggedWorkout'),
-            child: Container(
-                decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
-                padding: const EdgeInsets.all(20),
-                width: MediaQuery.of(context).size.width,
-                child: const Center(child: Text('23.01.2023'))),
-          ),
+
+          FutureBuilder(
+              builder: ((context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  print('waiting');
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                print('sessionInstances: ${snapshot.data}');
+
+                List<SessionInstance?> sessionInstances =
+                    snapshot.data as List<SessionInstance?>;
+
+                List<Widget> logCards = sessionInstances
+                    .where((element) => element != null)
+                    .where((element) => element!.completed)
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: SessionInstanceCard(
+                            sessionInstance: e!,
+                          ),
+                        ))
+                    .toList();
+
+                return Column(
+                  children: logCards,
+                );
+              }),
+              future: dbInstanceForSessions.getInstancesOfSession(session.id,
+                  Provider.of<AuthService>(context, listen: false).uid)),
           const SizedBox(height: 30),
         ],
       ),
+    );
+  }
+}
+
+class SessionInstanceCard extends StatelessWidget {
+  final SessionInstance sessionInstance;
+
+  SessionInstanceCard({
+    super.key,
+    required this.sessionInstance,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    DateTime date = sessionInstance.sessionInstanceId;
+
+    // TODO: dynamacise logged workout
+    return GestureDetector(
+      onTap: () => context.push('/loggedWorkout'),
+      child: Container(
+          decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(15))),
+          padding: const EdgeInsets.all(20),
+          width: MediaQuery.of(context).size.width,
+          child: Center(child: Text(DateFormat('dd.MM.yyyy').format(date)))),
     );
   }
 }

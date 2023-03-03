@@ -7,8 +7,3 @@ This is only a first draft and is open to changes
 - users not store goals
 
 ---
-
-# Database Table form
-
-![TabelForm](/Docs/Database/Tabellform.png)
-

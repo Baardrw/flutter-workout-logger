@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:pu_frontend/models/session.dart';
 
 // TODO: encapsulation
 
+/// Excercise is an atomic database item, can be retreived directly from dbService
 class Excercise {
   /// Excercise class that defines an excercise
   final String name;
@@ -47,6 +49,9 @@ class Log {
   final DateTime date;
   final String excerciseName;
 
+  /// SessionId is '0' if no session
+  final String sessionId;
+
   Log(
     this.weight,
     this.reps,
@@ -54,6 +59,7 @@ class Log {
     this.excerciseName,
     this.distance,
     this.duration,
+    this.sessionId,
   );
 
   String get id {
@@ -69,6 +75,7 @@ class Log {
       'excerciseName': excerciseName,
       'distance': distance,
       'duration': duration,
+      'sessionId': sessionId,
     };
   }
 
@@ -78,7 +85,8 @@ class Log {
         date = (json['date'] as Timestamp).toDate(),
         excerciseName = json['excerciseName'] as String,
         distance = json['distance'] as int?,
-        duration = json['duration'] as int?;
+        duration = json['duration'] as int?,
+        sessionId = json['sessionId'] as String;
 }
 
 enum ExcerciseType {

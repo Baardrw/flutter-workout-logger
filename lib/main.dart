@@ -4,7 +4,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/common/appstate.dart';
 import 'package:pu_frontend/firebase_options.dart';
+import 'package:pu_frontend/models/session.dart';
 import 'package:pu_frontend/screens/log_workout.dart';
 import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
@@ -58,11 +60,21 @@ GoRouter router() {
         builder: (context, state) => const Workouts(),
       ),
       GoRoute(
-        path: '/logNew/:param1',
+        path: '/logNew/:param1:',
         name: 'logNew',
-        builder: (context, state) => SetList(
-          sessionID: state.params['param1'],
-        ),
+        builder: (context, state) {
+          if (state.extra == null) {
+            return LogWorkoutScreen(
+              sessionID: state.params['param1'],
+              sessionInstance: null,
+            );
+          }
+          SessionInstance sessionInstance = state.extra as SessionInstance;
+          return LogWorkoutScreen(
+            sessionID: state.params['param1'],
+            sessionInstance: sessionInstance,
+          );
+        },
       ),
       GoRoute(
         path: '/Search',
@@ -92,7 +104,13 @@ class MyApp extends StatelessWidget {
 
         providers: [
           Provider<AuthService>(create: (_) => AuthService()),
-          Provider<DatabaseService>(create: (_) => DatabaseService())
+          Provider<DatabaseService>(create: (_) => DatabaseService()),
+
+          /// This provider is used to determine whether a workout is in process or not.
+          /// If it is, the user wont be allowed to start a new workout without taking action
+          Provider<AppState>(
+            create: (_) => AppState(),
+          )
         ],
         child: MaterialApp.router(
           debugShowCheckedModeBanner: false,
