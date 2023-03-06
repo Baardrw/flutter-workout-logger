@@ -1,3 +1,4 @@
+import 'package:pu_frontend/screens/log_workout.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 import 'excercise.dart';
@@ -41,7 +42,7 @@ class Session {
     return date.microsecondsSinceEpoch.toString().substring(0, 13);
   }
 
-  Future<List<Excercise?>> getExcercisesAsExcercise() async {
+  Future<List<Excercise?>> getExcerciseObjects() async {
     DatabaseService db = DatabaseService();
     List<Excercise?> excerciseList = [];
 
@@ -53,10 +54,18 @@ class Session {
   }
 }
 
+/// A session instance is a specific instance of a session, it is a weak entity
+/// to allow for an instance without a session the session id 0 is reserved for no session instances
+/// this will allow the database to find them, and show them, despite them not being in a session
 class SessionInstance {
-  final List<String>? excercises;
-  final String sessionId;
+  List<String>? excercises;
+
+  /// This list is never pushed to the db, as it leads to redundancy, this is only locally constructed
+  /// for ease of use in the app
+  List<Repetition>? reps;
+  late String sessionId;
   final DateTime sessionInstanceId;
+  bool completed = false;
 
   SessionInstance({
     required this.sessionId,
@@ -66,21 +75,33 @@ class SessionInstance {
 
   SessionInstance.fromJson(Map<String, Object?> json)
       : sessionId = json['sessionId'] as String,
-        excercises = (json['excercises'] as List<dynamic>?)
-            ?.map((e) => e as String)
-            .toList(),
-        sessionInstanceId = DateTime.parse(json['sessionInstanceId'] as String);
+        excercises =
+            (json['excercises'] as List<String>?)?.map((e) => e).toList(),
+        sessionInstanceId = DateTime.parse(json['sessionInstanceId'] as String),
+        completed = json['completed'] as bool;
 
   Map<String, Object?> toJson() {
     return {
       'sessionId': sessionId,
       'excercises': excercises,
       'sessionInstanceId': id,
+      'completed': completed,
     };
   }
 
   String get id {
     // Flutter encodes dates differently than firebase, flutter looses the last 3 digits
     return sessionInstanceId.microsecondsSinceEpoch.toString().substring(0, 13);
+  }
+
+  Future<List<Excercise?>> getExcerciseObjects() async {
+    DatabaseService db = DatabaseService();
+    List<Excercise?> excerciseList = [];
+
+    for (String excercise in excercises!) {
+      excerciseList.add(await db.getExcercise(excercise));
+    }
+
+    return excerciseList;
   }
 }

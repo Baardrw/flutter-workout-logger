@@ -1,164 +1,73 @@
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/common/appstate.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 import '../services/auth_service.dart';
-import '../widgets/workout_widgets/workout/workouts_view_widget.dart';
-import '../widgets/workout_widgets/program/program_screen_button_content.dart';
-import '../widgets/workout_widgets/program/program_screen.dart';
-import '../widgets/excercise_progression_widgets/excercise_tile.dart';
 import '../models/excercise.dart';
 import '../models/session.dart';
-import '../main.dart';
 
-class Repetition extends StatelessWidget {
-  final Excercise excercise;
-  final int set;
-  final int forrigeRep;
-  final int forrigeWeight;
-
-  final TextEditingController repsController = TextEditingController();
-  final TextEditingController weightController = TextEditingController();
-
-  Repetition({
-    super.key,
-    required this.excercise,
-    required this.set,
-    required this.forrigeRep,
-    required this.forrigeWeight,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    String last = "${forrigeRep.toString()} x ${forrigeWeight.toString()}kg";
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(set.toString()),
-          SizedBox(
-            width: 37,
-          ),
-          Text(last),
-          SizedBox(
-            width: 35,
-          ),
-          SizedBox(
-            height: 44,
-            width: 65,
-            child: TextField(
-              controller: repsController,
-              keyboardType: TextInputType.number,
-              style: TextStyle(fontSize: 15.0, height: 2.0),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Reps',
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 8,
-          ),
-          Text('X'),
-          SizedBox(
-            width: 8,
-          ),
-          SizedBox(
-            height: 44,
-            width: 65,
-            child: TextField(
-              controller: weightController,
-              keyboardType: TextInputType.number,
-              style: TextStyle(fontSize: 15.0, height: 2.0),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'kg',
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class StatelessRepetition extends StatelessWidget {
-  StatelessRepetition({
-    super.key,
-    required this.reps,
-    required this.weight,
-    required this.set,
-  });
-
-  final int reps;
-  final int weight;
-  final int set;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(set.toString()),
-          SizedBox(
-            width: 45,
-          ),
-          SizedBox(
-            width: 45,
-          ),
-          Text(reps.toString()),
-          SizedBox(
-            width: 4,
-          ),
-          Text('X'),
-          SizedBox(
-            width: 4,
-          ),
-          Text(weight.toString()),
-        ],
-      ),
-    );
-  }
-}
-
-class SetList extends StatefulWidget {
-  const SetList({
+class LogWorkoutScreen extends StatelessWidget {
+  LogWorkoutScreen({
     super.key,
     required this.sessionID,
+    required this.sessionInstance,
   });
 
   final String? sessionID;
-
-  @override
-  State<SetList> createState() => _SetList(sessionID: sessionID);
-}
-
-class _SetList extends State<SetList> {
-  final List<Repetition> repetitions = [];
-
-  _SetList({
-    required this.sessionID,
-  });
-
-  final String? sessionID;
+  SessionInstance? sessionInstance;
+  bool oldSession = true;
 
   @override
   Widget build(BuildContext context) {
+    // Cant access siessionId over, so must be done here
+
+    if (sessionInstance == null) {
+      oldSession = false;
+
+      sessionInstance = SessionInstance(
+        sessionId: sessionID!,
+        excercises: [],
+        sessionInstanceId: DateTime.now(),
+      );
+    }
+
+    Provider.of<AppState>(context, listen: false).isOldSession = oldSession;
+
     return Scaffold(
-        backgroundColor: Color.fromARGB(255, 225, 225, 225),
+        backgroundColor: const Color.fromARGB(255, 225, 225, 225),
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 51, 100, 140),
-          title: Text('Loggfør økt'),
+          title: const Text('Loggfør økt'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.check),
+              onPressed: () {
+                // Sets the apps state to inform the app that this session is no longer in progress
+                Provider.of<AppState>(context, listen: false).sessionInstance =
+                    null;
+
+                sessionInstance!.completed = true;
+                Provider.of<DatabaseService>(context, listen: false)
+                    .updateSessionInstance(
+                  sessionInstance!,
+                  Provider.of<AuthService>(context, listen: false).uid,
+                );
+
+                // Go back to the previous page
+                Navigator.pop(context);
+              },
+            )
+          ],
         ),
         body: Center(
-            child: ListView(padding: EdgeInsets.all(12), children: [
-          getSessionInfo(sessionID: sessionID),
-          SizedBox(height: 20),
-          Text(
+            child: ListView(padding: const EdgeInsets.all(12), children: [
+          GetSessionInfo(sessionInstance: sessionInstance!),
+          const SizedBox(height: 20),
+          const Text(
             'Øvelser',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -166,46 +75,25 @@ class _SetList extends State<SetList> {
               fontSize: 20,
             ),
           ),
-          SizedBox(height: 12),
-          // LogCard(sessionID: sessionID),
-          getSessionList(sessionID: sessionID),
-          SizedBox(height: 15),
+          const SizedBox(height: 12),
+          GetSessionList(sessionInstance: sessionInstance!),
+          const SizedBox(height: 15),
         ])));
   }
 }
 
-void saveRep(
-    Excercise excercise, Repetition repetition, BuildContext context) async {
-  String repsString = repetition.repsController.text;
-  String weightString = repetition.weightController.text;
+/// Session information card displayed on the top of the listveiw
+class GetSessionInfo extends StatelessWidget {
+  final SessionInstance sessionInstance;
 
-  if (repsString.isEmpty) {
-    repsString = '0';
-  }
-  if (weightString.isEmpty) {
-    weightString = '0';
-  }
-
-  int reps = int.parse(repsString);
-  int weight = int.parse(weightString);
-
-  Log push = Log(weight, reps, DateTime.now(), excercise.name, 0, 0);
-
-  await Provider.of<DatabaseService>(context, listen: false)
-      .addLog(push, Provider.of<AuthService>(context, listen: false).uid);
-}
-
-class getSessionInfo extends StatelessWidget {
-  final String? sessionID;
-
-  const getSessionInfo({
+  const GetSessionInfo({
     super.key,
-    required this.sessionID,
+    required this.sessionInstance,
   });
 
   @override
   Widget build(BuildContext context) {
-    DatabaseService db = Provider.of<DatabaseService>(context);
+    DatabaseService db = Provider.of<DatabaseService>(context, listen: false);
     AuthService authService = Provider.of<AuthService>(context, listen: false);
 
     String ID = '';
@@ -216,162 +104,182 @@ class getSessionInfo extends StatelessWidget {
         timeEstimate: 'Default');
 
     return Container(
-      child: StreamBuilder(
+      child: FutureBuilder(
           builder: (context, snapshot) {
-            return FutureBuilder(
-                builder: (context, snapshot) {
-                  List<Session>? sessions = snapshot.data;
-                  for (var i = 0; i < sessions!.length; i++) {
-                    if (sessions[i].id == sessionID) {
-                      ID = sessions[i].id;
-                      session = sessions[i];
-                      print(ID);
-                      return Container(
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15))),
-                        child: Column(
-                          children: [
-                            Text(
-                              session.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25,
-                              ),
-                            ),
-                            SizedBox(height: 12),
-                            Text(session.timeEstimate),
-                            SizedBox(height: 12),
-                            Text(session.description),
-                          ],
-                        ),
-                      );
-                    }
-                  }
-                  return Container(
-                    child: Text('Container'),
-                  );
-                },
-                future: db.getSessions(authService.uid));
+            while (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            session = snapshot.data as Session;
+            ID = session.id;
+            return Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(15))),
+              child: Column(
+                children: [
+                  Text(
+                    session.name,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(session.timeEstimate),
+                  const SizedBox(height: 12),
+                  Text(session.description),
+                ],
+              ),
+            );
           },
-          stream: db.getSessionStream(authService.uid)),
+          future: db.getSession(sessionInstance.sessionId,
+              Provider.of<AuthService>(context, listen: false).uid)),
     );
   }
 }
 
-class getSessionList extends StatelessWidget {
-  final String? sessionID;
+/// List of exercises in the session
+class GetSessionList extends StatelessWidget {
+  final SessionInstance sessionInstance;
 
-  const getSessionList({
+  const GetSessionList({
     super.key,
-    required this.sessionID,
+    required this.sessionInstance,
   });
 
   @override
   Widget build(BuildContext context) {
-    DatabaseService db = Provider.of<DatabaseService>(context);
+    DatabaseService db = Provider.of<DatabaseService>(context, listen: false);
     AuthService authService = Provider.of<AuthService>(context, listen: false);
 
-    String ID = '';
-    Session session = Session(
-        name: 'Default',
-        date: DateTime.now(),
-        description: 'Default',
-        timeEstimate: 'Default');
-
     return Container(
-      child: StreamBuilder(
-          builder: (context, snapshot) {
-            return FutureBuilder(
-                builder: (context, snapshot) {
-                  List<Session>? sessions = snapshot.data;
-                  for (var i = 0; i < sessions!.length; i++) {
-                    if (sessions[i].id == sessionID) {
-                      ID = sessions[i].id;
-                      session = sessions[i];
-                      print(ID);
-                      return FutureBuilder(
-                          builder: ((context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
+      // Gets the excercises in the session, adds them to sessionInstance and updates the database
+      // also displays the excercises in the session
 
-                            List<Excercise?> excercises =
-                                snapshot.data as List<Excercise?>;
-                            List<Widget> logCards = excercises
-                                .where((element) => element != null)
-                                .map((e) => Container(
-                                      child: LogCard(excercise: e!),
-                                    ))
-                                .toList();
-                            print(logCards);
+      child: FutureBuilder(
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          Session session = snapshot.data as Session;
 
-                            return Column(
-                              children: logCards,
-                            );
-                          }),
-                          future: session.getExcercisesAsExcercise());
-                    }
-                  }
-                  return Container(
-                    child: Text('Container'),
-                  );
-                },
-                future: db.getSessions(authService.uid));
-          },
-          stream: db.getSessionStream(authService.uid)),
+          // If this isnt a new session set the requirements for an old session
+          if (!Provider.of<AppState>(context, listen: false).isOldSession) {
+            // Add the excercises included in the session to the session instance
+            sessionInstance.excercises = session.excercises;
+
+            // Add session to database
+            Provider.of<DatabaseService>(context, listen: false)
+                .addSessionInstance(
+              sessionInstance,
+              Provider.of<AuthService>(context, listen: false).uid,
+            );
+
+            // Sets the apps state to inform the app that this session is in progress
+            Provider.of<AppState>(context, listen: false).sessionInstance =
+                sessionInstance;
+          }
+
+          return FutureBuilder(
+              builder: ((context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                List<Excercise?> excercises = snapshot.data as List<Excercise?>;
+
+                List<Widget> logCards = excercises
+                    .where((element) => element != null)
+                    .map((e) => Container(
+                          child: LogCard(
+                            excercise: e!,
+                            sessionInstance: sessionInstance,
+                          ),
+                        ))
+                    .toList();
+                return Column(
+                  children: logCards,
+                );
+              }),
+              future: session.getExcerciseObjects());
+        },
+        future: db.getSession(sessionInstance.sessionId,
+            Provider.of<AuthService>(context, listen: false).uid),
+      ),
     );
   }
 }
 
 class LogCard extends StatefulWidget {
   final Excercise excercise;
+  final SessionInstance sessionInstance;
 
   const LogCard({
     super.key,
     required this.excercise,
+    required this.sessionInstance,
   });
 
   @override
-  State<LogCard> createState() => _LogCardState(excercise: excercise);
+  State<LogCard> createState() =>
+      _LogCardState(excercise: excercise, sessionInstance: sessionInstance);
 }
 
 class _LogCardState extends State<LogCard> {
   _LogCardState({
     required this.excercise,
+    required this.sessionInstance,
   });
 
-  final List<StatelessRepetition> repetitions = [];
+  final List<Repetition> repetitions = [];
   final Excercise excercise;
+  final SessionInstance sessionInstance;
   int set = 1;
   int lastRep = 0;
   int lastWeight = 0;
 
   @override
   Widget build(BuildContext context) {
-    final Repetition repetition = Repetition(
+    // If repetition is empty we add one into the list
+    Repetition repetition = Repetition(
       excercise: excercise,
       set: set,
-      forrigeRep: lastRep,
-      forrigeWeight: lastWeight,
+      lastRep: lastRep,
+      lastWeight: lastWeight,
+      logId: '0',
+      delete: deleteRep,
+      save: saveRep,
+      remove: removeRep,
     );
+
+    sessionInstance.reps ??= [];
+    sessionInstance.reps!
+        .where((element) => element.excercise.name == excercise.name)
+        .where((element) => !repetitions.contains(element))
+        .map((e) {
+      e.isDone = true;
+      return e;
+    }).forEach((element) => repetitions.add(element));
+
     return Column(
       children: [
         Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(15))),
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           width: MediaQuery.of(context).size.width * 0.9,
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(
               excercise.name,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
@@ -380,82 +288,264 @@ class _LogCardState extends State<LogCard> {
               color: Color.fromARGB(255, 190, 190, 190),
               thickness: 3,
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Text(
-              excercise.description,
+              excercise.description.isEmpty
+                  ? 'Ingen beskrivelse'
+                  : excercise.description,
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             const Divider(
               color: Color.fromARGB(255, 190, 190, 190),
               thickness: 3,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
-            ),
-            Row(
-              children: [
-                Text('Set'),
-                SizedBox(width: MediaQuery.of(context).size.width * 0.09),
-                Text('Forrige'),
-                SizedBox(width: MediaQuery.of(context).size.width * 0.155),
-                Text('Reps'),
-                SizedBox(width: MediaQuery.of(context).size.width * 0.165),
-                Text('kg')
-              ],
-            ),
-            SizedBox(
-              height: 12,
             ),
             Column(
               children: [...repetitions, repetition],
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 51, 100, 140),
+                  primary: const Color.fromARGB(255, 51, 100, 140),
                 ),
                 onPressed: () {
                   addSet(repetition);
-                  saveRep(excercise, repetition, context);
                 },
-                child: Text('Lagre'),
+                child: const Text('Legg til Sett'),
               ),
             ),
           ]),
         ),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
       ],
     );
   }
 
-  void addSet(repetition) {
+  bool addSet(repetition) {
     String repsString = repetition.repsController.text;
     String weightString = repetition.weightController.text;
 
-    if (repsString.isEmpty) {
-      repsString = '0';
-    }
-    if (weightString.isEmpty) {
-      weightString = '0';
+    if (!repetition.isDone) {
+      SnackBar snackBar = const SnackBar(
+        content: Text('Du må fullføre forrige sett'),
+        duration: Duration(seconds: 5),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return false;
     }
 
     int reps = int.parse(repsString);
     int weight = int.parse(weightString);
+
     setState(() {
-      repetitions
-          .add(StatelessRepetition(reps: reps, weight: weight, set: set));
       set++;
       lastRep = reps;
       lastWeight = weight;
     });
+
+    return true;
+  }
+
+  /// Saves the repetition to the database, the return value indicates if the save was successful
+  /// and legal
+  Future<bool> saveRep(Repetition repetition) async {
+    String repsString = repetition.repsController.text;
+    String weightString = repetition.weightController.text;
+
+    if (repsString.isEmpty) {
+      return false;
+    }
+    if (weightString.isEmpty) {
+      return false;
+    }
+
+    int reps = int.parse(repsString);
+    int weight = int.parse(weightString);
+
+    Log push = Log(
+        weight, reps, DateTime.now(), excercise.name, 0, 0, sessionInstance.id);
+
+    // NOTE: These reps are not pushed to the db, they are only stored in the session instance
+    Repetition repcopy = Repetition.clone(repetition, sessionInstance.id);
+
+    repcopy.repsController.text = repsString;
+    repcopy.weightController.text = weightString;
+
+    sessionInstance.reps ??= [];
+    sessionInstance.reps!.add(repcopy);
+
+    // Updates the session instance in the globally available state object
+    Provider.of<AppState>(context, listen: false).sessionInstance =
+        sessionInstance;
+
+    await Provider.of<DatabaseService>(context, listen: false)
+        .addLog(push, Provider.of<AuthService>(context, listen: false).uid);
+    return true;
+  }
+
+  void deleteRep(Repetition repetition) async {
+    print('Deleting repetition');
+
+    DatabaseService db = DatabaseService();
+
+    await db.deleteLog(repetition.logId, repetition.excercise.name,
+        Provider.of<AuthService>(context, listen: false).uid);
+  }
+
+  void removeRep(Repetition repetition) {
+    sessionInstance.reps ??= [];
+    if (sessionInstance.reps!.isEmpty) {
+      return;
+    }
+
+    setState(() {
+      sessionInstance.reps!.remove(repetition);
+      repetitions.remove(repetition);
+    });
+  }
+}
+
+class Repetition extends StatefulWidget {
+  final Excercise excercise;
+  final int set;
+  final int lastRep;
+  final int lastWeight;
+  final TextEditingController repsController = TextEditingController();
+  final TextEditingController weightController = TextEditingController();
+  final Function(Repetition) delete;
+  final Function(Repetition) save;
+  final Function(Repetition) remove;
+
+  /// 0 if there is no log
+  final String logId;
+  bool isDone;
+
+  Repetition({
+    super.key,
+    required this.excercise,
+    required this.set,
+    required this.lastRep,
+    required this.lastWeight,
+    required this.logId,
+    required this.delete,
+    required this.save,
+    required this.remove,
+    this.isDone = false,
+  });
+
+  Repetition.clone(Repetition rep, String id)
+      : this(
+          excercise: rep.excercise,
+          set: rep.set,
+          lastRep: rep.lastRep,
+          lastWeight: rep.lastWeight,
+          logId: id,
+          delete: rep.delete,
+          save: rep.save,
+          remove: rep.remove,
+          isDone: true,
+        );
+
+  @override
+  State<Repetition> createState() => _RepetitionState(isDone);
+}
+
+class _RepetitionState extends State<Repetition> {
+  _RepetitionState(this.isDone);
+
+  bool isDone;
+
+  @override
+  Widget build(BuildContext context) {
+    String last =
+        "${widget.lastRep.toString()} x ${widget.lastWeight.toString()}kg";
+
+    Color? button_colour = isDone ? Colors.green[900] : Colors.grey;
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(widget.set.toString()),
+          const Spacer(flex: 25),
+          Text(last),
+          const Spacer(flex: 35),
+          SizedBox(
+            height: 44,
+            width: 65,
+            child: TextField(
+              controller: widget.repsController,
+              keyboardType: TextInputType.number,
+              style: const TextStyle(fontSize: 15.0, height: 2.0),
+              enabled: !isDone,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Reps',
+              ),
+            ),
+          ),
+          const Spacer(flex: 5),
+          const Text('X'),
+          const Spacer(flex: 5),
+          SizedBox(
+            height: 44,
+            width: 65,
+            child: TextField(
+              controller: widget.weightController,
+              keyboardType: TextInputType.number,
+              style: const TextStyle(fontSize: 15.0, height: 2.0),
+              enabled: !isDone,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'kg',
+              ),
+            ),
+          ),
+          const Spacer(flex: 15),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.5),
+            child: IconButton(
+                onPressed: () async {
+                  setState(() {
+                    if (widget.repsController.text.isEmpty ||
+                        widget.weightController.text.isEmpty && !isDone) {
+                      SnackBar snackBar = const SnackBar(
+                        content: Text('Du må fylle inn både vekt og reps'),
+                        duration: Duration(seconds: 5),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      return;
+                    }
+
+                    isDone = !isDone;
+                    widget.isDone = isDone;
+                  });
+                  if (isDone) {
+                    await widget.save(widget);
+                  } else {
+                    await widget.delete(widget);
+                  }
+                },
+                icon: Icon(
+                  Icons.check_box,
+                  color: button_colour,
+                  size: 44,
+                )),
+          ),
+        ],
+      ),
+    );
   }
 }

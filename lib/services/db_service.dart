@@ -5,6 +5,7 @@ import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/models/user.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 
+import '../models/program.dart';
 import '../models/session.dart';
 
 class DatabaseService {
@@ -99,14 +100,14 @@ class DatabaseService {
         .set(log.toJson());
   }
 
-  Future<void> deleteLog(Log log, String uid) async {
-    print("deleting log: ${log.id}");
+  Future<void> deleteLog(String logId, String excerciseName, String uid) async {
+    print("deleting log: ${logId}");
 
     return await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
-        .collection(log.excerciseName)
-        .doc(log.id)
+        .collection(excerciseName)
+        .doc(logId)
         .delete();
   }
 
@@ -185,6 +186,16 @@ class DatabaseService {
         .delete();
   }
 
+  Future<Session> getSession(String session, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(session)
+        .get()
+        .then((value) => Session.fromJson(value.data()!));
+  }
+
   Future<List<Session>> getSessions(String uid) async {
     return await FirebaseFirestore.instance
         .collection('users')
@@ -207,6 +218,127 @@ class DatabaseService {
         .snapshots()
         .map((event) {
       return event.docs.map((e) => Session.fromJson(e.data())).toList().first;
+    });
+  }
+
+  Future<void> addSessionInstance(
+      SessionInstance sessionInstance, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(sessionInstance.sessionId)
+        .collection('instances')
+        .doc(sessionInstance.id)
+        .set(sessionInstance.toJson());
+  }
+
+  Future<void> updateSessionInstance(
+      SessionInstance sessionInstance, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(sessionInstance.sessionId)
+        .collection('instances')
+        .doc(sessionInstance.id)
+        .set(sessionInstance.toJson());
+  }
+
+  Future<void> deleteSessionInstance(
+      SessionInstance sessionInstance, String uid) async {
+    List<String> excercises = sessionInstance.excercises ?? [];
+
+    for (String excercise in excercises) {
+      // Deletes all logs for this session instance
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection(excercise)
+          .where('sessionId', isEqualTo: sessionInstance.id)
+          .get()
+          .then((value) => value.docs.forEach((element) {
+                element.reference.delete();
+              }));
+    }
+
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(sessionInstance.sessionId)
+        .collection('instances')
+        .doc(sessionInstance.id)
+        .delete();
+  }
+
+  Future<List<SessionInstance>> getInstancesOfSession(
+      String sessionId, String uid) async {
+    print('sessionId: $sessionId');
+
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(sessionId)
+        .collection('instances')
+        .get()
+        .then((value) => value.docs
+            .map((e) => SessionInstance.fromJson(e.data()))
+            .toList()
+            .reversed
+            .toList());
+  }
+
+  Future<void> addProgram(Program program, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('programs')
+        .doc(program.id)
+        .set(program.toJson());
+  }
+
+  Future<void> updateProgram(Program program, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('programs')
+        .doc(program.id)
+        .set(program.toJson());
+  }
+
+  Future<void> deleteProgram(Program program, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('programs')
+        .doc(program.id)
+        .delete();
+  }
+
+  Future<List<Program>> getPrograms(String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('programs')
+        .orderBy('date', descending: true)
+        .get()
+        .then((value) => value.docs
+            .map((e) => Program.fromJson(e.data()))
+            .toList()
+            .reversed
+            .toList());
+  }
+
+  Stream<Program> getProgramStrean(String uid) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('programs')
+        .snapshots()
+        .map((event) {
+      return event.docs.map((e) => Program.fromJson(e.data())).toList().first;
     });
   }
 }

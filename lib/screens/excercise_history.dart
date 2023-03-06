@@ -116,7 +116,7 @@ class _ExcerciseHistoryState extends State<ExcerciseHistory> {
         Provider.of<DatabaseService>(context, listen: false);
     AuthService _authService = Provider.of<AuthService>(context, listen: false);
 
-    await _dbService.deleteLog(log, _authService.uid);
+    await _dbService.deleteLog(log.id, log.excerciseName, _authService.uid);
   }
 
   void sort() {
