@@ -1,11 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pu_frontend/common/bottom_bar.dart';
 
-class SearchPage extends StatelessWidget {
+import '../common/bottom_bar.dart';
+import '../widgets/search_widgets/search_bar.dart';
+
+class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
   @override
+  State<SearchPage> createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  @override
   Widget build(BuildContext context) {
+    final TextEditingController _searchController = TextEditingController();
     BottomBar bottomBar = BottomBar(3);
 
     return Scaffold(
@@ -13,11 +22,13 @@ class SearchPage extends StatelessWidget {
         title: const Text('Søk'),
         backgroundColor: const Color.fromARGB(255, 51, 100, 140),
       ),
-      body: const Center(
-        child: Text(
-          "Søk",
-          textAlign: TextAlign.center,
-        ),
+      body: Column(
+        children: [
+          SearchBar(
+          hintText: "Søk i Logify",
+          controller: _searchController,
+          ),
+        ],
       ),
       bottomNavigationBar: bottomBar.getBar(context),
     );
