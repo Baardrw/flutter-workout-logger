@@ -46,6 +46,25 @@ class DatabaseService {
         .then((value) => value.docs.map((e) => e.data()).toList());
   }
 
+  Future<int> getSessionCount(String uid) async {
+    int profileCount = 0;
+
+    var sessions = await _userRef.doc(uid).collection('sessions').get();
+
+    for (var element in sessions.docs) {
+      var instances = await _userRef
+          .doc(uid)
+          .collection('sessions')
+          .doc(element.id)
+          .collection('instances')
+          .get();
+      profileCount += instances.docs.length;
+      print("instances:   ${instances.docChanges.length}");
+    }
+
+    return profileCount;
+  }
+
   Future<void> addExcercise(Excercise excercise) async {
     return await _excerciseRef.doc(excercise.name).set(excercise);
   }

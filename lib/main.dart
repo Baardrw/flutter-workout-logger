@@ -82,7 +82,7 @@ GoRouter router() {
       ),
       GoRoute(
         path: '/Profile',
-        builder: (context, state) => const ProfilePage(),
+        builder: (context, state) => ProfilePage(),
       ),
       GoRoute(
         path: '/loggedWorkout',

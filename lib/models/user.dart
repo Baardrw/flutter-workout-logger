@@ -7,6 +7,7 @@ class User {
   final String _uid;
   final String? _email;
   final String? _name;
+  String? _profilePicture;
 
   /// List of userIDs of freinds
   late List<String> _freinds;
@@ -17,6 +18,8 @@ class User {
   User(this._uid, this._email, this._name) {
     _freinds = [];
     _groups = [];
+    _profilePicture =
+        "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg";
   }
 
   void addFreind(User user) {
@@ -38,6 +41,10 @@ class User {
   String get uid => _uid;
   String? get email => _email;
   String? get name => _name;
+  List<String> get freinds => _freinds;
+  List<String> get groups => _groups;
+  String? get profilePicture => _profilePicture;
+  set profilePicture(String? url) => _profilePicture = url;
 
   Map<String, Object?> toJson() {
     return {
@@ -46,6 +53,8 @@ class User {
       'name': _name,
       'freinds': _freinds,
       'groups': _groups,
+      'profilePicture': _profilePicture ??
+          "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg",
     };
   }
 
@@ -60,7 +69,8 @@ class User {
         _groups = (json['groups'] as List<dynamic>?)
                 ?.map((e) => e as String)
                 .toList() ??
-            [];
+            [],
+        _profilePicture = json['profilePicture'] as String?;
 
   @override
   String toString() {
@@ -76,6 +86,10 @@ class User {
     }
 
     return freinds;
+  }
+
+  void addProfilePicture(String url) {
+    _profilePicture = url;
   }
 
   // TODO : add user functionality to get groups
