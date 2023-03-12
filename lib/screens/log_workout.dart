@@ -373,10 +373,18 @@ class _LogCardState extends State<LogCard> {
     int reps = int.parse(repsString);
     int weight = int.parse(weightString);
 
-    Log push = Log(
-        weight, reps, DateTime.now(), excercise.name, 0, 0, sessionInstance.id);
+    Log push;
+
+    if (repetition.excercise.type == ExcerciseType.strength) {
+      push = Log(weight, reps, DateTime.now(), excercise.name, 0, 0,
+          sessionInstance.id);
+    } else {
+      push = Log(0, 0, DateTime.now(), excercise.name, reps, weight,
+          sessionInstance.id);
+    }
 
     // NOTE: These reps are not pushed to the db, they are only stored in the session instance
+    repetition.logId = push.id;
     Repetition repcopy = Repetition.clone(repetition, sessionInstance.id);
 
     repcopy.repsController.text = repsString;
@@ -428,7 +436,7 @@ class Repetition extends StatefulWidget {
   final Function(Repetition) remove;
 
   /// 0 if there is no log
-  final String logId;
+  String logId;
   bool isDone;
 
   Repetition({
@@ -468,8 +476,9 @@ class _RepetitionState extends State<Repetition> {
 
   @override
   Widget build(BuildContext context) {
-    String last =
-        "${widget.lastRep.toString()} x ${widget.lastWeight.toString()}kg";
+    String last = widget.excercise.type == ExcerciseType.strength
+        ? "${widget.lastRep.toString()} x ${widget.lastWeight.toString()}kg"
+        : "${widget.lastRep.toString()}km in ${widget.lastWeight.toString()} min";
 
     Color? button_colour = isDone ? Colors.green[900] : Colors.grey;
 
@@ -490,9 +499,11 @@ class _RepetitionState extends State<Repetition> {
               keyboardType: TextInputType.number,
               style: const TextStyle(fontSize: 15.0, height: 2.0),
               enabled: !isDone,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: 'Reps',
+                hintText: widget.excercise.type == ExcerciseType.strength
+                    ? 'Reps'
+                    : 'Distance',
               ),
             ),
           ),
@@ -507,9 +518,11 @@ class _RepetitionState extends State<Repetition> {
               keyboardType: TextInputType.number,
               style: const TextStyle(fontSize: 15.0, height: 2.0),
               enabled: !isDone,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: 'kg',
+                hintText: widget.excercise.type == ExcerciseType.strength
+                    ? 'kg'
+                    : 'Time',
               ),
             ),
           ),

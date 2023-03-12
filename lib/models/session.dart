@@ -75,9 +75,11 @@ class SessionInstance {
 
   SessionInstance.fromJson(Map<String, Object?> json)
       : sessionId = json['sessionId'] as String,
-        excercises =
-            (json['excercises'] as List<String>?)?.map((e) => e).toList(),
-        sessionInstanceId = DateTime.parse(json['sessionInstanceId'] as String),
+        excercises = (json['excercises'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
+        sessionInstanceId = DateTime.fromMicrosecondsSinceEpoch(
+            int.parse(('${json['sessionInstanceId'] as String}000'))),
         completed = json['completed'] as bool;
 
   Map<String, Object?> toJson() {

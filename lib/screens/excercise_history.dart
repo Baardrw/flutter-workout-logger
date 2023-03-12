@@ -53,34 +53,38 @@ class _ExcerciseHistoryState extends State<ExcerciseHistory> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Card holding PB and and sorting options
-            Card(
-              elevation: 8,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    excerciseIsCardio
-                        ? const SizedBox()
-                        : Text(
-                            'Personal Best: ${_getPersonalBest(logs, excerciseIsCardio)}',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                    // PB
-                    const SizedBox(height: 10),
-                    // Sorting options
-                    SingleSelectButtonBar(
-                        excerciseIsCardio
-                            ? cardioSortOptions
-                            : weightSortOptions,
-                        'Sort by:',
-                        isSelected,
-                        sort),
-                    ExcerciseHistoryChart(logs, excerciseIsCardio),
-                  ],
-                ),
-              ),
-            ),
+
+            logs.isNotEmpty
+                ? Card(
+                    elevation: 8,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          excerciseIsCardio
+                              ? const SizedBox()
+                              : Text(
+                                  'Personal Best: ${_getPersonalBest(logs, excerciseIsCardio)}',
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
+                                ),
+                          // PB
+                          const SizedBox(height: 10),
+                          // Sorting options
+                          SingleSelectButtonBar(
+                              excerciseIsCardio
+                                  ? cardioSortOptions
+                                  : weightSortOptions,
+                              'Sort by:',
+                              isSelected,
+                              sort),
+                          ExcerciseHistoryChart(logs, excerciseIsCardio),
+                        ],
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(

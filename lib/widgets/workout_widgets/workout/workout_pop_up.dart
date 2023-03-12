@@ -133,7 +133,6 @@ class WorkoutContent extends StatelessWidget {
 
               if (sessionInstance != null) {
                 // show a dialog that allows the user to finisht the workout or delete it
-
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -158,6 +157,8 @@ class WorkoutContent extends StatelessWidget {
                       TextButton(
                         onPressed: () {
                           // Saves session as completed
+                          sessionInstance.completed = true;
+
                           Provider.of<DatabaseService>(context, listen: false)
                               .updateSessionInstance(
                             sessionInstance,
@@ -231,15 +232,12 @@ class WorkoutContent extends StatelessWidget {
           FutureBuilder(
               builder: ((context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  print('waiting');
                   return const Center(child: CircularProgressIndicator());
                 }
 
                 if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: Text('Ingen tidligere logger'));
                 }
-
-                print('sessionInstances: ${snapshot.data}');
 
                 List<SessionInstance?> sessionInstances =
                     snapshot.data as List<SessionInstance?>;
