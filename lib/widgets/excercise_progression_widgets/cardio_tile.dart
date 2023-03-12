@@ -15,13 +15,13 @@ class CardioTile extends StatelessWidget {
     if (log == null)
       return Container();
     else {
-      double speed = (log!.distance! / log!.duration!) * 3.6 / 60;
+      double speed = (log!.distance! / log!.duration!) * 3600 / 60;
 
       return Card(
         elevation: 8,
         child: ListTile(
             title: Text('${speed.toStringAsFixed(2)} km/h'),
-            subtitle: Text('${log?.distance} m, ${log?.duration} mins'),
+            subtitle: Text('${log?.distance} km, ${log?.duration} mins'),
             leading: Text(DateFormat.yMd().format(log!.date)),
             trailing: IconButton(
               icon: Icon(Icons.delete),

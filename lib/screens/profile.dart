@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 import 'package:pu_frontend/services/storage_service.dart';
+import 'package:pu_frontend/widgets/progress_card.dart';
 
 import '../common/bottom_bar.dart';
+import '../models/excercise.dart';
 import '../models/user.dart';
 
 /// Inspired by this template https://www.fluttertemplates.dev/widgets/must_haves/profile_page
@@ -82,7 +85,8 @@ class ProfilePage extends StatelessWidget {
                               ],
                             ),
                       const SizedBox(height: 16),
-                      _ProfileInfoRow(user)
+                      _ProfileInfoRow(user),
+                      _ProfileExcerciseProgressionColumn(user),
                     ],
                   ),
                 ),
@@ -179,6 +183,7 @@ class _TopPortion extends StatefulWidget {
 }
 
 class _TopPortionState extends State<_TopPortion> {
+  // Basic image for users without a profile picture
   NetworkImage profilePic = NetworkImage(
       "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg");
 
@@ -267,5 +272,64 @@ class _TopPortionState extends State<_TopPortion> {
         )
       ],
     );
+  }
+}
+
+class _ProfileExcerciseProgressionColumn extends StatelessWidget {
+  const _ProfileExcerciseProgressionColumn(this.user, {super.key});
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        builder: ((context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              !snapshot.hasData) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          List<Excercise> excercises = snapshot.data as List<Excercise>;
+          print(excercises);
+
+          return Column(
+            children: [
+              const SizedBox(height: 16),
+              ..._getExcerciseProgressionTiles(excercises, context),
+            ],
+          );
+        }),
+        future: Provider.of<DatabaseService>(context)
+            .getExcercisesUserHasDone(user.uid));
+  }
+
+  List<FutureBuilder> _getExcerciseProgressionTiles(
+      List<Excercise> excercises, BuildContext context) {
+    List<FutureBuilder> tiles = [];
+
+    for (Excercise excercise in excercises) {
+      tiles.add(
+        FutureBuilder(
+          builder: ((context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting ||
+                !snapshot.hasData) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            List<Log> logs = snapshot.data as List<Log>;
+
+            return ProgressCard(excercise, logs);
+          }),
+          future: Provider.of<DatabaseService>(context, listen: false).getLogs(
+              excercise.name,
+              Provider.of<AuthService>(context, listen: false).uid),
+        ),
+      );
+    }
+
+    return tiles;
   }
 }

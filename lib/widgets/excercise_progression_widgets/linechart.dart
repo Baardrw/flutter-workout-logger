@@ -145,7 +145,7 @@ class _ExcerciseHistoryChartState extends State<ExcerciseHistoryChart> {
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 42,
-            interval: 10,
+            interval: _getInterval(),
           ),
         ),
       ),
@@ -203,7 +203,9 @@ class _ExcerciseHistoryChartState extends State<ExcerciseHistoryChart> {
   }
 
   double _getSpeed(Log log) {
-    return log.distance! / log.duration! * 3.6 / 60;
+    if (log.distance == 0 || log.duration == 0) return 0;
+
+    return log.distance! / log.duration! * 3600 / 60;
   }
 
   int? _getPersonalBest(List<Log> logs, bool excerciseIsCardio) {
@@ -222,6 +224,10 @@ class _ExcerciseHistoryChartState extends State<ExcerciseHistoryChart> {
   double _getInterval() {
     double pb = _roundToNearestTen(
         _getPersonalBest(widget.logs, widget.excerciseIsCardio)!.toDouble());
+
+    if (pb == 0) {
+      return 1;
+    }
 
     return pb / 10;
   }

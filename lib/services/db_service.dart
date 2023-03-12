@@ -46,25 +46,6 @@ class DatabaseService {
         .then((value) => value.docs.map((e) => e.data()).toList());
   }
 
-  Future<int> getSessionCount(String uid) async {
-    int profileCount = 0;
-
-    var sessions = await _userRef.doc(uid).collection('sessions').get();
-
-    for (var element in sessions.docs) {
-      var instances = await _userRef
-          .doc(uid)
-          .collection('sessions')
-          .doc(element.id)
-          .collection('instances')
-          .get();
-      profileCount += instances.docs.length;
-      print("instances:   ${instances.docChanges.length}");
-    }
-
-    return profileCount;
-  }
-
   Future<void> addExcercise(Excercise excercise) async {
     return await _excerciseRef.doc(excercise.name).set(excercise);
   }
@@ -99,6 +80,32 @@ class DatabaseService {
 
   Future<bool> excerciseExists(String name) async {
     return await _excerciseRef.doc(name).get().then((value) => value.exists);
+  }
+
+  Future<List<Excercise>> getExcercisesUserHasDone(String uid) async {
+    List<String> excercises = [];
+
+    List<Session> sessions = await getSessions(uid);
+
+    for (Session session in sessions) {
+      session.excercises!.forEach((element) {
+        if (!excercises.contains(element)) {
+          excercises.add(element);
+        }
+      });
+    }
+
+    List<Excercise> excerciseObjects = [];
+
+    for (String excercise in excercises) {
+      Excercise? excerciseObject = await getExcercise(excercise);
+
+      if (excerciseObject != null) {
+        excerciseObjects.add(excerciseObject);
+      }
+    }
+
+    return excerciseObjects;
   }
 
   Future<void> addLog(Log log, String uid) async {
@@ -291,22 +298,48 @@ class DatabaseService {
         .delete();
   }
 
+  Future<int> getSessionCount(String uid) async {
+    int profileCount = 0;
+
+    var sessions = await _userRef.doc(uid).collection('sessions').get();
+
+    for (var element in sessions.docs) {
+      var instances = await _userRef
+          .doc(uid)
+          .collection('sessions')
+          .doc(element.id)
+          .collection('instances')
+          .get();
+      profileCount += instances.docs.length;
+      print("instances:   ${instances.docChanges.length}");
+    }
+
+    return profileCount;
+  }
+
   Future<List<SessionInstance>> getInstancesOfSession(
       String sessionId, String uid) async {
-    print('sessionId: $sessionId');
+    try {
+      List<SessionInstance> s = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('sessions')
+          .doc(sessionId)
+          .collection('instances')
+          .get()
+          .then((value) => value.docs
+              .map((e) => SessionInstance.fromJson(e.data()))
+              .toList()
+              .reversed
+              .toList());
 
-    return await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('sessions')
-        .doc(sessionId)
-        .collection('instances')
-        .get()
-        .then((value) => value.docs
-            .map((e) => SessionInstance.fromJson(e.data()))
-            .toList()
-            .reversed
-            .toList());
+      print('instances: ${s.isEmpty}');
+
+      return s;
+    } catch (e) {
+      print(e);
+      return [];
+    }
   }
 
   Future<void> addProgram(Program program, String uid) async {
