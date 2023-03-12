@@ -44,21 +44,45 @@ GoRouter router() {
         builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
-        path: '/Home',
-        builder: (context, state) => const DemoHome(),
-      ),
+          path: '/Home',
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              transitionDuration: Duration(milliseconds: 180),
+              key: state.pageKey,
+              child: const DemoHome(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) =>
+                      FadeTransition(opacity: animation, child: child),
+            );
+          }),
       GoRoute(
         path: '/signup',
         builder: (context, state) => const signUp(),
       ),
       GoRoute(
-        path: '/ExcerciseProgression',
-        builder: (context, state) => const ExcerciseProgression(),
-      ),
+          path: '/ExcerciseProgression',
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              transitionDuration: Duration(milliseconds: 180),
+              key: state.pageKey,
+              child: const ExcerciseProgression(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) =>
+                      FadeTransition(opacity: animation, child: child),
+            );
+          }),
       GoRoute(
-        path: '/workouts',
-        builder: (context, state) => const Workouts(),
-      ),
+          path: '/workouts',
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              transitionDuration: Duration(milliseconds: 180),
+              key: state.pageKey,
+              child: const Workouts(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) =>
+                      FadeTransition(opacity: animation, child: child),
+            );
+          }),
       GoRoute(
         path: '/logNew/:param1:',
         name: 'logNew',
@@ -77,13 +101,29 @@ GoRouter router() {
         },
       ),
       GoRoute(
-        path: '/Search',
-        builder: (context, state) => const SearchPage(),
-      ),
+          path: '/Search',
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              transitionDuration: Duration(milliseconds: 180),
+              key: state.pageKey,
+              child: const SearchPage(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) =>
+                      FadeTransition(opacity: animation, child: child),
+            );
+          }),
       GoRoute(
-        path: '/Profile',
-        builder: (context, state) => ProfilePage(),
-      ),
+          path: '/Profile',
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              transitionDuration: Duration(milliseconds: 180),
+              key: state.pageKey,
+              child: const ProfilePage(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) =>
+                      FadeTransition(opacity: animation, child: child),
+            );
+          }),
       GoRoute(
         path: '/loggedWorkout',
         builder: (context, state) => const LoggedWorkout(),
