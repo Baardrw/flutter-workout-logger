@@ -42,7 +42,7 @@ class _SearchPageState extends State<SearchPage> {
             bottom: const TabBar(
               tabs: [Tab(icon: Icon(Icons.person)), Tab(icon: Icon(IconData(0xe9e9, fontFamily: 'MaterialIcons')))]
             ),
-            title: const Text("Søk"),
+            title: const Text("Search"),
             backgroundColor: const Color.fromARGB(255, 51, 100, 140),
           ),
           body: TabBarView(
@@ -50,7 +50,7 @@ class _SearchPageState extends State<SearchPage> {
               Column(
                 children: [
                   SearchBar(
-                    hintText: "Søk blant brukere",
+                    hintText: "Search for other users",
                     controller: _userController,
                     dbservice: dbservice,
                     icon: const Icon(Icons.person, color: Colors.white),
@@ -61,7 +61,7 @@ class _SearchPageState extends State<SearchPage> {
               Column(
                 children: [
                   SearchBar(
-                    hintText: "Søk blant grupper",
+                    hintText: "Search for groups",
                     controller: _groupController,
                     dbservice: dbservice,
                     icon: const Icon(IconData(0xe9e9, fontFamily: 'MaterialIcons'), color: Colors.white,),

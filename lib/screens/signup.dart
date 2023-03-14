@@ -32,7 +32,7 @@ class SignUpState extends State<signUp> {
 
             //"Velkommen" text
             const Text(
-              "Velkommen",
+              "Welcome",
               style: TextStyle(fontSize: 42),
             ),
 
@@ -42,7 +42,7 @@ class SignUpState extends State<signUp> {
 
             //Text field username input
             LoginTextfield(
-              hintText: "Fullt navn",
+              hintText: "Full name",
               obscureText: false,
               controller: _nameController,
             ),
@@ -64,7 +64,7 @@ class SignUpState extends State<signUp> {
 
             //Text field password input
             LoginTextfield(
-              hintText: "Passord",
+              hintText: "Password",
               obscureText: true,
               controller: _passwordController,
             ),
@@ -81,7 +81,7 @@ class SignUpState extends State<signUp> {
                           _nameController.text)
                       .onError((error, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Beklager, ugyldig E-mail eller passord'),
+                      content: Text('Sorry, invalid email or password.'),
                       duration: Duration(seconds: 3),
                     ));
                   });
@@ -100,7 +100,7 @@ class SignUpState extends State<signUp> {
                     fixedSize: const Size(300, 80),
                     shape: const StadiumBorder()),
                 child: const Text(
-                  "Registrer",
+                  "Sign up",
                   style: TextStyle(fontSize: 30, color: Colors.white),
                 )),
 
@@ -112,7 +112,7 @@ class SignUpState extends State<signUp> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Har du allerede en bruker?"),
+                const Text("Don't you have a user?"),
                 OutlinedButton(
                     onPressed: () =>
                         context.go("/login"), //TODO: Update path name
@@ -122,7 +122,7 @@ class SignUpState extends State<signUp> {
                       ),
                     ),
                     child: const Text(
-                      "Logg inn",
+                      "Log in",
                       style: TextStyle(color: Colors.blue),
                     ))
               ],
