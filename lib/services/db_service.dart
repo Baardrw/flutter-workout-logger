@@ -393,4 +393,30 @@ class DatabaseService {
       return event.docs.map((e) => Program.fromJson(e.data())).toList().first;
     });
   }
+
+  //Gets all the users friends which are stored in /users/{uid}/friends
+  Future<List<User>> getFriends(String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('friends')
+        .get()
+        .then((value) => value.docs
+            .map((e) => User.fromJson(e.data()))
+            .toList()
+            .reversed
+            .toList());
+  }
+
+  //Friends stream
+  Stream<List<User>> getFriendsStream(String uid) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('friends')
+        .snapshots()
+        .map((event) {
+      return event.docs.map((e) => User.fromJson(e.data())).toList();
+    });
+  }
 }

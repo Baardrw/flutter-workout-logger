@@ -10,6 +10,9 @@ import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pu_frontend/widgets/homepage/friends_workout_card.dart';
+
+import '../homepage/feed.dart';
 
 class TestHome extends StatefulWidget {
   const TestHome({super.key});
@@ -30,25 +33,17 @@ class _TestHomeState extends State<TestHome> {
         description: 'beskrivelse');
 
     return Container(
-      padding: const EdgeInsets.all(80.0),
+
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ElevatedButton(
-              onPressed: () async {
-                Log log = Log(
-                  Random.secure().nextInt(100),
-                  Random.secure().nextInt(20),
-                  DateTime.now(),
-                  'Bench Press',
-                  Random.secure().nextInt(10000),
-                  Random.secure().nextInt(180),
-                  '0',
-                );
+          //Container that fills the screen
+          Container(
+            //Width of screen
+            height: 700,
+            child: FriendsWorkout(),
+          ),
 
-                await _dbService.addLog(log, _authService.uid);
-              },
-              child: Text('Add bench log')),
           ElevatedButton(
             onPressed: () async {
               await _authService.signOut();
