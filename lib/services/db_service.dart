@@ -324,6 +324,15 @@ class DatabaseService {
     return profileCount;
   }
 
+  Future<int> countSessions(String uid, String sid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(sid)
+        .get()
+        .then((value) => value.docs.length);
+  }
+
   Future<List<SessionInstance>> getInstancesOfSession(
       String sessionId, String uid) async {
     try {

@@ -68,9 +68,9 @@ class ProfilePage extends StatelessWidget {
                               children: [
                                 FloatingActionButton.extended(
                                   onPressed: () {},
-                                  heroTag: 'follow',
+                                  heroTag: 'Add Freind',
                                   elevation: 0,
-                                  label: const Text("Follow"),
+                                  label: const Text("Add Freind"),
                                   icon: const Icon(Icons.person_add_alt_1),
                                 ),
                                 const SizedBox(width: 16.0),
