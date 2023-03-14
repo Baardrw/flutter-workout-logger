@@ -46,6 +46,13 @@ class DatabaseService {
         .then((value) => value.docs.map((e) => e.data()).toList());
   }
 
+  Future<List<User>> getUsersByUsername(String username) {
+    return _userRef
+        .where("name", isEqualTo: username)
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
+  }
+
   Future<void> addExcercise(Excercise excercise) async {
     return await _excerciseRef.doc(excercise.name).set(excercise);
   }
