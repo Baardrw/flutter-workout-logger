@@ -12,7 +12,7 @@ class User {
   /// List of userIDs of freinds
   late List<String> _freinds;
 
-  /// List of groupIDs of groups
+  /// List of groupIDs of groups stored as [groupID, groupName]
   late List<dynamic> _groups;
 
   late List<String> _freindRequests;
