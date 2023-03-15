@@ -118,7 +118,7 @@ class _ProfileInfoRow extends StatelessWidget {
 
           List<ProfileInfoItem> items = [
             ProfileInfoItem("Workouts", snapshot.data!),
-            ProfileInfoItem("Freinds", user.freinds.length),
+            ProfileInfoItem("Friends", user.freinds.length),
             ProfileInfoItem("Groups", user.groups.length),
           ];
 
