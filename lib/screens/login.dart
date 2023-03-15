@@ -71,7 +71,7 @@ class LoginState extends State<LoginPage> {
                   .signIn(_emailController.text, _passwordController.text)
                   .onError((error, stackTrace) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Beklager, passordet er feil'),
+                  content: Text('Sorry, the password is wrong'),
                   duration: Duration(seconds: 3),
                 ));
               });
@@ -105,7 +105,7 @@ class LoginState extends State<LoginPage> {
                   ),
                 ),
                 child: const Text(
-                  "Registrer here",
+                  "Sign up",
                   style: TextStyle(color: Colors.blue),
                 ))
           ],

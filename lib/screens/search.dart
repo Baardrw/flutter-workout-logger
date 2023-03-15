@@ -48,7 +48,7 @@ class _SearchPageState extends State<SearchPage> {
               Column(
                 children: [
                   SearchBar(
-                    hintText: "Search among users",
+                    hintText: "Search for other users",
                     controller: _userController,
                     dbservice: dbservice,
                     type: "user"
@@ -58,7 +58,7 @@ class _SearchPageState extends State<SearchPage> {
               Column(
                 children: [
                   SearchBar(
-                    hintText: "Search among groups",
+                    hintText: "Search for groups",
                     controller: _groupController,
                     dbservice: dbservice,
                     type: "group"

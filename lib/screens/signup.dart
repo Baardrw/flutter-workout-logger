@@ -81,7 +81,7 @@ class SignUpState extends State<signUp> {
                           _nameController.text)
                       .onError((error, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Beklager, ugyldig E-mail eller passord'),
+                      content: Text('Sorry, invalid email or password.'),
                       duration: Duration(seconds: 3),
                     ));
                   });
@@ -100,7 +100,7 @@ class SignUpState extends State<signUp> {
                     fixedSize: const Size(300, 80),
                     shape: const StadiumBorder()),
                 child: const Text(
-                  "Register",
+                  "Sign up",
                   style: TextStyle(fontSize: 30, color: Colors.white),
                 )),
 
