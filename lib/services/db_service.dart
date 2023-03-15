@@ -5,6 +5,7 @@ import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/models/user.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 
+import '../models/group.dart';
 import '../models/program.dart';
 import '../models/session.dart';
 
@@ -426,4 +427,38 @@ class DatabaseService {
       return event.docs.map((e) => User.fromJson(e.data())).toList();
     });
   }
+
+  //getSessionsFromUsersInGroupStream
+  Stream<List<Session>> getSessionsFromUsersInGroupStream(String groupId) {
+    return FirebaseFirestore.instance
+        .collection('groups')
+        .doc(groupId)
+        .get()
+        .then((doc) => doc.data()!['members'] as List<String>)
+        .asStream()
+        .asyncMap((userIds) async {
+      List<Session> sessions = [];
+      for (String userId in userIds) {
+        List<Session> userSessions = await getSessions(userId);
+        print('User sessions for $userId: $userSessions');
+        sessions.addAll(userSessions);
+      }
+      print('Sessions for group $groupId: $sessions');
+
+      return sessions;
+    });
+  }
+
+
+  //getAllGroupsStream
+  Stream<List<Group>> getAllGroupsStream() {
+    return FirebaseFirestore.instance
+        .collection('groups')
+        .snapshots()
+        .map((event) {
+      return event.docs.map((e) => Group.fromJson(e.data())).toList();
+    });
+  }
+
+
 }

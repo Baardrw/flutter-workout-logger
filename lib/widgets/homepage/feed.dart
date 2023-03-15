@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/group.dart';
 import '../../models/session.dart';
 import '../../models/user.dart';
 import '../../services/auth_service.dart';
@@ -14,43 +15,51 @@ class FriendsWorkout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DatabaseService db = Provider.of<DatabaseService>(context);
-    AuthService authService = Provider.of<AuthService>(context, listen: false);
+    final db = Provider.of<DatabaseService>(context);
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = Provider.of<User?>(context);
 
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 225, 225, 225),
-      body: StreamBuilder(
+      body: StreamBuilder<List<Group>>(
         builder: (context, snapshot) {
-          return FutureBuilder(
+          final groups = snapshot.data ?? [];
+
+          if (groups.isEmpty) {
+            return const Center(
+              child: Text("Empty group list"),
+            );
+          }
+          Group group;
+          group = groups[1];
+          return StreamBuilder<List<Session>>(
             builder: (context, snapshot) {
-              List<Session>? sessions = snapshot.data;
-              if (sessions == null) {
-                return const Center(child: CircularProgressIndicator());
+              final sessions = snapshot.data ?? [];
+              if (sessions.isEmpty) {
+                return Center(
+
+                  child: Text(group.name),
+                );
               }
-              return FutureBuilder(
-                builder: (context, snapshot) {
-                  List<User>? friends = snapshot.data ?? [];
-                  if (friends == null) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  List<GestureDetector> workoutButtons = sessions
+              final workoutButtons = sessions
+                  .map(
+                    (session) => GestureDetector(
+                  child: ShowWorkoutButtonFriend(
+                    card: FriendsWorkoutCard(session, session.name),
+                    string: session.id,
+                  ),
+                ),
+              )
+                  .toList();
 
-                      .map((session) => GestureDetector(
-                    child: ShowWorkoutButtonFriend(card: FriendsWorkoutCard(session, session.name), string: session.id),
-                  ))
-                      .toList();
-
-                  return ListView(
-                    children: workoutButtons,
-                  );
-                },
-                future: db.getFriends(authService.uid),
+              return ListView(
+                children: workoutButtons,
               );
             },
-            future: db.getSessions(authService.uid),
+            stream: db.getSessionsFromUsersInGroupStream(group.id),
           );
         },
-        stream: db.getSessionStream(authService.uid),
+        stream: db.getAllGroupsStream(),
       ),
     );
   }
