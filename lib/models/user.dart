@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:pu_frontend/services/db_service.dart';
 
 import 'group.dart';
@@ -13,7 +15,7 @@ class User {
   late List<String> _freinds;
 
   /// List of groupIDs of groups
-  late List<String> _groups;
+  late List<dynamic> _groups;
 
   User(this._uid, this._email, this._name) {
     _freinds = [];
@@ -30,19 +32,22 @@ class User {
     _freinds.remove(user.uid);
   }
 
-  void joinGroup(Group group) {
-    _groups.add(group.id);
+  void joinGroup(Group group, bool isAdmin) {
+    _groups.add([group.id, isAdmin]);
   }
 
   void leaveGroup(Group group) {
-    _groups.remove(group.id);
+    if (group.administrators.contains(uid))
+      _groups.remove([group.id, true]);
+    else
+      _groups.remove([group.id, false]);
   }
 
   String get uid => _uid;
   String? get email => _email;
   String? get name => _name;
   List<String> get freinds => _freinds;
-  List<String> get groups => _groups;
+  List<dynamic> get groups => _groups;
   String? get profilePicture => _profilePicture;
   set profilePicture(String? url) => _profilePicture = url;
 

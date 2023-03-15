@@ -1,8 +1,10 @@
 import 'dart:developer';
+import 'dart:js_util';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/models/user.dart';
+import 'package:pu_frontend/models/group.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 
 import '../models/program.dart';
@@ -24,6 +26,12 @@ class DatabaseService {
         toFirestore: (excercise, _) => excercise.toJson(),
       );
 
+  final _groupRef = 
+      FirebaseFirestore.instance.collection('groups').withConverter<Group>(
+        fromFirestore: (snapshot, _) => Group.fromJson(snapshot.data()!),
+        toFirestore: (group, _) => group.toJson(),
+    );
+  
   Future<User?> getUser(String uid) async {
     return await _userRef.doc(uid).get().then((value) => value.data());
   }
@@ -51,6 +59,18 @@ class DatabaseService {
         .where("name", isEqualTo: username)
         .get()
         .then((value) => value.docs.map((e) => e.data()).toList());
+  }
+
+  Future<Group?> getMember(String id) async {
+    return await _groupRef.doc(id).get().then((value) => value.data());
+  }
+
+  Future<void> deleteGroup(Group group) async {
+    return await _groupRef.doc(group.id).delete();
+  }
+
+  Future<void> addGroup(Group group) async {
+    return await _groupRef.doc(group.id).set(group);
   }
 
   Future<void> addExcercise(Excercise excercise) async {
