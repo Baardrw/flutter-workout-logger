@@ -20,6 +20,10 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final myUid = Provider.of<AuthService>(context).uid;
+    if (userUid != myUid && userUid != null) {
+      bottomBar = BottomBar(3);
+    }
+
 
     return FutureBuilder(
         builder: (context, snapshot) {
