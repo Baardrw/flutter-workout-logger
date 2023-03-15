@@ -1,65 +1,50 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/services/auth_service.dart';
+import 'package:pu_frontend/services/db_service.dart';
+import 'package:pu_frontend/widgets/homepage/feedWorkoutContent.dart';
 
-import '../../models/group.dart';
-import '../../models/session.dart';
-import '../../models/user.dart';
-import '../../services/auth_service.dart';
-import '../../services/db_service.dart';
-import 'feedWorkoutContent.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_screen_button_content.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/add_workout_pop_up.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_pop_up.dart';
+
+import '../../../models/session.dart';
 import 'friends_workout_card.dart';
 
 class FriendsWorkout extends StatelessWidget {
-  const FriendsWorkout({Key? key});
+  const FriendsWorkout({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final db = Provider.of<DatabaseService>(context);
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final user = Provider.of<User?>(context);
+    DatabaseService db = Provider.of<DatabaseService>(context);
+    AuthService authService = Provider.of<AuthService>(context, listen: false);
 
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 225, 225, 225),
-      body: StreamBuilder<List<Group>>(
+      body: StreamBuilder(
         builder: (context, snapshot) {
-          final groups = snapshot.data ?? [];
-
-          if (groups.isEmpty) {
-            return const Center(
-              child: Text("Empty group list"),
-            );
-          }
-          Group group;
-          group = groups[1];
-          return StreamBuilder<List<Session>>(
+          return FutureBuilder(
             builder: (context, snapshot) {
-              final sessions = snapshot.data ?? [];
-              if (sessions.isEmpty) {
-                return Center(
-
-                  child: Text(group.name),
-                );
+              List<Session>? sessions = snapshot.data;
+              if (sessions == null) {
+                return const Center(child: CircularProgressIndicator());
               }
-              final workoutButtons = sessions
+              List<GestureDetector> workoutButtons = sessions
                   .map(
-                    (session) => GestureDetector(
+                    (e) => GestureDetector(
                   child: ShowWorkoutButtonFriend(
-                    card: FriendsWorkoutCard(session, session.name),
-                    string: session.id,
-                  ),
+                      card: FriendsWorkoutCard(e, 'navn'), string: e.id),
                 ),
               )
                   .toList();
-
               return ListView(
                 children: workoutButtons,
               );
             },
-            stream: db.getSessionsFromUsersInGroupStream(group.id),
+            future: db.getSessionsFriend(authService.uid),
           );
         },
-        stream: db.getAllGroupsStream(),
+        stream: db.getSessionStreamFriends(authService.uid),
       ),
     );
   }

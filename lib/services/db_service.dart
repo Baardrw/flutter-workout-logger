@@ -8,6 +8,7 @@ import 'package:pu_frontend/services/auth_service.dart';
 import '../models/group.dart';
 import '../models/program.dart';
 import '../models/session.dart';
+import 'package:rxdart/rxdart.dart';
 
 class DatabaseService {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -244,6 +245,44 @@ class DatabaseService {
             .toList());
   }
 
+  Future<List<Session>> getSessionsFriend(String uid) async {
+    var friends = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get()
+        .then((doc) => doc.get('freinds'));
+
+    List<Session> allSessions = [];
+
+    for (var friendId in friends) {
+      var sessions = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(friendId)
+          .collection('sessions')
+          .orderBy('date', descending: true)
+          .get();
+      for (var sessionDoc in sessions.docs) {
+        var sessionData = sessionDoc.data();
+        // Get the completed instances for the session
+        var instancesQuery = await sessionDoc.reference
+            .collection('instances')
+            .where('completed', isEqualTo: true)
+            .get();
+        var completedInstances = instancesQuery.docs
+            .map((doc) => SessionInstance.fromJson(doc.data()))
+            .toList();
+
+        // Only include the session if it has at least one completed instance
+        if (completedInstances.isNotEmpty) {
+          var session = Session.fromJson(sessionData);
+          allSessions.add(session);
+        }
+      }
+    }
+
+    return allSessions.reversed.toList();
+  }
+
   Stream<Session> getSessionStream(String uid) {
     return FirebaseFirestore.instance
         .collection('users')
@@ -253,6 +292,17 @@ class DatabaseService {
         .map((event) {
       return event.docs.map((e) => Session.fromJson(e.data())).toList().first;
     });
+  }
+
+  Stream<Session> getSessionStreamFriends(String uid) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get()
+        .then((doc) => doc.get('freinds'))
+        .then((friendIds) => Future.wait(friendIds.map((friendId) => getSessionStream(friendId))))
+        .asStream()
+        .flatMap((sessions) => Stream.fromIterable(sessions as Iterable<Session>));
   }
 
   Future<void> addSessionInstance(
@@ -401,64 +451,5 @@ class DatabaseService {
       return event.docs.map((e) => Program.fromJson(e.data())).toList().first;
     });
   }
-
-  //Gets all the users friends which are stored in /users/{uid}/friends
-  Future<List<User>> getFriends(String uid) async {
-    return await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('friends')
-        .get()
-        .then((value) => value.docs
-            .map((e) => User.fromJson(e.data()))
-            .toList()
-            .reversed
-            .toList());
-  }
-
-  //Friends stream
-  Stream<List<User>> getFriendsStream(String uid) {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('friends')
-        .snapshots()
-        .map((event) {
-      return event.docs.map((e) => User.fromJson(e.data())).toList();
-    });
-  }
-
-  //getSessionsFromUsersInGroupStream
-  Stream<List<Session>> getSessionsFromUsersInGroupStream(String groupId) {
-    return FirebaseFirestore.instance
-        .collection('groups')
-        .doc(groupId)
-        .get()
-        .then((doc) => doc.data()!['members'] as List<String>)
-        .asStream()
-        .asyncMap((userIds) async {
-      List<Session> sessions = [];
-      for (String userId in userIds) {
-        List<Session> userSessions = await getSessions(userId);
-        print('User sessions for $userId: $userSessions');
-        sessions.addAll(userSessions);
-      }
-      print('Sessions for group $groupId: $sessions');
-
-      return sessions;
-    });
-  }
-
-
-  //getAllGroupsStream
-  Stream<List<Group>> getAllGroupsStream() {
-    return FirebaseFirestore.instance
-        .collection('groups')
-        .snapshots()
-        .map((event) {
-      return event.docs.map((e) => Group.fromJson(e.data())).toList();
-    });
-  }
-
 
 }
