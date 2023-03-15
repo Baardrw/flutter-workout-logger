@@ -40,7 +40,7 @@ class _TestHomeState extends State<TestHome> {
           //Container that fills the screen
           Container(
             //Width of screen
-            height: 700,
+            height: 600,
             child: FriendsWorkout(),
           ),
 
