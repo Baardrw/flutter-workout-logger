@@ -84,19 +84,23 @@ GoRouter router() {
             );
           }),
       GoRoute(
-        path: '/logNew/:param1:',
+        path: '/logNew/:param1/:completed',
         name: 'logNew',
         builder: (context, state) {
           if (state.extra == null) {
+            print("session.id: ${state.params['param1']}");
+
             return LogWorkoutScreen(
               sessionID: state.params['param1'],
               sessionInstance: null,
             );
           }
           SessionInstance sessionInstance = state.extra as SessionInstance;
+          print("session.id: ${state.params['param1']}");
           return LogWorkoutScreen(
             sessionID: state.params['param1'],
             sessionInstance: sessionInstance,
+            completed: state.params['completed'] == 'f' ? false : true,
           );
         },
       ),

@@ -27,6 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final myUid = Provider.of<AuthService>(context).uid;
+    print(myUid);
 
     return FutureBuilder(
         builder: (context, snapshot) {
@@ -225,23 +226,32 @@ class _ProfileInfoRow extends StatelessWidget {
       context: context,
       builder: ((context) {
         return AlertDialog(
-            title: const Text('Notifications'),
-            contentPadding: EdgeInsets.all(0),
-            content: ListView(
-              children: freinds
-                  .map((freind) => ListTile(
-                        title: Text(freind!.name ?? 'No name'),
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(freind.profilePicture!),
-                        ),
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ProfilePage(
-                                      userUid: freind.uid,
-                                    ))),
-                      ))
-                  .toList(),
+            elevation: 100,
+            title: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text('Notifications'),
+            ),
+            contentPadding: const EdgeInsets.all(0),
+            content: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.9,
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: ListView(
+                children: freinds
+                    .map((freind) => ListTile(
+                          title: Text(freind!.name ?? 'No name'),
+                          leading: CircleAvatar(
+                            backgroundImage:
+                                NetworkImage(freind.profilePicture!),
+                          ),
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfilePage(
+                                        userUid: freind.uid,
+                                      ))),
+                        ))
+                    .toList(),
+              ),
             ));
       }),
     );

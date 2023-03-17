@@ -38,10 +38,10 @@ class _TestHomeState extends State<TestHome> {
         children: [
           ElevatedButton(
               onPressed: () async {
-                User user = User("1234", "test", "bårds test user");
+                User user = User("12345", "test", "bårds test user");
                 await _dbService.addUser(user);
                 User? myUser = await _dbService.getUser(_authService.uid);
-                myUser?.addFreindRequest("1234");
+                myUser?.addFreindRequest("12345");
                 await _dbService.updateUser(myUser!);
               },
               child: Text('Add bench log')),
