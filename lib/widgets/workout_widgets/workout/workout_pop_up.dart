@@ -130,6 +130,7 @@ class WorkoutContent extends StatelessWidget {
             onPressed: () {
               SessionInstance? sessionInstance =
                   Provider.of<AppState>(context, listen: false).sessionInstance;
+              print("session.id: ${session.id}");
 
               if (sessionInstance != null) {
                 // show a dialog that allows the user to finisht the workout or delete it
@@ -148,7 +149,7 @@ class WorkoutContent extends StatelessWidget {
 
                           context.pushNamed(
                             'logNew',
-                            params: {'param1': session.id},
+                            params: {'param1': session.id, 'completed': 'f'},
                             extra: sessionInstance,
                           );
                         },
@@ -173,7 +174,7 @@ class WorkoutContent extends StatelessWidget {
 
                           context.pushNamed(
                             'logNew',
-                            params: {'param1': session.id},
+                            params: {'param1': session.id, 'completed': 'f'},
                           );
                         },
                         child: const Text('Fullfør'),
@@ -195,7 +196,7 @@ class WorkoutContent extends StatelessWidget {
 
                           context.pushNamed(
                             'logNew',
-                            params: {'param1': session.id},
+                            params: {'param1': session.id, 'completed': 'f'},
                           );
                         },
                         child: const Text('Avbryt'),
@@ -206,7 +207,7 @@ class WorkoutContent extends StatelessWidget {
               } else {
                 context.pushNamed(
                   'logNew',
-                  params: {'param1': session.id},
+                  params: {'param1': session.id, 'completed': 'f'},
                 );
               }
             },
@@ -280,7 +281,11 @@ class SessionInstanceCard extends StatelessWidget {
 
     // TODO: dynamacise logged workout
     return GestureDetector(
-      onTap: () => context.push('/loggedWorkout'),
+      onTap: () => context.pushNamed(
+        'logNew',
+        params: {'param1': sessionInstance.sessionId, 'completed': 'true'},
+        extra: sessionInstance,
+      ),
       child: Container(
           decoration: const BoxDecoration(
               color: Colors.white,
