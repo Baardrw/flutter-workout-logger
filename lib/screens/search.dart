@@ -13,11 +13,7 @@ import '../widgets/search_widgets/search_bar.dart';
 class SearchPage extends StatefulWidget {
   const SearchPage({
     super.key,
-    this.tile,
-    this.gestureDetectorOnTap,
   });
-  final String? tile;
-  final Function(Excercise)? gestureDetectorOnTap;
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -26,7 +22,8 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
-    final DatabaseService dbservice = Provider.of<DatabaseService>(context);
+    final DatabaseService dbservice =
+        Provider.of<DatabaseService>(context, listen: false);
     final TextEditingController _userController = TextEditingController();
     final TextEditingController _groupController = TextEditingController();
     BottomBar bottomBar = BottomBar(3);
@@ -49,7 +46,7 @@ class _SearchPageState extends State<SearchPage> {
                     SearchBar(
                         hintText: "Search for other users",
                         controller: _userController,
-                        dbservice: dbservice,
+                        dbservice: DatabaseService(),
                         type: "user"),
                   ],
                 ),
@@ -58,7 +55,7 @@ class _SearchPageState extends State<SearchPage> {
                     SearchBar(
                         hintText: "Search for groups",
                         controller: _groupController,
-                        dbservice: dbservice,
+                        dbservice: DatabaseService(),
                         type: "group"),
                   ],
                 )

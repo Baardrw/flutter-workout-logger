@@ -5,6 +5,7 @@ import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/models/user.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 
+import '../models/group.dart';
 import '../models/program.dart';
 import '../models/session.dart';
 
@@ -23,6 +24,12 @@ class DatabaseService {
         fromFirestore: (snapshot, _) => Excercise.fromJson(snapshot.data()!),
         toFirestore: (excercise, _) => excercise.toJson(),
       );
+
+  final _groupRef = FirebaseFirestore.instance
+      .collection('groups')
+      .withConverter<Group>(
+          fromFirestore: (snapshot, _) => Group.fromJson(snapshot.data()!),
+          toFirestore: (group, _) => group.toMap());
 
   Future<User?> getUser(String uid) async {
     return await _userRef.doc(uid).get().then((value) => value.data());
@@ -46,10 +53,19 @@ class DatabaseService {
         .then((value) => value.docs.map((e) => e.data()).toList());
   }
 
-  Future<List<User>> getUsersByUsername(String username) {
-    return _userRef
+  Future<List<User>> getUsersByUsername(String username) async {
+    return await _userRef
         .where("lowercaseName", isGreaterThanOrEqualTo: username)
         .where("lowercaseName", isLessThan: "$usernameå")
+        .orderBy("lowercaseName")
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
+  }
+
+  Future<List<Group>> getGroups(String groupname) async {
+    return await _groupRef
+        .where("lowercaseName", isGreaterThanOrEqualTo: groupname)
+        .where("lowercaseName", isLessThan: "$groupnameå")
         .orderBy("lowercaseName")
         .get()
         .then((value) => value.docs.map((e) => e.data()).toList());
