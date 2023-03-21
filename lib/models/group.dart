@@ -9,7 +9,7 @@ class Group {
   Group(this.name, this.groupMembers, this.groupGoal) {
     lowercaseName = name.toLowerCase();
     profilePicture =
-        "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg";
+        "https://farm5.static.flickr.com/4007/4177211228_9fc2029702_z.jpg";
   }
 
   String get id {
@@ -23,7 +23,7 @@ class Group {
       'goal': groupGoal,
       'lowercaseName': lowercaseName,
       'profilePicture': profilePicture ??
-          "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg"
+          "https://farm5.static.flickr.com/4007/4177211228_9fc2029702_z.jpg"
     };
   }
 
@@ -36,7 +36,7 @@ class Group {
         groupGoal = json['goal'] as String,
         lowercaseName = json['lowercaseName'] as String,
         profilePicture = json['profilePicture'] == null
-            ? "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg"
+            ? "https://farm5.static.flickr.com/4007/4177211228_9fc2029702_z.jpg"
             : json['profilePicture'] as String;
 
   Map<String, Object?> toMap() {
