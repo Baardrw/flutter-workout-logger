@@ -11,7 +11,6 @@ import 'package:pu_frontend/screens/log_workout.dart';
 import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
 import 'package:pu_frontend/screens/excercise_progression.dart';
-import 'package:pu_frontend/screens/logged_workout.dart';
 import 'package:pu_frontend/screens/login.dart';
 import 'package:pu_frontend/screens/profile.dart';
 import 'package:pu_frontend/screens/search.dart';
@@ -128,10 +127,6 @@ GoRouter router() {
                       FadeTransition(opacity: animation, child: child),
             );
           }),
-      GoRoute(
-        path: '/loggedWorkout',
-        builder: (context, state) => const LoggedWorkout(),
-      ),
     ],
   );
 }
