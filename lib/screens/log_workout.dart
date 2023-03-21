@@ -9,6 +9,7 @@ import 'package:pu_frontend/services/db_service.dart';
 import '../services/auth_service.dart';
 import '../models/excercise.dart';
 import '../models/session.dart';
+import '../widgets/app_bar.dart';
 
 class LogWorkoutScreen extends StatelessWidget {
   LogWorkoutScreen({
@@ -39,10 +40,9 @@ class LogWorkoutScreen extends StatelessWidget {
 
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 225, 225, 225),
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 51, 100, 140),
-          title: const Text('Log workout'),
-          actions: [
+        appBar: GlobalAppBar(
+          title: 'Loggfør økt',
+          additionalActions: [
             IconButton(
               icon: const Icon(Icons.check),
               onPressed: () {

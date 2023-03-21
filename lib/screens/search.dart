@@ -4,6 +4,7 @@ import 'package:pu_frontend/models/excercise.dart';
 
 import '../common/bottom_bar.dart';
 import '../services/db_service.dart';
+import '../widgets/app_bar.dart';
 import '../widgets/search_widgets/search_bar.dart';
 
 //Search page where users can search for other users and groups. Contains a TabBarView with
@@ -18,58 +19,51 @@ class SearchPage extends StatefulWidget {
   final String? tile;
   final Function(Excercise)? gestureDetectorOnTap;
 
-
   @override
   State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  
   @override
   Widget build(BuildContext context) {
     final DatabaseService dbservice = Provider.of<DatabaseService>(context);
     final TextEditingController _userController = TextEditingController();
     final TextEditingController _groupController = TextEditingController();
     BottomBar bottomBar = BottomBar(3);
-    
+
     return Scaffold(
-      body: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            bottom: const TabBar(
-              tabs: [Tab(icon: Icon(Icons.person)), Tab(icon: Icon(IconData(0xe9e9, fontFamily: 'MaterialIcons')))]
-            ),
-            title: const Text("Search"),
-            backgroundColor: const Color.fromARGB(255, 51, 100, 140),
-          ),
-          body: TabBarView(
-            children: [
-              Column(
-                children: [
-                  SearchBar(
-                    hintText: "Search for other users",
-                    controller: _userController,
-                    dbservice: dbservice,
-                    type: "user"
-                  ),
-                ],
+        body: DefaultTabController(
+            length: 2,
+            child: Scaffold(
+              appBar: AppBar(
+                bottom: const TabBar(tabs: [
+                  Tab(icon: Icon(Icons.person)),
+                  Tab(icon: Icon(IconData(0xe9e9, fontFamily: 'MaterialIcons')))
+                ]),
+                title: const Text("Search"),
+                backgroundColor: const Color.fromARGB(255, 51, 100, 140),
               ),
-              Column(
-                children: [
-                  SearchBar(
-                    hintText: "Search for groups",
-                    controller: _groupController,
-                    dbservice: dbservice,
-                    type: "group"
-                  ),
-                ],
-              )
-            ]
-          ),
-        )
-      ),
-      bottomNavigationBar: bottomBar.getBar(context)
-    );
+              body: TabBarView(children: [
+                Column(
+                  children: [
+                    SearchBar(
+                        hintText: "Search for other users",
+                        controller: _userController,
+                        dbservice: dbservice,
+                        type: "user"),
+                  ],
+                ),
+                Column(
+                  children: [
+                    SearchBar(
+                        hintText: "Search for groups",
+                        controller: _groupController,
+                        dbservice: dbservice,
+                        type: "group"),
+                  ],
+                )
+              ]),
+            )),
+        bottomNavigationBar: bottomBar.getBar(context));
   }
 }

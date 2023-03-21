@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 import 'package:pu_frontend/services/storage_service.dart';
+import 'package:pu_frontend/widgets/app_bar.dart';
 import 'package:pu_frontend/widgets/progress_card.dart';
 
 import '../common/bottom_bar.dart';
@@ -12,9 +13,15 @@ import '../models/user.dart';
 
 /// Inspired by this template https://www.fluttertemplates.dev/widgets/must_haves/profile_page
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key, this.userUid}) : super(key: key);
   String? userUid;
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   BottomBar bottomBar = BottomBar(4);
 
   @override
@@ -45,8 +52,11 @@ class ProfilePage extends StatelessWidget {
 
           User user = snapshot.data as User;
 
+          bool areFreinds = user.freinds.contains(myUid);
+          print(areFreinds);
+
           return Scaffold(
-            appBar: AppBar(title: Text('${user.name ?? 'No name'}')),
+            appBar: GlobalAppBar(title: user.name ?? 'No name'),
             body: ListView(
               children: [
                 const SizedBox(height: 16),
@@ -62,29 +72,36 @@ class ProfilePage extends StatelessWidget {
                             .headline6
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      userUid == null
+                      widget.userUid == null
                           ? const SizedBox()
                           : const SizedBox(height: 16),
-                      userUid == null
+                      widget.userUid == null
                           ? const SizedBox()
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 FloatingActionButton.extended(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    if (areFreinds) {
+                                      await _removeFreind(context, user, myUid);
+                                      setState(() {
+                                        areFreinds = false;
+                                      });
+                                    } else {
+                                      await _addFreind(context, user);
+                                      setState(() {
+                                        areFreinds = true;
+                                      });
+                                    }
+                                  },
                                   heroTag: 'Add Freind',
                                   elevation: 0,
-                                  label: const Text("Add Freind"),
-                                  icon: const Icon(Icons.person_add_alt_1),
-                                ),
-                                const SizedBox(width: 16.0),
-                                FloatingActionButton.extended(
-                                  onPressed: () {},
-                                  heroTag: 'mesage',
-                                  elevation: 0,
-                                  backgroundColor: Colors.red,
-                                  label: const Text("Message"),
-                                  icon: const Icon(Icons.message_rounded),
+                                  label: areFreinds
+                                      ? const Text('UnFreind')
+                                      : const Text("Add Freind"),
+                                  icon: areFreinds
+                                      ? const Icon(Icons.person_remove_alt_1)
+                                      : const Icon(Icons.person_add_alt_1),
                                 ),
                               ],
                             ),
@@ -99,9 +116,27 @@ class ProfilePage extends StatelessWidget {
             bottomNavigationBar: bottomBar.getBar(context),
           );
         },
-        future: userUid == null
+        future: widget.userUid == null
             ? Provider.of<DatabaseService>(context).getUser(myUid)
-            : Provider.of<DatabaseService>(context).getUser(userUid!));
+            : Provider.of<DatabaseService>(context).getUser(widget.userUid!));
+  }
+
+  _addFreind(BuildContext context, User user) async {
+    user.addFreindRequest(Provider.of<AuthService>(context, listen: false).uid);
+
+    await Provider.of<DatabaseService>(context, listen: false).updateUser(user);
+  }
+
+  _removeFreind(BuildContext context, User user, String myUid) async {
+    User? myUser = await Provider.of<DatabaseService>(context, listen: false)
+        .getUser(myUid);
+
+    user.removeFreind(myUid);
+    myUser!.removeFreind(user.uid);
+
+    await Provider.of<DatabaseService>(context, listen: false)
+        .updateUser(myUser);
+    await Provider.of<DatabaseService>(context, listen: false).updateUser(user);
   }
 }
 
@@ -132,13 +167,28 @@ class _ProfileInfoRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: items
-                  .map((item) => Expanded(
-                          child: Row(
-                        children: [
-                          if (items.indexOf(item) != 0) const VerticalDivider(),
-                          Expanded(child: _singleItem(context, item)),
-                        ],
-                      )))
+                  .map((item) => GestureDetector(
+                        onTap: items.indexOf(item) == 1
+                            ? () => _showFreinds(context)
+                            : () {},
+                        child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                    child: _singleItem(
+                                  context,
+                                  item,
+                                )),
+                              ],
+                            )),
+                      ))
                   .toList(),
             ),
           );
@@ -151,7 +201,7 @@ class _ProfileInfoRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(20.0),
             child: Text(
               item.value.toString(),
               style: const TextStyle(
@@ -166,6 +216,40 @@ class _ProfileInfoRow extends StatelessWidget {
           )
         ],
       );
+
+  void _showFreinds(BuildContext context) async {
+    List<User?> freinds = [];
+
+    for (String freindUid in user.freinds) {
+      freinds.add(await Provider.of<DatabaseService>(context, listen: false)
+          .getUser(freindUid));
+    }
+
+    showDialog(
+      context: context,
+      builder: ((context) {
+        return AlertDialog(
+            title: const Text('Notifications'),
+            contentPadding: EdgeInsets.all(0),
+            content: ListView(
+              children: freinds
+                  .map((freind) => ListTile(
+                        title: Text(freind!.name ?? 'No name'),
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(freind.profilePicture!),
+                        ),
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfilePage(
+                                      userUid: freind.uid,
+                                    ))),
+                      ))
+                  .toList(),
+            ));
+      }),
+    );
+  }
 }
 
 class ProfileInfoItem {

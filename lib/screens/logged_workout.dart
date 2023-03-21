@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../widgets/app_bar.dart';
 import '../widgets/workout_widgets/workout/workouts_view_widget.dart';
 import '../widgets/excercise_progression_widgets/excercise_tile.dart';
 import '../models/excercise.dart';
@@ -11,7 +12,7 @@ class LoggedWorkout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Excercise ex1 = new Excercise(
+    Excercise ex1 = Excercise(
         type: ExcerciseType.strength,
         bodyPart: BodyPart.chest,
         name: 'Pushups',
@@ -21,10 +22,9 @@ class LoggedWorkout extends StatelessWidget {
     Repetition rep3 = Repetition();
     List<Repetition> repetitions = [rep1, rep2, rep3];
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 225, 225, 225),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 51, 100, 140),
-        title: Text('23.01.2023'),
+      backgroundColor: const Color.fromARGB(255, 225, 225, 225),
+      appBar: GlobalAppBar(
+        title: '23.01.2023',
       ),
       body: Center(
         child: ListView(
