@@ -351,6 +351,33 @@ class DatabaseService {
     return profileCount;
   }
 
+  Future<int> getWorkoutDaysInRow(String uid) async {
+    List<DateTime> workoutDates = [];
+    var sessions = await _userRef.doc(uid).collection('sessions').get();
+    int consecutiveDays = 0;
+    DateTime currentDate = DateTime.now();
+
+    for (var session in sessions.docs) {
+      var instances = await _userRef
+        .doc(uid)
+        .collection('sessions')
+        .doc(session.id)
+        .collection('date')
+        .get();
+      
+      for (var instance in instances.docs) {
+        DateTime workoutDate = DateTime.parse(instance.data()['date']);
+
+        if (workoutDate.isAfter(currentDate.subtract(Duration(days: 1)))) {
+          consecutiveDays += 1;
+        } else {
+          break;
+        }
+      }
+    }
+    return consecutiveDays;
+  }
+
   Future<int> countSessions(String uid, String sid) async {
     return await FirebaseFirestore.instance
         .collection('users')

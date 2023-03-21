@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 import '../models/user.dart';
+import '../models/session.dart';
 
 class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
   const GlobalAppBar({
@@ -18,8 +20,14 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget> additionalActions;
 
+
+
   @override
   Widget build(BuildContext context) {
+    final myUid = Provider.of<AuthService>(context).uid;
+    final dateFormatter = DateFormat.yMd();
+
+
     final List<Widget> actions = [
       Hero(
         tag: 'notification',
@@ -29,11 +37,25 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
     ];
+    DatabaseService db = Provider.of<DatabaseService>(context);
+    final daysSinceLastWorkout = db.getWorkoutDaysInRow(myUid);
 
     actions.addAll(additionalActions);
+    final List<Widget> fireIcons = List.generate(
+      daysSinceLastWorkout as int,
+      (_) => const Icon(
+        Icons.whatshot,
+        color: Colors.orange,
+      ),
+    );
+
 
     return AppBar(
-      title: Text(title),
+      title: Row( children: [
+          Text(title),
+          if (daysSinceLastWorkout > 0) ...fireIcons,
+        ],
+      ),
       actions: actions,
     );
   }
