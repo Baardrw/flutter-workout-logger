@@ -1,10 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/models/excercise.dart';
 
 import '../common/bottom_bar.dart';
-import '../models/user.dart';
 import '../services/db_service.dart';
 import '../widgets/search_widgets/search_bar.dart';
 
@@ -42,7 +40,7 @@ class _SearchPageState extends State<SearchPage> {
             bottom: const TabBar(
               tabs: [Tab(icon: Icon(Icons.person)), Tab(icon: Icon(IconData(0xe9e9, fontFamily: 'MaterialIcons')))]
             ),
-            title: const Text("Søk"),
+            title: const Text("Search"),
             backgroundColor: const Color.fromARGB(255, 51, 100, 140),
           ),
           body: TabBarView(
@@ -50,10 +48,9 @@ class _SearchPageState extends State<SearchPage> {
               Column(
                 children: [
                   SearchBar(
-                    hintText: "Søk blant brukere",
+                    hintText: "Search for other users",
                     controller: _userController,
                     dbservice: dbservice,
-                    icon: const Icon(Icons.person, color: Colors.white),
                     type: "user"
                   ),
                 ],
@@ -61,10 +58,9 @@ class _SearchPageState extends State<SearchPage> {
               Column(
                 children: [
                   SearchBar(
-                    hintText: "Søk blant grupper",
+                    hintText: "Search for groups",
                     controller: _groupController,
                     dbservice: dbservice,
-                    icon: const Icon(IconData(0xe9e9, fontFamily: 'MaterialIcons'), color: Colors.white,),
                     type: "group"
                   ),
                 ],
