@@ -12,11 +12,7 @@ import '../widgets/search_widgets/search_bar.dart';
 class SearchPage extends StatefulWidget {
   const SearchPage({
     super.key,
-    this.tile,
-    this.gestureDetectorOnTap,
   });
-  final String? tile;
-  final Function(Excercise)? gestureDetectorOnTap;
 
 
   @override

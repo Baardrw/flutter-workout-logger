@@ -25,6 +25,7 @@ class SearchBar extends StatefulWidget {
 
 //Updates the SearchScroller whenever the search button is pressed
 void updateSearchScroller(BuildContext context, Future<List<dynamic>> query, SearchBar widget) {
+  print(query);
   widget.searchView = [];
   widget.searchView.add (
   Column(
@@ -33,7 +34,9 @@ void updateSearchScroller(BuildContext context, Future<List<dynamic>> query, Sea
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             List<dynamic> searchObjects = snapshot.data as List<dynamic>;
+            print(snapshot);
             if (searchObjects.isEmpty) {
+              print(searchObjects);
               return const Text("No result");
             } else {
               return SearchScroller(searchObjects: searchObjects);
@@ -94,7 +97,7 @@ class _SearchBarState extends State<SearchBar> {
                         if (widget.type == "user") {
                           query = widget.dbservice.getUsersByUsername(widget.controller.text.toLowerCase());
                         } else if (widget.type == "group") {
-                          // TODO: declare group query in dbservice
+                          query = widget.dbservice.getGroups(widget.controller.text.toLowerCase());
                         }
                         updateSearchScroller(context, query, widget);
                       });
