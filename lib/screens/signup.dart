@@ -112,7 +112,7 @@ class SignUpState extends State<signUp> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Don't you have a user?"),
+                const Text("Already a member?"),
                 OutlinedButton(
                     onPressed: () =>
                         context.go("/login"), //TODO: Update path name

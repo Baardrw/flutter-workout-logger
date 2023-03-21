@@ -1,17 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:pu_frontend/screens/profile.dart';
+import 'package:pu_frontend/services/auth_service.dart';
 
 //The SearchScroller contains each result listed from a search
 class SearchScroller extends StatelessWidget {
   List<dynamic> searchObjects;
-  Icon icon;
   List<Widget> widgets = [];
 
   
   SearchScroller({
     super.key,
     required this.searchObjects,
-    required this.icon
     });
 
   @override
@@ -19,23 +20,32 @@ class SearchScroller extends StatelessWidget {
     
     //Iterates through each user/group and makes a ListTile-widget representing the search result
     for (var searchObject in searchObjects) {
-      String name;
-      if (searchObject.name == null) {
-        name = "";
-      } else {
-        name = searchObject.name!;
+      if (searchObject.uid != Provider.of<AuthService>(context).uid) {
+        String name;
+        if (searchObject.name == null) {
+          name = "";
+        } else {
+          name = searchObject.name!;
+        }
+        widgets.add(
+          GestureDetector(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: ListTile(
+                title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                leading: CircleAvatar(backgroundImage: NetworkImage(searchObject.profilePicture)),
+                tileColor: const Color.fromARGB(255, 51, 100, 140),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage(userUid: searchObject.uid)));
+            },
+          )
+        );
       }
-      widgets.add(
-        Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: ListTile(
-            title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-            leading: icon,
-            tileColor: const Color.fromARGB(255, 51, 100, 140),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        )
-      );
     }
     
     //Representing all the ListTiles from the search result

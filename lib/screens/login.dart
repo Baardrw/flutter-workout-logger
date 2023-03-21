@@ -96,7 +96,7 @@ class LoginState extends State<LoginPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Don't you have a user?"),
+            const Text("No user?"),
             OutlinedButton(
                 onPressed: () => context.go("/signup"), //Update path
                 style: OutlinedButton.styleFrom(
