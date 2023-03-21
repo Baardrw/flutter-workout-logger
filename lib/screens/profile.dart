@@ -27,10 +27,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final myUid = Provider.of<AuthService>(context).uid;
-    if (userUid != myUid && userUid != null) {
+    if (widget.userUid != myUid && widget.userUid != null) {
       bottomBar = BottomBar(3);
     }
-
 
     return FutureBuilder(
         builder: (context, snapshot) {
