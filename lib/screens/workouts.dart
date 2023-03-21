@@ -24,7 +24,7 @@ class Workouts extends StatelessWidget {
                     Tab(icon: Icon(Icons.directions_run_rounded)),
                   ],
                 ),
-                title: const Text('Trening'),
+                title: const Text('Workouts'),
                 backgroundColor: const Color.fromARGB(255, 51, 100, 140)),
             body: const TabBarView(
               children: [

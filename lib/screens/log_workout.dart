@@ -68,7 +68,7 @@ class LogWorkoutScreen extends StatelessWidget {
           GetSessionInfo(sessionInstance: sessionInstance!),
           const SizedBox(height: 20),
           const Text(
-            'Øvelser',
+            'Exercises',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.bold,
@@ -293,7 +293,7 @@ class _LogCardState extends State<LogCard> {
             ),
             Text(
               excercise.description.isEmpty
-                  ? 'Ingen beskrivelse'
+                  ? 'No description'
                   : excercise.description,
             ),
             const SizedBox(
@@ -320,7 +320,7 @@ class _LogCardState extends State<LogCard> {
                 onPressed: () {
                   addSet(repetition);
                 },
-                child: const Text('Legg til Sett'),
+                child: const Text('Add set'),
               ),
             ),
           ]),
@@ -338,7 +338,7 @@ class _LogCardState extends State<LogCard> {
 
     if (!repetition.isDone) {
       SnackBar snackBar = const SnackBar(
-        content: Text('Du må fullføre forrige sett'),
+        content: Text('You have to complete the previous set'),
         duration: Duration(seconds: 5),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -535,7 +535,7 @@ class _RepetitionState extends State<Repetition> {
                     if (widget.repsController.text.isEmpty ||
                         widget.weightController.text.isEmpty && !isDone) {
                       SnackBar snackBar = const SnackBar(
-                        content: Text('Du må fylle inn både vekt og reps'),
+                        content: Text('Please fill in both reps and weights'),
                         duration: Duration(seconds: 5),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);

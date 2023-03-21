@@ -16,7 +16,7 @@ class LoggedWorkout extends StatelessWidget {
         type: ExcerciseType.strength,
         bodyPart: BodyPart.chest,
         name: 'Pushups',
-        description: 'Dytt henda mot gulvet');
+        description: 'Push against the ground with your arms while keeping the core and legs engaged.');
     Repetition rep1 = Repetition();
     Repetition rep2 = Repetition();
     Repetition rep3 = Repetition();
@@ -38,7 +38,7 @@ class LoggedWorkout extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    'Beskrivelse av økten / tittel',
+                    'Description of the session / title',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -47,13 +47,13 @@ class LoggedWorkout extends StatelessWidget {
                   ),
                   SizedBox(height: 12),
                   Text(
-                      'Med denne økten er det meningen at du skal\nbli komfortabel med å holde ut i den posisjonen lenge.\nStart med 3x10 pushups, ta 2 min pause, osv'),
+                      'With this session, the goal is for you to become comfortable with holding the position for a long time. Start with 3 sets of 10 pushups, take a 2-minute break, etc.'),
                 ],
               ),
             ),
             SizedBox(height: 40),
             Text(
-              'Øvelser',
+              'Exercises',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -99,7 +99,7 @@ class Excercise_log_card extends StatelessWidget {
           height: 10,
         ),
         const Text(
-          'Varierer hvordan du posisjonerer hendene dine.\nDersom du ønsker størree utfordring kan du legge en vekt på ryggen din.',
+          'Vary how you position your hands. If you want a greater challenge, you can add weight to your back.',
         ),
         SizedBox(
           height: 10,
