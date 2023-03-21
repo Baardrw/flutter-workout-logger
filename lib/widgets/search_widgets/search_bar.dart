@@ -9,7 +9,6 @@ class SearchBar extends StatefulWidget {
   final TextEditingController controller;
   List<Widget> widgets = [];
   List<Column> searchView = [];
-  Icon icon;
   DatabaseService dbservice;
   
   SearchBar({
@@ -17,7 +16,6 @@ class SearchBar extends StatefulWidget {
     required this.hintText,
     required this.controller,
     required this.type,
-    required this.icon,
     required this.dbservice
   });
   
@@ -26,7 +24,7 @@ class SearchBar extends StatefulWidget {
 }
 
 //Updates the SearchScroller whenever the search button is pressed
-void updateSearchScroller(BuildContext context, String controllerText, Future<List<dynamic>> query, SearchBar widget) {
+void updateSearchScroller(BuildContext context, Future<List<dynamic>> query, SearchBar widget) {
   widget.searchView = [];
   widget.searchView.add (
   Column(
@@ -36,9 +34,9 @@ void updateSearchScroller(BuildContext context, String controllerText, Future<Li
           if (snapshot.hasData) {
             List<dynamic> searchObjects = snapshot.data as List<dynamic>;
             if (searchObjects.isEmpty) {
-              return const Text("Ingen resultat");
+              return const Text("No result");
             } else {
-              return SearchScroller(searchObjects: searchObjects, icon: widget.icon);
+              return SearchScroller(searchObjects: searchObjects);
             }
           } else {
             return const Center(child: CircularProgressIndicator());
@@ -89,16 +87,16 @@ class _SearchBarState extends State<SearchBar> {
                 const SizedBox(width: 5),
                 Expanded(
                   flex: 1,
-                  child: ElevatedButton.icon(
+                  child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        Future<List<dynamic>> query = widget.dbservice.getUsersByUsername(widget.controller.text);
+                        Future<List<dynamic>> query = widget.dbservice.getUsersByUsername(widget.controller.text.toLowerCase());
                         if (widget.type == "user") {
-                          query = widget.dbservice.getUsersByUsername(widget.controller.text);
+                          query = widget.dbservice.getUsersByUsername(widget.controller.text.toLowerCase());
                         } else if (widget.type == "group") {
                           // TODO: declare group query in dbservice
                         }
-                        updateSearchScroller(context, widget.controller.text, query, widget);
+                        updateSearchScroller(context, query, widget);
                       });
                     },
                     style: ElevatedButton.styleFrom(
@@ -108,8 +106,7 @@ class _SearchBarState extends State<SearchBar> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0)
                         )),
-                    icon: const Icon(IconData(0xf0072, fontFamily: 'MaterialIcons')),
-                    label: const Text("Søk"),
+                    child: const Text("Search", style: TextStyle(fontSize: 17),),
                     ),
                 ),
               ],

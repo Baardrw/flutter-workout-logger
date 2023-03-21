@@ -7,6 +7,7 @@ class User {
   final String _uid;
   final String? _email;
   final String? _name;
+  String? _lowercaseName;
   String? _profilePicture;
 
   /// List of userIDs of freinds
@@ -18,6 +19,11 @@ class User {
   late List<String> _freindRequests;
 
   User(this._uid, this._email, this._name) {
+    if (name == null) {
+      _lowercaseName = "";
+    } else {
+      _lowercaseName = _name!.toLowerCase();
+    }
     _freinds = [];
     _groups = [];
     _freindRequests = [];
@@ -66,6 +72,7 @@ class User {
       'freinds': _freinds,
       'freindRequests': _freindRequests,
       'groups': _groups,
+      'lowercaseName': _lowercaseName,
       'profilePicture': _profilePicture ??
           "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg",
     };
@@ -75,6 +82,9 @@ class User {
       : _uid = json['uid'] as String,
         _email = json['email'] as String?,
         _name = json['name'] as String,
+        _lowercaseName = json['lowercaseName'] == null
+            ? json['name'].toString().toLowerCase()
+            : json['lowercaseName'] as String,
         _freinds = (json['freinds'] as List<dynamic>?)
                 ?.map((e) => e as String)
                 .toList() ??

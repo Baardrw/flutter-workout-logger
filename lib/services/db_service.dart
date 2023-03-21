@@ -48,7 +48,9 @@ class DatabaseService {
 
   Future<List<User>> getUsersByUsername(String username) {
     return _userRef
-        .where("name", isEqualTo: username)
+        .where("lowercaseName", isGreaterThanOrEqualTo: username)
+        .where("lowercaseName", isLessThan: "$usernameå")
+        .orderBy("lowercaseName")
         .get()
         .then((value) => value.docs.map((e) => e.data()).toList());
   }

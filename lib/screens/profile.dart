@@ -27,7 +27,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final myUid = Provider.of<AuthService>(context).uid;
-    print(myUid);
+    if (widget.userUid != myUid && widget.userUid != null) {
+      bottomBar = BottomBar(3);
+    }
 
     return FutureBuilder(
         builder: (context, snapshot) {
@@ -154,7 +156,7 @@ class _ProfileInfoRow extends StatelessWidget {
 
           List<ProfileInfoItem> items = [
             ProfileInfoItem("Workouts", snapshot.data!),
-            ProfileInfoItem("Freinds", user.freinds.length),
+            ProfileInfoItem("Friends", user.freinds.length),
             ProfileInfoItem("Groups", user.groups.length),
           ];
 
