@@ -47,13 +47,8 @@ class SearchScroller extends StatelessWidget {
                 tileColor: const Color.fromARGB(255, 51, 100, 140),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              leading: CircleAvatar(
-                  backgroundImage: NetworkImage(searchObject.profilePicture)),
-              tileColor: const Color.fromARGB(255, 51, 100, 140),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+
             ),
-          ),
           onTap: () {
             Navigator.push(
                 context,
