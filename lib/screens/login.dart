@@ -40,7 +40,6 @@ class LoginState extends State<LoginPage> {
         const SizedBox(
           height: 50,
         ),
-
         //Text field username input
         LoginTextfield(
           hintText: "E-mail",

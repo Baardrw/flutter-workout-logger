@@ -4,6 +4,7 @@ import 'package:pu_frontend/models/excercise.dart';
 
 import '../common/bottom_bar.dart';
 import '../services/db_service.dart';
+import '../widgets/app_bar.dart';
 import '../widgets/search_widgets/search_bar.dart';
 
 //Search page where users can search for other users and groups. Contains a TabBarView with

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/screens/profile.dart';
 import 'package:pu_frontend/services/auth_service.dart';
@@ -12,11 +13,10 @@ class SearchScroller extends StatelessWidget {
   List<dynamic> searchObjects;
   List<Widget> widgets = [];
 
-  
   SearchScroller({
     super.key,
     required this.searchObjects,
-    });
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,17 +47,24 @@ class SearchScroller extends StatelessWidget {
                 tileColor: const Color.fromARGB(255, 51, 100, 140),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
+              leading: CircleAvatar(
+                  backgroundImage: NetworkImage(searchObject.profilePicture)),
+              tileColor: const Color.fromARGB(255, 51, 100, 140),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
-            onTap: () {
-              Navigator.push(
+          ),
+          onTap: () {
+            Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfilePage(userUid: searchObject.id)));
-            },
-          )
-        );
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ProfilePage(userUid: searchObject.uid)));
+          },
+        ));
       }
     }
-    
+
     //Representing all the ListTiles from the search result
     return Padding(
       padding: const EdgeInsets.only(top: 8),

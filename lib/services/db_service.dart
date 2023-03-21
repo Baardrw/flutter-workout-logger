@@ -176,6 +176,15 @@ class DatabaseService {
             .toList());
   }
 
+  Future<List<Log>> getLogsBySessionAndExcercise(
+      String excerciseName, String uid, String sessionInstanceId) async {
+    List<Log> logs = await getLogs(excerciseName, uid);
+
+    return logs
+        .where((element) => element.sessionInstanceId == sessionInstanceId)
+        .toList();
+  }
+
   Future<Log> getWeightLiftingPersonalRecord(
       String excerciseName, String uid) async {
     return await FirebaseFirestore.instance
@@ -340,6 +349,15 @@ class DatabaseService {
     }
 
     return profileCount;
+  }
+
+  Future<int> countSessions(String uid, String sid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(sid)
+        .get()
+        .then((value) => value.docs.length);
   }
 
   Future<List<SessionInstance>> getInstancesOfSession(
