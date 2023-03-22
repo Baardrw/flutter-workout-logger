@@ -11,6 +11,8 @@ import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../models/user.dart';
+
 class TestHome extends StatefulWidget {
   const TestHome({super.key});
 
@@ -36,17 +38,11 @@ class _TestHomeState extends State<TestHome> {
         children: [
           ElevatedButton(
               onPressed: () async {
-                Log log = Log(
-                  Random.secure().nextInt(100),
-                  Random.secure().nextInt(20),
-                  DateTime.now(),
-                  'Bench Press',
-                  Random.secure().nextInt(10000),
-                  Random.secure().nextInt(180),
-                  '0',
-                );
-
-                await _dbService.addLog(log, _authService.uid);
+                User user = User("12345", "test", "bårds test user");
+                await _dbService.addUser(user);
+                User? myUser = await _dbService.getUser(_authService.uid);
+                myUser?.addFreindRequest("12345");
+                await _dbService.updateUser(myUser!);
               },
               child: Text('Add bench log')),
           ElevatedButton(

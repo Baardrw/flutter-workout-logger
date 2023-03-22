@@ -5,7 +5,7 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: "98d1d33ed129b372846e862de23a0fc365745f4d7b5e786ce667fcbbb7ac5c07"
+      sha256: "4897882604d919befd350648c7f91926a9d5de99e67b455bf0917cc2362f4bb8"
       url: "https://pub.dev"
     source: hosted
     version: "55.0.0"
@@ -29,7 +29,7 @@ packages:
     dependency: transitive
     description:
       name: analyzer
-      sha256: "881348aed9b0b425882c97732629a6a31093c8ff20fc4b3b03fb9d3d50a3a126"
+      sha256: "690e335554a8385bc9d787117d9eb52c0c03ee207a607e593de3c9d71b1cfe80"
       url: "https://pub.dev"
     source: hosted
     version: "5.7.1"
@@ -284,7 +284,7 @@ packages:
     dependency: transitive
     description:
       name: frontend_server_client
-      sha256: "408e3ca148b31c20282ad6f37ebfa6f4bdc8fede5b74bc2f08d9d92b55db3612"
+      sha256: "4f4a162323c86ffc1245765cfe138872b8f069deb42f7dbb36115fa27f31469b"
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
@@ -340,7 +340,7 @@ packages:
     dependency: transitive
     description:
       name: image_picker_android
-      sha256: "420ed22d2c9ce767ed96df723aaebfeb20ce92dfda8665cd2ba72d72a51ae669"
+      sha256: "1f5a4b38eb742422d89c1a01d9db6077c3c9496f551bc9da74649e338a2b5101"
       url: "https://pub.dev"
     source: hosted
     version: "0.8.6+1"

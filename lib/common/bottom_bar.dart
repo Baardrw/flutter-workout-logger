@@ -15,27 +15,27 @@ class BottomBar {
   final _navBarItems = [
     SalomonBottomBarItem(
       icon: const Icon(Icons.home),
-      title: const Text("Hjem"),
+      title: const Text("Home"),
       selectedColor: Colors.blue,
     ),
     SalomonBottomBarItem(
       icon: const ImageIcon(AssetImage("assets/icons8-workout-64.png")),
-      title: const Text("Øvelser"),
+      title: const Text("Excercises"),
       selectedColor: Colors.blue,
     ),
     SalomonBottomBarItem(
       icon: const Icon(Icons.calendar_today),
-      title: const Text("Trening"),
+      title: const Text("Training"),
       selectedColor: Colors.blue,
     ),
     SalomonBottomBarItem(
       icon: const Icon(Icons.search),
-      title: const Text("Søk"),
+      title: const Text("Search"),
       selectedColor: Colors.blue,
     ),
     SalomonBottomBarItem(
       icon: const Icon(Icons.person),
-      title: const Text("Profil"),
+      title: const Text("Profile"),
       selectedColor: Colors.blue,
     ),
   ];

@@ -40,6 +40,8 @@ class _ProgressCardState extends State<ProgressCard> {
     final bool excerciseIsCardio =
         widget.excercise.type == ExcerciseType.cardio;
 
+    if (widget.logs.isEmpty) return Container();
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(

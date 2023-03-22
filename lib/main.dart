@@ -11,7 +11,6 @@ import 'package:pu_frontend/screens/log_workout.dart';
 import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
 import 'package:pu_frontend/screens/excercise_progression.dart';
-import 'package:pu_frontend/screens/logged_workout.dart';
 import 'package:pu_frontend/screens/login.dart';
 import 'package:pu_frontend/screens/profile.dart';
 import 'package:pu_frontend/screens/search.dart';
@@ -84,19 +83,23 @@ GoRouter router() {
             );
           }),
       GoRoute(
-        path: '/logNew/:param1:',
+        path: '/logNew/:param1/:completed',
         name: 'logNew',
         builder: (context, state) {
           if (state.extra == null) {
+            print("session.id: ${state.params['param1']}");
+
             return LogWorkoutScreen(
               sessionID: state.params['param1'],
               sessionInstance: null,
             );
           }
           SessionInstance sessionInstance = state.extra as SessionInstance;
+          print("session.id: ${state.params['param1']}");
           return LogWorkoutScreen(
             sessionID: state.params['param1'],
             sessionInstance: sessionInstance,
+            completed: state.params['completed'] == 'f' ? false : true,
           );
         },
       ),
@@ -124,10 +127,6 @@ GoRouter router() {
                       FadeTransition(opacity: animation, child: child),
             );
           }),
-      GoRoute(
-        path: '/loggedWorkout',
-        builder: (context, state) => const LoggedWorkout(),
-      ),
     ],
   );
 }

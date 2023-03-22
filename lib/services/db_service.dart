@@ -5,6 +5,7 @@ import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/models/user.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 
+import '../models/group.dart';
 import '../models/program.dart';
 import '../models/session.dart';
 
@@ -24,11 +25,11 @@ class DatabaseService {
         toFirestore: (excercise, _) => excercise.toJson(),
       );
 
-  final _sessionRef =
-      FirebaseFirestore.instance.collection('sessions').withConverter(
-            fromFirestore: (snapshot, _) => Session.fromJson(snapshot.data()!),
-            toFirestore: (session, _) => session.toJson(),
-          );
+  final _groupRef = FirebaseFirestore.instance
+      .collection('groups')
+      .withConverter<Group>(
+          fromFirestore: (snapshot, _) => Group.fromJson(snapshot.data()!),
+          toFirestore: (group, _) => group.toMap());
 
   Future<User?> getUser(String uid) async {
     return await _userRef.doc(uid).get().then((value) => value.data());
@@ -48,6 +49,24 @@ class DatabaseService {
 
   Future<List<User>> get users {
     return _userRef
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
+  }
+
+  Future<List<User>> getUsersByUsername(String username) async {
+    return await _userRef
+        .where("lowercaseName", isGreaterThanOrEqualTo: username)
+        .where("lowercaseName", isLessThan: "$usernameå")
+        .orderBy("lowercaseName")
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
+  }
+
+  Future<List<Group>> getGroups(String groupname) async {
+    return await _groupRef
+        .where("lowercaseName", isGreaterThanOrEqualTo: groupname)
+        .where("lowercaseName", isLessThan: "$groupnameå")
+        .orderBy("lowercaseName")
         .get()
         .then((value) => value.docs.map((e) => e.data()).toList());
   }
@@ -155,6 +174,15 @@ class DatabaseService {
             .toList()
             .reversed
             .toList());
+  }
+
+  Future<List<Log>> getLogsBySessionAndExcercise(
+      String excerciseName, String uid, String sessionInstanceId) async {
+    List<Log> logs = await getLogs(excerciseName, uid);
+
+    return logs
+        .where((element) => element.sessionInstanceId == sessionInstanceId)
+        .toList();
   }
 
   Future<Log> getWeightLiftingPersonalRecord(
@@ -338,6 +366,15 @@ class DatabaseService {
     }
 
     return profileCount;
+  }
+
+  Future<int> countSessions(String uid, String sid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(sid)
+        .get()
+        .then((value) => value.docs.length);
   }
 
   Future<List<SessionInstance>> getInstancesOfSession(
