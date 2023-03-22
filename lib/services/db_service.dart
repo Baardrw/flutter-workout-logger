@@ -442,7 +442,6 @@ class DatabaseService {
   }
 
   Stream<List<SessionInstance>> getSessionFriends(String userId) {
-    print(userId);
     return FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
@@ -451,7 +450,6 @@ class DatabaseService {
         .asyncMap((userDoc) async {
       List<String> friendIds = List<String>.from(userDoc.get('freinds') ?? []);
       List<SessionInstance> sessions = [];
-      print("friendIdsLength ${friendIds.length}");
       for (String friendId in friendIds) {
         print(friendId);
         QuerySnapshot sessionsQuery = await FirebaseFirestore.instance
@@ -459,7 +457,6 @@ class DatabaseService {
             .doc(friendId)
             .collection('sessions')
             .get();
-        print("sessionsQueryDocsLength ${sessionsQuery.docs.length}");
 
         for (QueryDocumentSnapshot sessionDoc in sessionsQuery.docs) {
           QuerySnapshot instancesQuery = await FirebaseFirestore.instance
@@ -470,8 +467,6 @@ class DatabaseService {
               .collection('instances')
               .where('completed', isEqualTo: true)
               .get();
-          print("instancesQueryDocsLength ${instancesQuery.docs.length}");
-
           List<SessionInstance> completedInstances = instancesQuery.docs
               .map((doc) => SessionInstance.fromJson({
             'sessionId': sessionDoc.id,
@@ -481,14 +476,11 @@ class DatabaseService {
             'completedBy': doc.get('completedBy'),
           }))
               .toList();
-          print("completedInstancesLength ${completedInstances.length}");
           if (completedInstances.isNotEmpty) {
             sessions.addAll(completedInstances);
-            print("funker");
           }
         }
       }
-      print("sessionsLength ${sessions.length}");
       return sessions;
     });
   }
