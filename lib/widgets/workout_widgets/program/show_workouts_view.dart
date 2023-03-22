@@ -8,6 +8,7 @@ import 'package:pu_frontend/widgets/workout_widgets/workout/add_workout_pop_up.d
 import 'package:pu_frontend/widgets/workout_widgets/workout/workout_pop_up.dart';
 
 import '../../../models/session.dart';
+import 'new_workout_in_program.dart';
 
 class AddWorkoutsView extends StatefulWidget {
   const AddWorkoutsView({
@@ -50,7 +51,6 @@ class _AddWorkoutsView extends State<AddWorkoutsView> {
                           ;
                         }));
                   }
-                  ;
                   return GridView(
                     padding: const EdgeInsets.all(15.0),
                     gridDelegate:
@@ -60,7 +60,7 @@ class _AddWorkoutsView extends State<AddWorkoutsView> {
                             mainAxisSpacing: 12.0),
                     children: [
                       ...sessionCards,
-                      // const AddWorkoudButton(),
+                      const AddWorkoutButton(), // This is in new_workout_in_program.dart
                     ],
                   );
                 },
