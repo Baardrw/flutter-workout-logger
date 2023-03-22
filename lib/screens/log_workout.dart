@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/common/appstate.dart';
 import 'package:pu_frontend/services/db_service.dart';
@@ -9,17 +10,20 @@ import 'package:pu_frontend/services/db_service.dart';
 import '../services/auth_service.dart';
 import '../models/excercise.dart';
 import '../models/session.dart';
+import '../widgets/app_bar.dart';
 
 class LogWorkoutScreen extends StatelessWidget {
   LogWorkoutScreen({
     super.key,
     required this.sessionID,
     required this.sessionInstance,
+    this.completed = false,
   });
 
   final String? sessionID;
   SessionInstance? sessionInstance;
   bool oldSession = true;
+  bool completed;
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +41,15 @@ class LogWorkoutScreen extends StatelessWidget {
     }
 
     Provider.of<AppState>(context, listen: false).isOldSession = oldSession;
-
+    print("completed: $completed");
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 225, 225, 225),
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 51, 100, 140),
-          title: const Text('Loggfør økt'),
-          actions: [
+        appBar: GlobalAppBar(
+          title: completed
+              ? DateFormat('dd.MM.yyyy')
+                  .format(sessionInstance!.sessionInstanceId)
+              : 'Loggfør økt',
+          additionalActions: [
             IconButton(
               icon: const Icon(Icons.check),
               onPressed: () {
@@ -69,7 +75,7 @@ class LogWorkoutScreen extends StatelessWidget {
           GetSessionInfo(sessionInstance: sessionInstance!),
           const SizedBox(height: 20),
           const Text(
-            'Øvelser',
+            'Exercises',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.bold,
@@ -77,7 +83,8 @@ class LogWorkoutScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          GetSessionList(sessionInstance: sessionInstance!),
+          GetSessionList(
+              sessionInstance: sessionInstance!, completed: completed),
           const SizedBox(height: 15),
         ])));
   }
@@ -103,6 +110,8 @@ class GetSessionInfo extends StatelessWidget {
         date: DateTime.now(),
         description: 'Default',
         timeEstimate: 'Default');
+
+    print("sessionInstance id ${sessionInstance.sessionId}");
 
     return Container(
       child: FutureBuilder(
@@ -145,10 +154,12 @@ class GetSessionInfo extends StatelessWidget {
 /// List of exercises in the session
 class GetSessionList extends StatelessWidget {
   final SessionInstance sessionInstance;
+  final bool completed;
 
   const GetSessionList({
     super.key,
     required this.sessionInstance,
+    required this.completed,
   });
 
   @override
@@ -183,8 +194,10 @@ class GetSessionList extends StatelessWidget {
             );
 
             // Sets the apps state to inform the app that this session is in progress
-            Provider.of<AppState>(context, listen: false).sessionInstance =
-                sessionInstance;
+            if (!completed) {
+              Provider.of<AppState>(context, listen: false).sessionInstance =
+                  sessionInstance;
+            }
           }
 
           return FutureBuilder(
@@ -201,6 +214,7 @@ class GetSessionList extends StatelessWidget {
                           child: LogCard(
                             excercise: e!,
                             sessionInstance: sessionInstance,
+                            completed: completed,
                           ),
                         ))
                     .toList();
@@ -220,11 +234,13 @@ class GetSessionList extends StatelessWidget {
 class LogCard extends StatefulWidget {
   final Excercise excercise;
   final SessionInstance sessionInstance;
+  final bool completed;
 
   const LogCard({
     super.key,
     required this.excercise,
     required this.sessionInstance,
+    required this.completed,
   });
 
   @override
@@ -294,7 +310,7 @@ class _LogCardState extends State<LogCard> {
             ),
             Text(
               excercise.description.isEmpty
-                  ? 'Ingen beskrivelse'
+                  ? 'No description'
                   : excercise.description,
             ),
             const SizedBox(
@@ -307,23 +323,31 @@ class _LogCardState extends State<LogCard> {
             const SizedBox(
               height: 20,
             ),
-            Column(
-              children: [...repetitions, repetition],
-            ),
+            !widget.completed
+                ? Column(
+                    children: [...repetitions, repetition],
+                    // History of this session
+                  )
+                : History(
+                    excercise: excercise,
+                    sessionInstance: sessionInstance,
+                  ),
             const SizedBox(
               height: 20,
             ),
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: const Color.fromARGB(255, 51, 100, 140),
-                ),
-                onPressed: () {
-                  addSet(repetition);
-                },
-                child: const Text('Legg til Sett'),
-              ),
-            ),
+            widget.completed
+                ? const SizedBox()
+                : Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color.fromARGB(255, 51, 100, 140),
+                      ),
+                      onPressed: () {
+                        addSet(repetition);
+                      },
+                      child: const Text('Legg til Sett'),
+                    ),
+                  ),
           ]),
         ),
         const SizedBox(
@@ -339,7 +363,7 @@ class _LogCardState extends State<LogCard> {
 
     if (!repetition.isDone) {
       SnackBar snackBar = const SnackBar(
-        content: Text('Du må fullføre forrige sett'),
+        content: Text('You have to complete the previous set'),
         duration: Duration(seconds: 5),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -536,7 +560,7 @@ class _RepetitionState extends State<Repetition> {
                     if (widget.repsController.text.isEmpty ||
                         widget.weightController.text.isEmpty && !isDone) {
                       SnackBar snackBar = const SnackBar(
-                        content: Text('Du må fylle inn både vekt og reps'),
+                        content: Text('Please fill in both reps and weights'),
                         duration: Duration(seconds: 5),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -561,5 +585,57 @@ class _RepetitionState extends State<Repetition> {
         ],
       ),
     );
+  }
+}
+
+class History extends StatelessWidget {
+  const History({
+    super.key,
+    required this.sessionInstance,
+    required this.excercise,
+  });
+
+  final SessionInstance sessionInstance;
+  final Excercise excercise;
+
+  @override
+  Widget build(BuildContext context) {
+    DatabaseService db = Provider.of<DatabaseService>(context, listen: false);
+    String uid = Provider.of<AuthService>(context, listen: false).uid;
+
+    return FutureBuilder(
+        builder: ((context, snapshot) {
+          if (!snapshot.hasData ||
+              snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          List<Log> logs = snapshot.data as List<Log>;
+          print("logs  ${logs.length}");
+
+          List<ListTile> cards = [];
+
+          if (excercise.type == ExcerciseType.strength) {
+            cards = logs
+                .map((log) => ListTile(
+                      title: Text("${log.weight.toString()} Kg"),
+                      subtitle: Text("${log.reps.toString()} reps"),
+                    ))
+                .toList();
+          } else {
+            cards = logs
+                .map((log) => ListTile(
+                      title: Text("${log.distance.toString()} Km"),
+                      subtitle: Text("${log.duration.toString()} mins"),
+                    ))
+                .toList();
+          }
+
+          return Column(
+            children: cards,
+          );
+        }),
+        future: db.getLogsBySessionAndExcercise(
+            excercise.name, uid, sessionInstance.id));
   }
 }

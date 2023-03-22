@@ -55,6 +55,13 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
                           .displayLarge!
                           .copyWith(color: Colors.white)),
                 ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications),
+                    color: Colors.white,
+                    onPressed: () => _showNotificationDialog(context),
+                  ),
+                ],
               ),
             ];
           }),
@@ -78,6 +85,26 @@ class _ExcerciseProgressionState extends State<ExcerciseProgression> {
             },
           )),
       bottomNavigationBar: bottomBar.getBar(context),
+    );
+  }
+
+  _showNotificationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Notification'),
+          content: const Text('You have no new notification'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -14,6 +14,8 @@ import 'package:pu_frontend/widgets/homepage/friends_workout_card.dart';
 
 import '../homepage/feed.dart';
 
+import '../../models/user.dart';
+
 class TestHome extends StatefulWidget {
   const TestHome({super.key});
 

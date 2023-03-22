@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pu_frontend/models/group.dart';
 import 'package:pu_frontend/widgets/search_widgets/search_scroller.dart';
 import '../../services/db_service.dart';
 
@@ -9,36 +10,36 @@ class SearchBar extends StatefulWidget {
   final TextEditingController controller;
   List<Widget> widgets = [];
   List<Column> searchView = [];
-  Icon icon;
   DatabaseService dbservice;
-  
-  SearchBar({
-    super.key,
-    required this.hintText,
-    required this.controller,
-    required this.type,
-    required this.icon,
-    required this.dbservice
-  });
-  
+
+  SearchBar(
+      {super.key,
+      required this.hintText,
+      required this.controller,
+      required this.type,
+      required this.dbservice});
+
   @override
   State<SearchBar> createState() => _SearchBarState();
 }
 
 //Updates the SearchScroller whenever the search button is pressed
-void updateSearchScroller(BuildContext context, String controllerText, Future<List<dynamic>> query, SearchBar widget) {
+void updateSearchScroller(
+    BuildContext context, Future<List<dynamic>> query, SearchBar widget) {
+  print(query);
   widget.searchView = [];
-  widget.searchView.add (
-  Column(
+  widget.searchView.add(Column(
     children: [
       FutureBuilder(
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             List<dynamic> searchObjects = snapshot.data as List<dynamic>;
+            print(snapshot);
             if (searchObjects.isEmpty) {
-              return const Text("Ingen resultat");
+              print(searchObjects);
+              return const Text("No result");
             } else {
-              return SearchScroller(searchObjects: searchObjects, icon: widget.icon);
+              return SearchScroller(searchObjects: searchObjects);
             }
           } else {
             return const Center(child: CircularProgressIndicator());
@@ -50,12 +51,9 @@ void updateSearchScroller(BuildContext context, String controllerText, Future<Li
   ));
 }
 
-
 class _SearchBarState extends State<SearchBar> {
-
   @override
   Widget build(BuildContext context) {
-    
     return Padding(
       padding: const EdgeInsets.only(
         top: 15,
@@ -89,40 +87,45 @@ class _SearchBarState extends State<SearchBar> {
                 const SizedBox(width: 5),
                 Expanded(
                   flex: 1,
-                  child: ElevatedButton.icon(
+                  child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        Future<List<dynamic>> query = widget.dbservice.getUsersByUsername(widget.controller.text);
+                        Future<List<dynamic>> query = widget.dbservice
+                            .getUsersByUsername(
+                                widget.controller.text.toLowerCase());
                         if (widget.type == "user") {
-                          query = widget.dbservice.getUsersByUsername(widget.controller.text);
+                          query = widget.dbservice.getUsersByUsername(
+                              widget.controller.text.toLowerCase());
                         } else if (widget.type == "group") {
-                          // TODO: declare group query in dbservice
+                          query = widget.dbservice
+                              .getGroups(widget.controller.text.toLowerCase());
                         }
-                        updateSearchScroller(context, widget.controller.text, query, widget);
+                        updateSearchScroller(context, query, widget);
                       });
                     },
                     style: ElevatedButton.styleFrom(
                         maximumSize: const Size(64, 60),
-                        backgroundColor: const Color.fromARGB(255, 51, 100, 140),
+                        backgroundColor:
+                            const Color.fromARGB(255, 51, 100, 140),
                         padding: const EdgeInsets.all(20.0),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0)
-                        )),
-                    icon: const Icon(IconData(0xf0072, fontFamily: 'MaterialIcons')),
-                    label: const Text("Søk"),
+                            borderRadius: BorderRadius.circular(12.0))),
+                    child: const Text(
+                      "Search",
+                      style: TextStyle(fontSize: 17),
                     ),
+                  ),
                 ),
               ],
             ),
             //ListView dynamically updates whenever the SearchScroller-widget is updated
             Center(
               child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: widget.searchView.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return widget.searchView[index];
-                }
-              ),
+                  shrinkWrap: true,
+                  itemCount: widget.searchView.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return widget.searchView[index];
+                  }),
             )
           ],
         ),

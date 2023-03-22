@@ -19,37 +19,20 @@ class Workouts extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
                 bottom: const TabBar(
+                  indicator: UnderlineTabIndicator(),
                   tabs: [
                     Tab(icon: Icon(Icons.calendar_today)),
                     Tab(icon: Icon(Icons.directions_run_rounded)),
                   ],
                 ),
-                title: const Text('Trening'),
+                title: const Text('Workouts'),
                 backgroundColor: const Color.fromARGB(255, 51, 100, 140)),
             body: const TabBarView(
               children: [
                 ProgramsView(),
-                // Icon(Icons.construction),
                 WorkoutsView(),
               ],
             ),
-            // bottomNavigationBar: BottomNavigationBar(
-            //   items: const <BottomNavigationBarItem>[
-            //     BottomNavigationBarItem(
-            //       icon: Icon(Icons.fitness_center),
-            //       label: 'Trening',
-            //     ),
-            //     BottomNavigationBarItem(
-            //       icon: Icon(Icons.home),
-            //       label: 'Hjem',
-            //     ),
-            //     BottomNavigationBarItem(
-            //       icon: Icon(Icons.account_circle_outlined),
-            //       label: 'Profil',
-            //     )
-            //   ],
-            //   selectedItemColor: const Color.fromARGB(255, 51, 100, 140),
-            // ),
           )),
       bottomNavigationBar: bottomBar.getBar(context),
     );
