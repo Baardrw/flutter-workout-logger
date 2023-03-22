@@ -10,6 +10,7 @@ import 'package:pu_frontend/widgets/workout_widgets/workout/workout_pop_up.dart'
 import 'package:pu_frontend/widgets/workout_widgets/workout/workout_screen_button_content.dart';
 
 import '../../../common/appstate.dart';
+import '../../../services/auth_service.dart';
 import '../../../services/db_service.dart';
 
 class ShowProgramButton extends StatelessWidget {
@@ -77,7 +78,12 @@ class ProgramContent extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: GestureDetector(
                         child: WorkoutCard(e!),
-                        onTap: () {},
+                        onTap: () {
+                          SessionInstance? sessionInstance =
+                              Provider.of<AppState>(context, listen: false)
+                                  .sessionInstance;
+                          onPressedSession(sessionInstance, context, e);
+                        },
                       ),
                     ))
                 .toList();
@@ -85,14 +91,30 @@ class ProgramContent extends StatelessWidget {
                 .where((element) => element != null)
                 .map((e) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: WorkoutCard(e!),
+                      child: GestureDetector(
+                        child: WorkoutCard(e!),
+                        onTap: () {
+                          SessionInstance? sessionInstance =
+                              Provider.of<AppState>(context, listen: false)
+                                  .sessionInstance;
+                          onPressedSession(sessionInstance, context, e);
+                        },
+                      ),
                     ))
                 .toList();
             List<Widget> wednesdayCards = sessionDays['wednesday']!
                 .where((element) => element != null)
                 .map((e) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: WorkoutCard(e!),
+                      child: GestureDetector(
+                        child: WorkoutCard(e!),
+                        onTap: () {
+                          SessionInstance? sessionInstance =
+                              Provider.of<AppState>(context, listen: false)
+                                  .sessionInstance;
+                          onPressedSession(sessionInstance, context, e);
+                        },
+                      ),
                     ))
                 .toList();
 
@@ -100,21 +122,45 @@ class ProgramContent extends StatelessWidget {
                 .where((element) => element != null)
                 .map((e) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: WorkoutCard(e!),
+                      child: GestureDetector(
+                        child: WorkoutCard(e!),
+                        onTap: () {
+                          SessionInstance? sessionInstance =
+                              Provider.of<AppState>(context, listen: false)
+                                  .sessionInstance;
+                          onPressedSession(sessionInstance, context, e);
+                        },
+                      ),
                     ))
                 .toList();
             List<Widget> fridayCards = sessionDays['friday']!
                 .where((element) => element != null)
                 .map((e) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: WorkoutCard(e!),
+                      child: GestureDetector(
+                        child: WorkoutCard(e!),
+                        onTap: () {
+                          SessionInstance? sessionInstance =
+                              Provider.of<AppState>(context, listen: false)
+                                  .sessionInstance;
+                          onPressedSession(sessionInstance, context, e);
+                        },
+                      ),
                     ))
                 .toList();
             List<Widget> saturdayCards = sessionDays['saturday']!
                 .where((element) => element != null)
                 .map((e) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: WorkoutCard(e!),
+                      child: GestureDetector(
+                        child: WorkoutCard(e!),
+                        onTap: () {
+                          SessionInstance? sessionInstance =
+                              Provider.of<AppState>(context, listen: false)
+                                  .sessionInstance;
+                          onPressedSession(sessionInstance, context, e);
+                        },
+                      ),
                     ))
                 .toList();
 
@@ -122,17 +168,27 @@ class ProgramContent extends StatelessWidget {
                 .where((element) => element != null)
                 .map((e) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: WorkoutCard(e!),
+                      child: GestureDetector(
+                        child: WorkoutCard(e!),
+                        onTap: () {
+                          SessionInstance? sessionInstance =
+                              Provider.of<AppState>(context, listen: false)
+                                  .sessionInstance;
+                          onPressedSession(sessionInstance, context, e);
+                        },
+                      ),
                     ))
                 .toList();
 
             return ListView(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(10.0),
                 children: <Widget>[
                   SizedBox(height: 20),
-                  Text(
-                    program.name,
-                    style: Theme.of(context).textTheme.displayLarge,
+                  Center(
+                    child: Text(
+                      program.name,
+                      style: Theme.of(context).textTheme.displayLarge,
+                    ),
                   ),
                   SizedBox(height: 15),
                   Text('Description:'),
@@ -270,5 +326,85 @@ class ProgramContent extends StatelessWidget {
           }),
           future: program.getSessionObjects(uid)),
     );
+  }
+
+  void onPressedSession(
+      SessionInstance? sessionInstance, BuildContext context, Session session) {
+    if (sessionInstance != null) {
+      // show a dialog that allows the user to finisht the workout or delete it
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Du har allerede en økt i gang'),
+          content: const Text(
+              'Du må fullføre, fortsette eller avbryte den økten før du kan starte en ny.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Re routes the user to the workout page, allowing the user to
+                // continue the workout
+                context.pop(); // closes the dialog
+
+                context.pushNamed(
+                  'logNew',
+                  params: {'param1': session.id, 'completed': 'f'},
+                  extra: sessionInstance,
+                );
+              },
+              child: const Text('Fortsett'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Saves session as completed
+                sessionInstance.completed = true;
+
+                Provider.of<DatabaseService>(context, listen: false)
+                    .updateSessionInstance(
+                  sessionInstance,
+                  Provider.of<AuthService>(context, listen: false).uid,
+                );
+
+                Provider.of<AppState>(context, listen: false).sessionInstance =
+                    null;
+
+                context.pop(); // closes the dialog
+
+                context.pushNamed(
+                  'logNew',
+                  params: {'param1': session.id, 'completed': 'f'},
+                );
+              },
+              child: const Text('Fullfør'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Deletes sessionInstance
+                Provider.of<DatabaseService>(context, listen: false)
+                    .deleteSessionInstance(
+                  sessionInstance,
+                  Provider.of<AuthService>(context, listen: false).uid,
+                );
+
+                Provider.of<AppState>(context, listen: false).sessionInstance =
+                    null;
+
+                context.pop(); // closes the dialog
+
+                context.pushNamed(
+                  'logNew',
+                  params: {'param1': session.id, 'completed': 'f'},
+                );
+              },
+              child: const Text('Avbryt'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      context.pushNamed(
+        'logNew',
+        params: {'param1': session.id, 'completed': 'f'},
+      );
+    }
   }
 }
