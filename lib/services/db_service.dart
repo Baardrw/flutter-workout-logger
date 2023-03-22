@@ -71,6 +71,14 @@ class DatabaseService {
         .then((value) => value.docs.map((e) => e.data()).toList());
   }
 
+  Future<void> updateGroup(Group group) async {
+    return await _groupRef.doc(group.name).set(group);
+  }
+
+  Future<Group?> getGroup(String groupname) async {
+    return await _groupRef.doc(groupname).get().then((value) => value.data());
+  }
+
   Future<void> addExcercise(Excercise excercise) async {
     return await _excerciseRef.doc(excercise.name).set(excercise);
   }
@@ -247,13 +255,14 @@ class DatabaseService {
   }
 
   Future<Session> getSession(String session, String uid) async {
-    return await FirebaseFirestore.instance
+    var s = await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('sessions')
         .doc(session)
         .get()
         .then((value) => Session.fromJson(value.data()!));
+    return s;
   }
 
   Future<List<Session>> getSessions(String uid) async {
@@ -413,7 +422,7 @@ class DatabaseService {
   }
 
   Future<List<Program>> getPrograms(String uid) async {
-    return await FirebaseFirestore.instance
+    var s = await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('programs')
@@ -424,10 +433,11 @@ class DatabaseService {
             .toList()
             .reversed
             .toList());
+    return s;
   }
 
   Stream<Program> getProgramStrean(String uid) {
-    return FirebaseFirestore.instance
+    var a = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('programs')
@@ -435,5 +445,6 @@ class DatabaseService {
         .map((event) {
       return event.docs.map((e) => Program.fromJson(e.data())).toList().first;
     });
+    return a;
   }
 }
