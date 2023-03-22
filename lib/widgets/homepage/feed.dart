@@ -8,11 +8,11 @@ import 'package:pu_frontend/widgets/workout_widgets/workout/workout_screen_butto
 import 'package:pu_frontend/widgets/workout_widgets/workout/add_workout_pop_up.dart';
 import 'package:pu_frontend/widgets/workout_widgets/workout/workout_pop_up.dart';
 
-import '../../../models/session.dart';
+import '../../models/session.dart';
 import 'friends_workout_card.dart';
 
 class FriendsWorkout extends StatelessWidget {
-  const FriendsWorkout({super.key});
+  const FriendsWorkout({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,28 +23,44 @@ class FriendsWorkout extends StatelessWidget {
       backgroundColor: Color.fromARGB(255, 225, 225, 225),
       body: StreamBuilder(
         builder: (context, snapshot) {
-          return FutureBuilder(
-            builder: (context, snapshot) {
-              List<Session>? sessions = snapshot.data;
-              if (sessions == null) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              List<GestureDetector> workoutButtons = sessions
-                  .map(
-                    (e) => GestureDetector(
-                  child: ShowWorkoutButtonFriend(
-                      card: FriendsWorkoutCard(e, 'navn'), string: e.id),
-                ),
-              )
-                  .toList();
-              return ListView(
-                children: workoutButtons,
+          if (!snapshot.hasData || snapshot.data == null) {
+            print("SessionInstances snapshot is null or has no data.");
+            return const SizedBox.shrink();
+          }
+          List<SessionInstance>? sessionInstances = snapshot.data;
+          print("SessionInstances length: ${sessionInstances!.length}");
+          return ListView.builder(
+            itemCount: sessionInstances.length,
+            itemBuilder: (BuildContext context, int index) {
+              SessionInstance sessionInstance = sessionInstances[index];
+              return FutureBuilder<Session?>(
+                future: db.getAllSessionsAndCheckSession(sessionInstance.sessionId),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data == null) {
+                    print("Session snapshot is null or has no data.");
+                    return const SizedBox.shrink();
+                  }
+                  Session session = snapshot.data!;
+                  return FutureBuilder<String?>(
+                    future: db.getUsernameByUid(sessionInstance.completedBy as String),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData || snapshot.data == null) {
+                        print("Username snapshot is null or has no data.");
+                        return const SizedBox.shrink();
+                      }
+                      String username = snapshot.data!;
+                      return ShowWorkoutButtonFriend(
+                        card: FriendsWorkoutCard(session, username),
+                        string: session.id,
+                      );
+                    },
+                  );
+                },
               );
             },
-            future: db.getSessionsFriend(authService.uid),
           );
         },
-        stream: db.getSessionStreamFriends(authService.uid),
+        stream: db.getSessionFriends(authService.uid),
       ),
     );
   }
