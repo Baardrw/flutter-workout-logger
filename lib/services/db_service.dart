@@ -257,22 +257,6 @@ class DatabaseService {
     return s;
   }
 
-  Future<List<Session>> get sessions async {
-    List<Session> ses = await _sessionRef
-        .get()
-        .then((value) => value.docs.map((e) => e.data()).toList());
-
-    ses.sort((a, b) => a.name.compareTo(b.name));
-
-    return ses;
-  }
-
-  Stream<Session> get sessionStream {
-    return _sessionRef.snapshots().map((event) {
-      return event.docs.map((e) => e.data()).toList().first;
-    });
-  }
-
   Future<List<Session>> getSessions(String uid) async {
     return await FirebaseFirestore.instance
         .collection('users')
