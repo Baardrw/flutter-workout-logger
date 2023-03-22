@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pu_frontend/models/excercise.dart';
@@ -354,28 +355,37 @@ class DatabaseService {
   Future<int> getWorkoutDaysInRow(String uid) async {
     List<DateTime> workoutDates = [];
     var sessions = await _userRef.doc(uid).collection('sessions').get();
-    int consecutiveDays = 0;
     DateTime currentDate = DateTime.now();
+
+    List<DateTime> dates = [];
 
     for (var session in sessions.docs) {
       var instances = await _userRef
-        .doc(uid)
-        .collection('sessions')
-        .doc(session.id)
-        .collection('date')
-        .get();
-      
-      for (var instance in instances.docs) {
-        DateTime workoutDate = DateTime.parse(instance.data()['date']);
+          .doc(uid)
+          .collection('sessions')
+          .doc(session.id)
+          .collection('instances')
+          .get();
 
-        if (workoutDate.isAfter(currentDate.subtract(Duration(days: 1)))) {
-          consecutiveDays += 1;
-        } else {
-          break;
-        }
+      dates.addAll(instances.docs
+          .map((e) => DateTime.fromMicrosecondsSinceEpoch(
+              int.parse(e.data()['sessionInstanceId'] + "000")))
+          .toList()
+          .reversed
+          .toList());
+    }
+
+    dates.sort((a, b) => b.compareTo(a));
+
+    if (dates[0].difference(currentDate).inDays > 1) return 0;
+
+    for (int i = 0; i < dates.length; i++) {
+      if (dates[i].difference(dates[i + 1]).inDays > 1) {
+        return i + 1;
       }
     }
-    return consecutiveDays;
+
+    return dates.length;
   }
 
   Future<int> countSessions(String uid, String sid) async {

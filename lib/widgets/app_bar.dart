@@ -20,13 +20,10 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget> additionalActions;
 
-
-
   @override
   Widget build(BuildContext context) {
     final myUid = Provider.of<AuthService>(context).uid;
     final dateFormatter = DateFormat.yMd();
-
 
     final List<Widget> actions = [
       Hero(
@@ -38,26 +35,45 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     ];
     DatabaseService db = Provider.of<DatabaseService>(context);
-    final daysSinceLastWorkout = db.getWorkoutDaysInRow(myUid);
 
-    actions.addAll(additionalActions);
-    final List<Widget> fireIcons = List.generate(
-      daysSinceLastWorkout as int,
-      (_) => const Icon(
-        Icons.whatshot,
-        color: Colors.orange,
-      ),
-    );
+    return FutureBuilder(
+        builder: ((context, snapshot) {
+          if (!snapshot.hasData ||
+              snapshot.connectionState != ConnectionState.done) {
+            print("nodata");
+            return AppBar(
+              title: Row(
+                children: [
+                  Text(title),
+                ],
+              ),
+              actions: actions,
+            );
+          }
 
+          int streak = snapshot.data as int;
+          print("Days since last workout: $streak");
 
-    return AppBar(
-      title: Row( children: [
-          Text(title),
-          if (daysSinceLastWorkout > 0) ...fireIcons,
-        ],
-      ),
-      actions: actions,
-    );
+          actions.addAll(additionalActions);
+          final List<Widget> fireIcons = List.generate(
+            streak,
+            (_) => const Icon(
+              Icons.whatshot,
+              color: Colors.orange,
+            ),
+          );
+
+          return AppBar(
+            title: Row(
+              children: [
+                Text(title),
+                ...fireIcons,
+              ],
+            ),
+            actions: actions,
+          );
+        }),
+        future: db.getWorkoutDaysInRow(myUid));
   }
 
   void refresh(BuildContext context) async {
