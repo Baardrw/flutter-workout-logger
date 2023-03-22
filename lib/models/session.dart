@@ -72,6 +72,11 @@ class SessionInstance {
     this.excercises, this.completedBy,
   });
 
+  //Get date
+  String get date {
+    return sessionInstanceId.toIso8601String().substring(0, 10);
+  }
+
   SessionInstance.fromJson(Map<String, Object?> json)
       : sessionId = json['sessionId'] as String,
         excercises = (json['excercises'] as List<dynamic>?)?.map((e) => e as String).toList(),

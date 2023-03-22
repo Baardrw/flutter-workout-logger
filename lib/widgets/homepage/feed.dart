@@ -28,6 +28,8 @@ class FriendsWorkout extends StatelessWidget {
             return const SizedBox.shrink();
           }
           List<SessionInstance>? sessionInstances = snapshot.data;
+          //Sorts the list of sessionInstances by date
+          sessionInstances!.sort((a, b) => b.sessionInstanceId.compareTo(a.sessionInstanceId));
           print("SessionInstances length: ${sessionInstances!.length}");
           return ListView.builder(
             itemCount: sessionInstances.length,
