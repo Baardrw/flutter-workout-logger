@@ -51,9 +51,14 @@ class FriendsWorkout extends StatelessWidget {
                         return const SizedBox.shrink();
                       }
                       String username = snapshot.data!;
-                      return ShowWorkoutButtonFriend(
-                        card: FriendsWorkoutCard(session, username),
-                        string: session.id,
+                      return GestureDetector(
+                        onTap: () {
+                          // TODO: handle like action
+                          print("Liked session ${session.id}");
+                        },
+                        child: Ink(
+                          child: FriendsWorkoutCard(session, username),
+                        ),
                       );
                     },
                   );
@@ -63,6 +68,8 @@ class FriendsWorkout extends StatelessWidget {
           );
         },
         stream: db.getSessionFriends(authService.uid),
+
+
       ),
     );
   }
