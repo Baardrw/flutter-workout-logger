@@ -8,7 +8,6 @@ import 'package:pu_frontend/services/auth_service.dart';
 import '../models/group.dart';
 import '../models/program.dart';
 import '../models/session.dart';
-import 'package:rxdart/rxdart.dart';
 
 class DatabaseService {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -292,17 +291,6 @@ class DatabaseService {
         .map((event) {
       return event.docs.map((e) => Session.fromJson(e.data())).toList().first;
     });
-  }
-
-  Stream<Session> getSessionStreamFriends(String uid) {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get()
-        .then((doc) => doc.get('freinds'))
-        .then((friendIds) => Future.wait(friendIds.map((friendId) => getSessionStream(friendId))))
-        .asStream()
-        .flatMap((sessions) => Stream.fromIterable(sessions as Iterable<Session>));
   }
 
   Future<void> addSessionInstance(
