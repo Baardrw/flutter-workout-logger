@@ -118,7 +118,7 @@ GoRouter router() {
             return CustomTransitionPage(
               transitionDuration: Duration(milliseconds: 180),
               key: state.pageKey,
-              child: const ProfilePage(),
+              child: ProfilePage(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) =>
                       FadeTransition(opacity: animation, child: child),

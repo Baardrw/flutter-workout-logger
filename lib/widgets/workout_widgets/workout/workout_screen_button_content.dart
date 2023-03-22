@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:pu_frontend/models/session.dart';
 
 class WorkoutCard extends StatelessWidget {
+  final Session session;
+
   const WorkoutCard(
     this.session, {
     Key? key,
   }) : super(key: key);
 
-  final Session session;
-
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
       child: Card(
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),

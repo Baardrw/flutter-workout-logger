@@ -24,6 +24,12 @@ class DatabaseService {
         toFirestore: (excercise, _) => excercise.toJson(),
       );
 
+  final _sessionRef =
+      FirebaseFirestore.instance.collection('sessions').withConverter(
+            fromFirestore: (snapshot, _) => Session.fromJson(snapshot.data()!),
+            toFirestore: (session, _) => session.toJson(),
+          );
+
   Future<User?> getUser(String uid) async {
     return await _userRef.doc(uid).get().then((value) => value.data());
   }
@@ -213,13 +219,30 @@ class DatabaseService {
   }
 
   Future<Session> getSession(String session, String uid) async {
-    return await FirebaseFirestore.instance
+    var s = await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('sessions')
         .doc(session)
         .get()
         .then((value) => Session.fromJson(value.data()!));
+    return s;
+  }
+
+  Future<List<Session>> get sessions async {
+    List<Session> ses = await _sessionRef
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
+
+    ses.sort((a, b) => a.name.compareTo(b.name));
+
+    return ses;
+  }
+
+  Stream<Session> get sessionStream {
+    return _sessionRef.snapshots().map((event) {
+      return event.docs.map((e) => e.data()).toList().first;
+    });
   }
 
   Future<List<Session>> getSessions(String uid) async {
@@ -370,7 +393,7 @@ class DatabaseService {
   }
 
   Future<List<Program>> getPrograms(String uid) async {
-    return await FirebaseFirestore.instance
+    var s = await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('programs')
@@ -381,10 +404,11 @@ class DatabaseService {
             .toList()
             .reversed
             .toList());
+    return s;
   }
 
   Stream<Program> getProgramStrean(String uid) {
-    return FirebaseFirestore.instance
+    var a = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('programs')
@@ -392,5 +416,6 @@ class DatabaseService {
         .map((event) {
       return event.docs.map((e) => Program.fromJson(e.data())).toList().first;
     });
+    return a;
   }
 }
