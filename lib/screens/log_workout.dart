@@ -32,6 +32,7 @@ class LogWorkoutScreen extends StatelessWidget {
         sessionId: sessionID!,
         excercises: [],
         sessionInstanceId: DateTime.now(),
+        completedBy: Provider.of<AuthService>(context, listen: false).uid,
       );
     }
 

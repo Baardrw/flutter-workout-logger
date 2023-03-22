@@ -63,13 +63,13 @@ class SessionInstance {
   late String sessionId;
   final DateTime sessionInstanceId;
   bool completed = false;
-  String completedBy = '';
+  String? completedBy = "";
 
 
   SessionInstance({
     required this.sessionId,
     required this.sessionInstanceId,
-    this.excercises, required String completedBy,
+    this.excercises, this.completedBy,
   });
 
   SessionInstance.fromJson(Map<String, Object?> json)
