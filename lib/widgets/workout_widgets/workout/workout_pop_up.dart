@@ -17,8 +17,10 @@ import '../../excercise_progression_widgets/excercise_tile.dart';
 class ShowWorkoutButton extends StatelessWidget {
   final WorkoutCard card;
   final String string;
+  final Function(Session)? gestureDetectorOnTap;
 
   const ShowWorkoutButton({
+    this.gestureDetectorOnTap,
     required this.card,
     required this.string,
     Key? key,

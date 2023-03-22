@@ -1,22 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../../models/program.dart';
 
 class ProgramCard extends StatelessWidget {
-  final bool mon;
-  final bool tue;
-  final bool wed;
-  final bool thu;
-  final bool fri;
-  final bool sat;
-  final bool sun;
+  final Program program;
 
   const ProgramCard(
-    this.mon,
-    this.tue,
-    this.wed,
-    this.thu,
-    this.fri,
-    this.sat,
-    this.sun, {
+    this.program, {
     Key? key,
   }) : super(key: key);
 
@@ -31,9 +20,16 @@ class ProgramCard extends StatelessWidget {
           child: Column(
             children: <Widget>[
               SizedBox(height: 8),
-              WorkoutCardHeader(),
+              WorkoutCardHeader(program),
               SizedBox(height: 25),
-              WeekBar(mon, tue, wed, thu, fri, sat, sun),
+              WeekBar(
+                  program.days!['monday']!.isNotEmpty,
+                  program.days!['tuesday']!.isNotEmpty,
+                  program.days!['wednesday']!.isNotEmpty,
+                  program.days!['thursday']!.isNotEmpty,
+                  program.days!['friday']!.isNotEmpty,
+                  program.days!['saturday']!.isNotEmpty,
+                  program.days!['sunday']!.isNotEmpty),
               SizedBox(height: 8),
             ],
           ),
@@ -46,15 +42,17 @@ class ProgramCard extends StatelessWidget {
 class WorkoutCardHeader extends StatelessWidget {
   // List<bool> days;
   // WeekBar(this.days);
-  const WorkoutCardHeader();
+  const WorkoutCardHeader(this.program, {super.key});
+
+  final Program program;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [
+      children: [
         Text(
-          'Tittel',
+          program.name,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 25,
@@ -99,37 +97,37 @@ class WeekBar extends StatelessWidget {
             style: TextStyle(color: !mon ? active : inActive),
           ),
         ),
-        SizedBox(width: 11),
+        Spacer(),
         CircleAvatar(
           backgroundColor: tue ? active : inActive,
           radius: 15,
           child: Text('T', style: TextStyle(color: !tue ? active : inActive)),
         ),
-        SizedBox(width: 11),
+        Spacer(),
         CircleAvatar(
           backgroundColor: wed ? active : inActive,
           radius: 15,
           child: Text('O', style: TextStyle(color: !wed ? active : inActive)),
         ),
-        SizedBox(width: 11),
+        Spacer(),
         CircleAvatar(
           backgroundColor: thu ? active : inActive,
           radius: 15,
           child: Text('T', style: TextStyle(color: !thu ? active : inActive)),
         ),
-        SizedBox(width: 11),
+        Spacer(),
         CircleAvatar(
           backgroundColor: fri ? active : inActive,
           radius: 15,
           child: Text('F', style: TextStyle(color: !fri ? active : inActive)),
         ),
-        SizedBox(width: 11),
+        Spacer(),
         CircleAvatar(
           backgroundColor: sat ? active : inActive,
           radius: 15,
           child: Text('L', style: TextStyle(color: !sat ? active : inActive)),
         ),
-        SizedBox(width: 11),
+        Spacer(),
         CircleAvatar(
           backgroundColor: sun ? active : inActive,
           radius: 15,
