@@ -52,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
           User user = snapshot.data as User;
 
           bool areFreinds = user.freinds.contains(myUid);
-          print(areFreinds);
+          print(user.name);
 
           return Scaffold(
             appBar: GlobalAppBar(title: user.name ?? 'No name'),
@@ -419,9 +419,8 @@ class _ProfileExcerciseProgressionColumn extends StatelessWidget {
 
             return ProgressCard(excercise, logs);
           }),
-          future: Provider.of<DatabaseService>(context, listen: false).getLogs(
-              excercise.name,
-              Provider.of<AuthService>(context, listen: false).uid),
+          future: Provider.of<DatabaseService>(context, listen: false)
+              .getLogs(excercise.name, user.uid),
         ),
       );
     }
