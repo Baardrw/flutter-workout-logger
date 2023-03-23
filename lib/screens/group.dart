@@ -28,6 +28,8 @@ class _GroupPageState extends State<GroupPage> {
   
   @override
   Widget build(BuildContext context) {
+
+
     return FutureBuilder(
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -39,6 +41,7 @@ class _GroupPageState extends State<GroupPage> {
           }
 
           if (!snapshot.hasData) {
+            print("data");
             return const Scaffold(
               body: Center(
                 child: Text("No data"),
@@ -66,7 +69,10 @@ class _GroupPageState extends State<GroupPage> {
                             .headline6
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      Text(group.groupGoal),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(group.groupGoal)
+                      ),
                       widget.groupName == null
                           ? const SizedBox()
                           : Row(
@@ -122,7 +128,7 @@ _leaveGroup(BuildContext context, Group group) async {
 _joinGroup(BuildContext context, Group group) async {
   DatabaseService dbservice = DatabaseService();
   User user = await dbservice.getUser(Provider.of<AuthService>(context, listen: false).uid) as User;
-  user.joinGroup(group);
+  user.joinGroup(group, false);
   group.addMember(user.uid);
   dbservice.updateGroup(group);
   dbservice.updateUser(user);

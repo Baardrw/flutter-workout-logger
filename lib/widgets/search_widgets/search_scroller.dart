@@ -7,6 +7,7 @@ import 'package:pu_frontend/services/auth_service.dart';
 
 import '../../models/group.dart';
 import '../../models/user.dart';
+import '../../screens/group.dart';
 
 //The SearchScroller contains each result listed from a search
 class SearchScroller extends StatelessWidget {
@@ -37,9 +38,8 @@ class SearchScroller extends StatelessWidget {
         name = id;
         materialPageRoute = MaterialPageRoute(
                     builder: (context) =>
-                        ProfilePage(userUid: searchObject.name));
+                        GroupPage(groupName: searchObject.name));
       }
-      print(name + id);
 
 
       if (id != Provider.of<AuthService>(context).uid) {

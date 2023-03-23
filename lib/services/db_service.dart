@@ -78,6 +78,8 @@ class DatabaseService {
 
   Future<void> addGroup(Group group) async {
     return await _groupRef.doc(group.id).set(group);
+  }
+  
   Future<void> updateGroup(Group group) async {
     return await _groupRef.doc(group.name).set(group);
   }

@@ -66,7 +66,7 @@ class User {
   String? get email => _email;
   String? get name => _name;
   List<String> get freinds => _freinds;
-  List<dynamic> get groups => _groups;
+  List<Membership> get groups => _groups;
   String? get profilePicture => _profilePicture;
   List<String> get freindRequests => _freindRequests;
   set profilePicture(String? url) => _profilePicture = url;
