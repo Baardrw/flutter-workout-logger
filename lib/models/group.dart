@@ -21,6 +21,18 @@ class Group {
     return name;
   }
 
+  List get _groupMembers {
+    return groupMembers;
+  }
+
+  void addMember(String uid) {
+    if (!groupMembers.contains(uid)) groupMembers.add(uid);
+  }
+
+  void removeMember(String uid) {
+    if (groupMembers.contains(uid)) groupMembers.remove(uid);
+  }
+
   Map<String, Object?> toJson() {
     return {
       'name': name,

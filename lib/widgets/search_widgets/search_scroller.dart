@@ -25,12 +25,19 @@ class SearchScroller extends StatelessWidget {
     for (var searchObject in searchObjects) {
       String id = "";
       String name = "";
+      MaterialPageRoute materialPageRoute = MaterialPageRoute(
+                    builder: (context) =>
+                        ProfilePage(userUid: searchObject.uid));
+
       if (searchObject is User) {
         id = searchObject.uid;
         name = searchObject.name ?? "";
       } else if (searchObject is Group){
         id = searchObject.id;
         name = id;
+        materialPageRoute = MaterialPageRoute(
+                    builder: (context) =>
+                        ProfilePage(userUid: searchObject.name));
       }
       print(name + id);
 
@@ -52,9 +59,7 @@ class SearchScroller extends StatelessWidget {
           onTap: () {
             Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        ProfilePage(userUid: searchObject.uid)));
+                materialPageRoute);
           },
         ));
       }

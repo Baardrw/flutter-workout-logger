@@ -78,6 +78,12 @@ class DatabaseService {
 
   Future<void> addGroup(Group group) async {
     return await _groupRef.doc(group.id).set(group);
+  Future<void> updateGroup(Group group) async {
+    return await _groupRef.doc(group.name).set(group);
+  }
+
+  Future<Group?> getGroup(String groupname) async {
+    return await _groupRef.doc(groupname).get().then((value) => value.data());
   }
 
   Future<void> addExcercise(Excercise excercise) async {

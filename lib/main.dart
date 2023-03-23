@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:pu_frontend/common/appstate.dart';
 import 'package:pu_frontend/firebase_options.dart';
 import 'package:pu_frontend/models/session.dart';
+import 'package:pu_frontend/screens/group.dart';
 import 'package:pu_frontend/screens/log_workout.dart';
 import 'package:pu_frontend/screens/demohome.dart';
 import 'package:pu_frontend/common/theme.dart';
@@ -32,8 +33,12 @@ Future<void> main() async {
 /// defaults to the authwrapper page, which will redirect to the login page if the user is not logged in.
 GoRouter router() {
   return GoRouter(
-    initialLocation: '/Home',
+    initialLocation: '/group',
     routes: [
+      GoRoute(
+        path: '/group',
+        builder: (context, state) => const GroupPage(groupName: "GruPpa"),
+      ),
       GoRoute(
         path: '/',
         builder: (context, state) => const AuthWrapper(),
