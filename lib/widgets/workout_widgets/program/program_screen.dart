@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
-import 'package:pu_frontend/widgets/workout_widgets/program/program_screen_button.dart';
 
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_screen_button_content.dart';
 import 'package:pu_frontend/widgets/workout_widgets/program/program_screen_button_content.dart';
+import 'package:pu_frontend/widgets/workout_widgets/program/add_program_pop_up.dart';
+import 'package:pu_frontend/widgets/workout_widgets/workout/workout_pop_up.dart';
 import 'package:pu_frontend/widgets/workout_widgets/program/program_pop_up_content.dart';
+
+import '../../../models/program.dart';
 
 class ProgramsView extends StatelessWidget {
   const ProgramsView({super.key});
@@ -15,45 +19,80 @@ class ProgramsView extends StatelessWidget {
     DatabaseService db = Provider.of<DatabaseService>(context);
     AuthService authService = Provider.of<AuthService>(context, listen: false);
 
-    const ProgramCard pc1 =
-        ProgramCard(true, false, false, true, true, true, false);
-    const ProgramCard pc2 =
-        ProgramCard(true, false, false, false, false, false, false);
-    const ProgramCard pc3 =
-        ProgramCard(true, false, false, true, false, true, false);
-    const ProgramCard pc4 =
-        ProgramCard(true, false, false, false, false, false, true);
-    const ProgramCard pc5 =
-        ProgramCard(true, false, true, true, true, true, false);
-    const ProgramCard pc6 =
-        ProgramCard(true, false, false, true, true, true, false);
-    const String ID1 = '1';
-    const String ID2 = '2';
-    const String ID3 = '3';
-    const String ID4 = '4';
-    const String ID5 = '5';
-    const String ID6 = '6';
     return Scaffold(
-        backgroundColor: Color.fromARGB(255, 225, 225, 225),
-        body: Center(
-          child: ListView(
-            padding: const EdgeInsets.all(12.0),
-            children: const <Widget>[
-              ShowProgramButton(test: pc1, string: ID1),
-              SizedBox(height: 10),
-              ShowProgramButton(test: pc2, string: ID2),
-              SizedBox(height: 10),
-              ShowProgramButton(test: pc3, string: ID3),
-              SizedBox(height: 10),
-              ShowProgramButton(test: pc4, string: ID4),
-              SizedBox(height: 10),
-              ShowProgramButton(test: pc5, string: ID5),
-              SizedBox(height: 10),
-              ShowProgramButton(test: pc6, string: ID6),
-              SizedBox(height: 10),
-              AddProgramButton(),
-            ],
-          ),
-        ));
+      backgroundColor: Color.fromARGB(255, 225, 225, 225),
+      body: StreamBuilder(
+          builder: (context, snapshot) {
+            return FutureBuilder(
+                builder: (context, snapshot) {
+                  List<Program>? programs = snapshot.data;
+                  if (programs == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  List<GestureDetector> programButtons = programs
+                      .map(
+                        (e) => GestureDetector(
+                          onLongPress: () {
+                            // set up the buttons
+                            Widget cancelButton = TextButton(
+                              child: Text("Cancel"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            );
+                            Widget continueButton = TextButton(
+                              child: Text("Continue"),
+                              onPressed: () {
+                                db.deleteProgram(e, authService.uid);
+                                Navigator.of(context).pop();
+                              },
+                            );
+
+                            // set up the AlertDialog
+                            AlertDialog alert = AlertDialog(
+                              title: Text("Delete "),
+                              content: const Text(
+                                  "Are you sure you want to delete this workout program?"),
+                              actions: [
+                                cancelButton,
+                                continueButton,
+                              ],
+                            );
+
+                            // show the dialog
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return alert;
+                              },
+                            );
+                          },
+                          child: Column(
+                            children: [
+                              SizedBox(height: 8),
+                              ShowProgramButton(
+                                card: ProgramCard(e),
+                                string: e.id,
+                                uid: authService.uid,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList();
+
+                  return ListView(
+                    padding: const EdgeInsets.all(10.0),
+                    children: [
+                      ...programButtons,
+                      const AddProgramButton(),
+                    ],
+                  );
+                },
+                future: db.getPrograms(authService.uid));
+          },
+          stream: db.getProgramStrean(authService.uid)),
+    );
   }
 }

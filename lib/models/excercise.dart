@@ -50,7 +50,7 @@ class Log {
   final String excerciseName;
 
   /// SessionId is '0' if no session
-  final String sessionId;
+  final String sessionInstanceId;
 
   Log(
     this.weight,
@@ -59,7 +59,7 @@ class Log {
     this.excerciseName,
     this.distance,
     this.duration,
-    this.sessionId,
+    this.sessionInstanceId,
   );
 
   String get id {
@@ -75,7 +75,7 @@ class Log {
       'excerciseName': excerciseName,
       'distance': distance,
       'duration': duration,
-      'sessionId': sessionId,
+      'sessionId': sessionInstanceId,
     };
   }
 
@@ -86,7 +86,7 @@ class Log {
         excerciseName = json['excerciseName'] as String,
         distance = json['distance'] as int?,
         duration = json['duration'] as int?,
-        sessionId = json['sessionId'] as String;
+        sessionInstanceId = json['sessionId'] as String;
 }
 
 enum ExcerciseType {

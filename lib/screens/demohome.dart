@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/auth_service.dart';
@@ -6,6 +7,7 @@ import 'package:pu_frontend/widgets/test/test_homepage.dart';
 import '../models/group.dart';
 import 'package:pu_frontend/models/user.dart';
 import '../common/bottom_bar.dart';
+import '../widgets/app_bar.dart';
 
 class DemoHome extends StatelessWidget {
   const DemoHome({super.key});
@@ -14,15 +16,16 @@ class DemoHome extends StatelessWidget {
   Widget build(BuildContext context) {
     BottomBar bottomBar = BottomBar(0);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        backgroundColor: const Color.fromARGB(255, 51, 100, 140),
-        actions: [
+      appBar: GlobalAppBar(
+        title: 'Hjem',
+        additionalActions: [
           IconButton(
-            onPressed:  () => showDialog(context: context, builder: (BuildContext context) {
-              return CreateGroup();
-            }), 
-            icon: const Icon(Icons.group_add))
+            icon: const Icon(Icons.group_add),
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => const CreateGroup(),
+            ),
+          ),
         ],
       ),
       body: const Center(
@@ -45,30 +48,38 @@ class _CreateGroupState extends State<CreateGroup> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _membersController = TextEditingController();
   final TextEditingController _goalController = TextEditingController();
-  final TextEditingController _administrators= TextEditingController();
-  
+  final TextEditingController _administrators = TextEditingController();
+
   Future<void> _createGroup() async {
     final groupName = _nameController.text;
     final groupMembers = _membersController.text.split('');
     final groupGoal = _goalController.text;
     final administrators = _administrators.text.split('');
 
-    final DatabaseService _db = Provider.of<DatabaseService>(context, listen: false);
+    final DatabaseService _db =
+        Provider.of<DatabaseService>(context, listen: false);
     final AuthService auth = Provider.of<AuthService>(context, listen: false);
     String uid = auth.uid;
     administrators.add(uid);
     groupMembers.add(uid);
 
-    final group = Group(groupName, groupGoal, groupMembers, administrators);
+    final group = Group(groupName, groupMembers, administrators, groupGoal);
     await _db.addGroup(group);
-    
+
     User? user = await _db.getUser(uid);
     user!.joinGroup(group, true);
-    
+
     await _db.updateUser(user);
 
-
-
+    try {
+      final groupRef = FirebaseFirestore.instance.collection('groups');
+      final group = Group(groupName, groupMembers, administrators, groupGoal);
+      await groupRef.doc(groupName).set(group.toMap());
+      print('Group created: $group');
+      Navigator.pop(context);
+    } catch (e) {
+      print('Error creating group: $e');
+    }
   }
 
   @override
@@ -97,18 +108,16 @@ class _CreateGroupState extends State<CreateGroup> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context), 
+          onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: _createGroup, 
+          onPressed: () async {
+            await _createGroup();
+          },
           child: const Text('Create'),
         ),
       ],
     );
   }
 }
-
-
-
-

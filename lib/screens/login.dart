@@ -40,7 +40,6 @@ class LoginState extends State<LoginPage> {
         const SizedBox(
           height: 50,
         ),
-
         //Text field username input
         LoginTextfield(
           hintText: "E-mail",
@@ -96,7 +95,7 @@ class LoginState extends State<LoginPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Don't you have a user?"),
+            const Text("No user?"),
             OutlinedButton(
                 onPressed: () => context.go("/signup"), //Update path
                 style: OutlinedButton.styleFrom(

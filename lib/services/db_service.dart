@@ -1,11 +1,7 @@
-import 'dart:developer';
-import 'dart:js_util';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/models/user.dart';
 import 'package:pu_frontend/models/group.dart';
-import 'package:pu_frontend/services/auth_service.dart';
 
 import '../models/program.dart';
 import '../models/session.dart';
@@ -26,12 +22,12 @@ class DatabaseService {
         toFirestore: (excercise, _) => excercise.toJson(),
       );
 
-  final _groupRef = 
+  final _groupRef =
       FirebaseFirestore.instance.collection('groups').withConverter<Group>(
-        fromFirestore: (snapshot, _) => Group.fromJson(snapshot.data()!),
-        toFirestore: (group, _) => group.toJson(),
-    );
-  
+            fromFirestore: (snapshot, _) => Group.fromJson(snapshot.data()!),
+            toFirestore: (group, _) => group.toJson(),
+          );
+
   Future<User?> getUser(String uid) async {
     return await _userRef.doc(uid).get().then((value) => value.data());
   }
@@ -54,9 +50,20 @@ class DatabaseService {
         .then((value) => value.docs.map((e) => e.data()).toList());
   }
 
-  Future<List<User>> getUsersByUsername(String username) {
-    return _userRef
-        .where("name", isEqualTo: username)
+  Future<List<User>> getUsersByUsername(String username) async {
+    return await _userRef
+        .where("lowercaseName", isGreaterThanOrEqualTo: username)
+        .where("lowercaseName", isLessThan: "$usernameå")
+        .orderBy("lowercaseName")
+        .get()
+        .then((value) => value.docs.map((e) => e.data()).toList());
+  }
+
+  Future<List<Group>> getGroups(String groupname) async {
+    return await _groupRef
+        .where("lowercaseName", isGreaterThanOrEqualTo: groupname)
+        .where("lowercaseName", isLessThan: "$groupnameå")
+        .orderBy("lowercaseName")
         .get()
         .then((value) => value.docs.map((e) => e.data()).toList());
   }
@@ -178,6 +185,15 @@ class DatabaseService {
             .toList());
   }
 
+  Future<List<Log>> getLogsBySessionAndExcercise(
+      String excerciseName, String uid, String sessionInstanceId) async {
+    List<Log> logs = await getLogs(excerciseName, uid);
+
+    return logs
+        .where((element) => element.sessionInstanceId == sessionInstanceId)
+        .toList();
+  }
+
   Future<Log> getWeightLiftingPersonalRecord(
       String excerciseName, String uid) async {
     return await FirebaseFirestore.instance
@@ -240,13 +256,14 @@ class DatabaseService {
   }
 
   Future<Session> getSession(String session, String uid) async {
-    return await FirebaseFirestore.instance
+    var s = await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('sessions')
         .doc(session)
         .get()
         .then((value) => Session.fromJson(value.data()!));
+    return s;
   }
 
   Future<List<Session>> getSessions(String uid) async {
@@ -344,6 +361,15 @@ class DatabaseService {
     return profileCount;
   }
 
+  Future<int> countSessions(String uid, String sid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection(sid)
+        .get()
+        .then((value) => value.docs.length);
+  }
+
   Future<List<SessionInstance>> getInstancesOfSession(
       String sessionId, String uid) async {
     try {
@@ -397,7 +423,7 @@ class DatabaseService {
   }
 
   Future<List<Program>> getPrograms(String uid) async {
-    return await FirebaseFirestore.instance
+    var s = await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('programs')
@@ -408,10 +434,11 @@ class DatabaseService {
             .toList()
             .reversed
             .toList());
+    return s;
   }
 
   Stream<Program> getProgramStrean(String uid) {
-    return FirebaseFirestore.instance
+    var a = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('programs')
@@ -419,5 +446,6 @@ class DatabaseService {
         .map((event) {
       return event.docs.map((e) => Program.fromJson(e.data())).toList().first;
     });
+    return a;
   }
 }

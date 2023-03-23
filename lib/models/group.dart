@@ -1,65 +1,76 @@
 import 'package:flutter/cupertino.dart';
+import 'package:pu_frontend/models/user.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 /// Warning: class is not ready to use, only place holder
 class Group {
-  final String _name;
-  final List<String> _groupMembers;
-  final String _groupGoal;
-  final List<String> _administrators;
+  final String name;
+  final List groupMembers;
+  final List<String> administrators;
+  final String groupGoal;
+  String? lowercaseName;
+  String? profilePicture;
 
-  Group(
-    this._name, 
-    this._groupGoal,
-    this._groupMembers,
-    this._administrators
-  );
-
+  Group(this.name, this.groupMembers, this.administrators, this.groupGoal) {
+    lowercaseName = name.toLowerCase();
+    profilePicture =
+        "https://farm5.static.flickr.com/4007/4177211228_9fc2029702_z.jpg";
+  }
 
   String get id {
-    return _name;
+    return name;
   }
-  List<String> get groupmembers => _groupMembers;
-  String? get groupGoal => _groupGoal;
-  List<String> get administrators => _administrators;
 
-
-  Map<String, Object> toJson() {
+  Map<String, Object?> toJson() {
     return {
-      'name': _name,
-      'members': _groupMembers,
-      'goal': _groupGoal,
-      'administrators': _administrators
+      'name': name,
+      'members': groupMembers,
+      'goal': groupGoal,
+      'lowercaseName': lowercaseName,
+      'profilePicture': profilePicture ??
+          "https://farm5.static.flickr.com/4007/4177211228_9fc2029702_z.jpg"
     };
   }
 
   Group.fromJson(Map<String, Object?> json)
-    : _name = json['id'] as String,
-    _groupMembers = (json['groupmembers'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-          [],
-    _groupGoal = json['goal'] as String,
-    _administrators = (json['administrators'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-          [];
+      : name = json['name'] as String,
+        groupMembers = (json['members'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            [],
+        administrators = (json['administrators'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            [],
+        groupGoal = json['goal'] as String,
+        lowercaseName = json['lowercaseName'] as String,
+        profilePicture = json['profilePicture'] == null
+            ? "https://farm5.static.flickr.com/4007/4177211228_9fc2029702_z.jpg"
+            : json['profilePicture'] as String;
+
+  Map<String, Object?> toMap() {
+    return {
+      'name': name,
+      'members': groupMembers,
+      'goal': groupGoal,
+      'lowercaseName': lowercaseName,
+      'profilePicture': profilePicture
+    };
+  }
 
   @override
   String toString() {
-    return 'Group:  $_name, $_groupGoal' ;
+    return 'Group:  $name, $groupGoal';
   }
 
-  Future<List<Group?>> getMembers() async {
+  Future<List<User?>> getMembers() async {
     DatabaseService db = DatabaseService();
 
-    List<Group?> groupMembers = [];
-    for (String member in _groupMembers) {
-      groupMembers.add(await db.getMember(member));
+    List<User?> userMembers = [];
+    for (List<dynamic> uid in groupMembers) {
+      User? user = await db.getUser(uid[0]);
+      userMembers.add(user);
     }
-    
-    return groupMembers;
+    return userMembers;
   }
-
-
 }

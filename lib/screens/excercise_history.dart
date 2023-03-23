@@ -11,6 +11,7 @@ import 'package:pu_frontend/services/db_service.dart';
 import 'package:pu_frontend/widgets/excercise_progression_widgets/linechart.dart';
 import 'package:pu_frontend/widgets/single_select_toggle_bar.dart';
 
+import '../widgets/app_bar.dart';
 import '../widgets/excercise_progression_widgets/cardio_tile.dart';
 import '../widgets/excercise_progression_widgets/weight_tile.dart';
 
@@ -48,7 +49,7 @@ class _ExcerciseHistoryState extends State<ExcerciseHistory> {
         widget.excercise.type == ExcerciseType.cardio;
 
     return Scaffold(
-        appBar: AppBar(title: Text('${widget.excercise.name} History')),
+        appBar: GlobalAppBar(title: 'History'),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
