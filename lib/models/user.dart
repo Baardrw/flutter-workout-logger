@@ -146,6 +146,9 @@ class Membership implements Comparable<Membership> {
 
   Membership(this.groupName, this.isAdmin);
 
+  String get _groupName => groupName;
+  bool get _isAdmin => isAdmin;
+
   @override
   String toString() {
     return 'Membership: $groupName, $isAdmin';

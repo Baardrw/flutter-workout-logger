@@ -37,7 +37,7 @@ GoRouter router() {
     routes: [
       GoRoute(
         path: '/group',
-        builder: (context, state) => const GroupPage(groupName: "GruPpa"),
+        builder: (context, state) => const GroupPage(groupName: "testt"),
       ),
       GoRoute(
         path: '/',

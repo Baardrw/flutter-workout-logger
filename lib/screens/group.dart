@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +33,7 @@ class _GroupPageState extends State<GroupPage> {
 
 
     return FutureBuilder(
-        builder: (context, snapshot) {
+      builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Scaffold(
               body: Center(
@@ -49,71 +51,104 @@ class _GroupPageState extends State<GroupPage> {
             );
           }
 
-          Group group = snapshot.data as Group;
-          bool isMember = group.groupMembers.contains(Provider.of<AuthService>(context).uid);
+          bool isAdmin = false;
 
-          return Scaffold(
-            appBar: GlobalAppBar(title: group.name),
-            body: ListView(
-              children: [
-                const SizedBox(height: 16),
-                _TopPortion(group),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        group.name,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline6
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(group.groupGoal)
-                      ),
-                      widget.groupName == null
-                          ? const SizedBox()
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                FloatingActionButton.extended(
-                                  onPressed: () async {
-                                    if (isMember) {
-                                      await _leaveGroup(context, group);
-                                      setState(() {
-                                        isMember = false;
-                                      });
-                                    } else {
-                                      await _joinGroup(context, group);
-                                      setState(() {
-                                        isMember = true;
-                                      });
-                                    }
-                                  },
-                                  heroTag: 'Join Group',
-                                  elevation: 0,
-                                  label: isMember
-                                      ? const Text('Leave Group')
-                                      : const Text("Join Group"),
-                                  icon: isMember
-                                      ? const Icon(Icons.person_remove_alt_1)
-                                      : const Icon(Icons.person_add_alt_1),
-                                ),
-                              ],
-                            ),
-                      const SizedBox(height: 16),
-                      _ProfileInfoRow(group)
-                    ],
+          User currentUser = snapshot.data as User;
+          List<Membership> groups = currentUser.groups;
+
+          for (var group in groups) {
+            if (group.groupName == widget.groupName && group.isAdmin == true) {
+              isAdmin = true;
+            }
+          }
+
+          return FutureBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
                   ),
+                );
+              }
+
+              if (!snapshot.hasData) {
+                print("data");
+                return const Scaffold(
+                  body: Center(
+                    child: Text("No data"),
+                  ),
+                );
+              }
+
+              Group group = snapshot.data as Group;
+              bool isMember = group.groupMembers.contains(Provider.of<AuthService>(context).uid);
+
+              return Scaffold(
+                appBar: GlobalAppBar(title: group.name),
+                body: ListView(
+                  children: [
+                    const SizedBox(height: 16),
+                    _TopPortion(group),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            group.name,
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline6
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(group.groupGoal)
+                          ),
+                          widget.groupName == null
+                              ? const SizedBox()
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    FloatingActionButton.extended(
+                                      onPressed: () async {
+                                        if (isMember) {
+                                          await _leaveGroup(context, group);
+                                          setState(() {
+                                            isMember = false;
+                                          });
+                                        } else {
+                                          await _joinGroup(context, group);
+                                          setState(() {
+                                            isMember = true;
+                                          });
+                                        }
+                                      },
+                                      heroTag: 'Join Group',
+                                      elevation: 0,
+                                      label: isMember
+                                          ? const Text('Leave Group')
+                                          : const Text("Join Group"),
+                                      icon: isMember
+                                          ? const Icon(Icons.person_remove_alt_1)
+                                          : const Icon(Icons.person_add_alt_1),
+                                    ),
+                                  ],
+                                ),
+                          const SizedBox(height: 16),
+                          _GroupInfoRow(group, isAdmin)
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            bottomNavigationBar: bottomBar.getBar(context),
-          );
-        },
-        future: DatabaseService().getGroup(widget.groupName!));
+                bottomNavigationBar: bottomBar.getBar(context),
+              );
+            },
+            future: DatabaseService().getGroup(widget.groupName!));
+          },
+          future: DatabaseService().getUser(Provider.of<AuthService>(context).uid),
+        );
   }
 
 _leaveGroup(BuildContext context, Group group) async {
@@ -148,7 +183,7 @@ class _TopPortion extends StatefulWidget {
 }
 
 class _TopPortionState extends State<_TopPortion> {
-  // Basic image for users without a profile picture
+  // Basic image for groups without a group picture
   NetworkImage profilePic = NetworkImage(
       "https://farm5.static.flickr.com/4007/4177211228_9fc2029702_z.jpg");
 
@@ -234,15 +269,30 @@ class _TopPortionState extends State<_TopPortion> {
   }
 }
 
-class ProfileInfoItem {
+class GroupInfoItem {
   final String title;
   final int value;
-  const ProfileInfoItem(this.title, this.value);
+  const GroupInfoItem(this.title, this.value);
 }
 
-class _ProfileInfoRow extends StatelessWidget {
-  _ProfileInfoRow(this.group, {Key? key}) : super(key: key);
+class _GroupInfoRow extends StatefulWidget {
+  _GroupInfoRow(this.group, this.isAdmin, {Key? key}) 
+  : gm = group.groupMembers.length, 
+   super(key: key);
+
   final Group group;
+  final bool isAdmin;
+  int gm;
+
+  void decrementGm() {
+    gm--;
+  }
+
+  @override
+  State<_GroupInfoRow> createState() => _GroupInfoRowState();
+}
+
+class _GroupInfoRowState extends State<_GroupInfoRow> {
 
   @override
   Widget build(BuildContext context) {
@@ -256,7 +306,7 @@ class _ProfileInfoRow extends StatelessWidget {
           }
 
           List<ProfileInfoItem> items = [
-            ProfileInfoItem("Members", group.groupMembers.length),
+            ProfileInfoItem("Members", widget.gm),
           ];
 
           return Container(
@@ -267,7 +317,7 @@ class _ProfileInfoRow extends StatelessWidget {
               children: items
                   .map((item) => GestureDetector(
                         onTap: items.indexOf(item) == 0
-                            ? () => _showMembers(context)
+                            ? () => _showMembers(context, widget)
                             : () {},
                         child: Container(
                             decoration: BoxDecoration(
@@ -291,7 +341,7 @@ class _ProfileInfoRow extends StatelessWidget {
             ),
           );
         }),
-        future: DatabaseService().getGroup(group.name));
+        future: DatabaseService().getGroup(widget.group.name));
   }
 
   Widget _singleItem(BuildContext context, ProfileInfoItem item) => Column(
@@ -312,16 +362,17 @@ class _ProfileInfoRow extends StatelessWidget {
             style: Theme.of(context).textTheme.caption,
           )
         ],
-      );
+  );
 
-  void _showMembers(BuildContext context) async {
+  void _showMembers(BuildContext context, _GroupInfoRow gir) async {
     List<User?> members = [];
 
-    for (String memberUid in group.groupMembers) {
+    for (String memberUid in widget.group.groupMembers) {
       members.add(await Provider.of<DatabaseService>(context, listen: false)
           .getUser(memberUid));
     }
 
+    // ignore: use_build_context_synchronously
     showDialog(
       context: context,
       builder: ((context) {
@@ -335,25 +386,63 @@ class _ProfileInfoRow extends StatelessWidget {
             content: SizedBox(
               height: MediaQuery.of(context).size.height * 0.9,
               width: MediaQuery.of(context).size.width * 0.6,
-              child: ListView(
-                children: members
-                    .map((freind) => ListTile(
-                          title: Text(freind!.name ?? 'No name'),
+              child: membersList(members, widget.isAdmin, widget.group, gir)
+            ));
+      }),
+    );
+  }
+}
+
+class membersList extends StatefulWidget {
+  const membersList(this. members, this.isAdmin, this.group, this.gir, {super.key});
+  final List<User?> members;
+  final bool isAdmin;
+  final Group group;
+  final _GroupInfoRow gir;
+
+  @override
+  State<membersList> createState() => _membersListState();
+}
+
+class _membersListState extends State<membersList> {
+  _leaveGroup(BuildContext context, Group group, User member) async {
+    DatabaseService dbservice = DatabaseService();
+    member.leaveGroup(group);
+    group.removeMember(member.uid);
+    dbservice.updateGroup(group);
+    dbservice.updateUser(member);
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+                children: widget.members
+                    .map((member) => ListTile(
+                          title: Text(member!.name ?? 'No name'),
                           leading: CircleAvatar(
                             backgroundImage:
-                                NetworkImage(freind.profilePicture!),
+                                NetworkImage(member.profilePicture!),
                           ),
+                          trailing: widget.isAdmin
+                              ? ElevatedButton.icon(
+                                onPressed: () async {
+                                  await _leaveGroup(context, widget.group, member);
+                                  setState(() {
+                                    widget.members.remove(member);
+                                    widget.gir.decrementGm();
+                                  });
+                                },
+                                icon: Icon(Icons.delete_outline),
+                                label: Text(""))
+                              : const SizedBox(),
                           onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ProfilePage(
-                                        userUid: freind.uid,
+                                        userUid: member.uid,
                                       ))),
                         ))
                     .toList(),
-              ),
-            ));
-      }),
-    );
+              );
   }
 }
