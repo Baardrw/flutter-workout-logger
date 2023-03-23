@@ -17,7 +17,7 @@ class DemoHome extends StatelessWidget {
     BottomBar bottomBar = BottomBar(0);
     return Scaffold(
       appBar: GlobalAppBar(
-        title: 'Hjem',
+        title: 'Home',
         myUser: true,
         additionalActions: [
           IconButton(
