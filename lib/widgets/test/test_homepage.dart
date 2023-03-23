@@ -42,7 +42,7 @@ class _TestHomeState extends State<TestHome> {
           //Container that fills the screen
           Container(
             //Width of screen
-            height: MediaQuery.of(context).size.height * 0.8,
+            height: MediaQuery.of(context).size.height * 0.7,
             child: FriendsWorkout(),
           ),
         ],
