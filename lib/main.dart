@@ -33,7 +33,7 @@ Future<void> main() async {
 /// defaults to the authwrapper page, which will redirect to the login page if the user is not logged in.
 GoRouter router() {
   return GoRouter(
-    initialLocation: '/group',
+    initialLocation: '/',
     routes: [
       GoRoute(
         path: '/group',
