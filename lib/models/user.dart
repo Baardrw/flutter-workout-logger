@@ -1,4 +1,5 @@
 import 'package:flutter/rendering.dart';
+import 'package:pu_frontend/models/tuple.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 import 'group.dart';
@@ -11,7 +12,7 @@ class User {
   String? _lowercaseName;
   String? _profilePicture;
 
-  late List<String> _pictures;
+  late List<Tuple> _pictures;
 
   /// List of userIDs of freinds
   late List<String> _freinds;
@@ -71,7 +72,7 @@ class User {
   List<String> get freinds => _freinds;
   List<dynamic> get groups => _groups;
   String? get profilePicture => _profilePicture;
-  List<String> get picturesUrls => _pictures;
+  List<Tuple> get picturesUrls => _pictures;
   List<String> get freindRequests => _freindRequests;
   set profilePicture(String? url) => _profilePicture = url;
 
@@ -86,7 +87,7 @@ class User {
       'lowercaseName': _lowercaseName,
       'profilePicture': _profilePicture ??
           "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg",
-      'pictures': _pictures,
+      'pictures': _pictures.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -111,7 +112,7 @@ class User {
             [],
         _profilePicture = json['profilePicture'] as String,
         _pictures = (json['pictures'] as List<dynamic>?)
-                ?.map((e) => e as String)
+                ?.map((e) => Tuple.fromJson(e as Map<String, Object?>))
                 .toList() ??
             [];
 
@@ -136,11 +137,11 @@ class User {
   }
 
   void addPicture(String url) {
-    _pictures.add(url);
+    _pictures.add(Tuple(url, DateTime.now()));
   }
 
   void removePicture(String url) {
-    _pictures.remove(url);
+    _pictures.removeWhere((element) => element.string == url);
   }
 }
 

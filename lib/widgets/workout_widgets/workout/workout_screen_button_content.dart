@@ -16,8 +16,8 @@ class WorkoutCard extends StatelessWidget {
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
         child: Container(
-          width: 180,
-          height: 180,
+          width: 200,
+          height: 200,
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -41,10 +41,13 @@ class WorkoutCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Icon(
-                    Icons.bookmark_rounded,
-                    color: Colors.blueAccent,
-                    size: 35,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: const Icon(
+                      Icons.bookmark_rounded,
+                      color: Colors.blueAccent,
+                      size: 35,
+                    ),
                   )
                 ],
               ),

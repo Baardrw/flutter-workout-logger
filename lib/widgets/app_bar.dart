@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
+import 'package:pu_frontend/services/storage_service.dart';
 
 import '../models/user.dart';
 
@@ -21,13 +22,13 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> actions = [
-      Hero(
-        tag: 'notification',
-        child: IconButton(
-          icon: const Icon(Icons.notifications),
-          onPressed: () async => await _showNotificationDialog(context),
-        ),
+      IconButton(
+        icon: const Icon(Icons.notifications),
+        onPressed: () async => await _showNotificationDialog(context),
       ),
+      IconButton(
+          onPressed: () async => await _addImage(context),
+          icon: const Icon(Icons.add_a_photo_sharp))
     ];
 
     actions.addAll(additionalActions);
@@ -74,6 +75,25 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
         );
       },
     );
+  }
+
+  _addImage(BuildContext context) async {
+    StorageService ss = StorageService();
+    String? url = await ss.showPicker(context);
+
+    if (url == null) {
+      SnackBar s = const SnackBar(content: Text('Problem uploading image'));
+      ScaffoldMessenger.of(context).showSnackBar(s);
+      return;
+    }
+
+    User? myUser = await Provider.of<DatabaseService>(context, listen: false)
+        .getUser(Provider.of<AuthService>(context, listen: false).uid);
+
+    myUser!.addPicture(url);
+
+    await Provider.of<DatabaseService>(context, listen: false)
+        .updateUser(myUser);
   }
 
   @override
