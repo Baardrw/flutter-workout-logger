@@ -14,7 +14,7 @@ class User {
   /// List of userIDs of freinds
   late List<String> _freinds;
 
-  /// List of groupIDs of groups
+  /// List of groupIDs of groups [groupID, isAdmin]
   late List<dynamic> _groups;
 
   User(this._uid, this._email, this._name) {
