@@ -47,7 +47,7 @@ class LogWorkoutScreen extends StatelessWidget {
           title: completed
               ? DateFormat('dd.MM.yyyy')
                   .format(sessionInstance!.sessionInstanceId)
-              : 'Loggfør økt',
+              : 'Log session',
           additionalActions: [
             IconButton(
               icon: const Icon(Icons.check),

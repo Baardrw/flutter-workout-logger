@@ -60,7 +60,10 @@ class WorkoutCardHeader extends StatelessWidget {
         ),
         Expanded(
             child: Center(
-          child: Icon(Icons.fitness_center),
+          child: Icon(
+            Icons.fitness_center,
+            size: 30,
+          ),
         )),
         Icon(Icons.account_circle_outlined),
       ],

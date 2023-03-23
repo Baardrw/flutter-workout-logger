@@ -40,6 +40,7 @@ class AddWorkoudButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
         child: const Icon(
           Icons.add_rounded,
+          color: Colors.lightBlue,
           size: 45,
         ),
       ),
