@@ -1,3 +1,5 @@
+import 'package:flutter/rendering.dart';
+import 'package:pu_frontend/models/tuple.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 import 'group.dart';
@@ -10,11 +12,13 @@ class User {
   String? _lowercaseName;
   String? _profilePicture;
 
+  late List<Tuple> _pictures;
+
   /// List of userIDs of freinds
   late List<String> _freinds;
 
-  /// List of groupIDs of groups stored as [groupID, groupName]
-  late List<dynamic> _groups;
+  /// List of groupIDs of groups stored as
+  late List<Membership> _groups;
 
   late List<String> _freindRequests;
 
@@ -29,6 +33,7 @@ class User {
     _freindRequests = [];
     _profilePicture =
         "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg";
+    _pictures = [];
   }
 
   void addFreind(User user) {
@@ -47,20 +52,27 @@ class User {
     if (_freindRequests.contains(uid)) _freindRequests.remove(uid);
   }
 
-  void joinGroup(Group group) {
-    if (!_groups.contains(group.id)) _groups.add(group.id);
+  void joinGroup(Group group, bool isAdmin) {
+    Membership member = Membership(group.name, isAdmin);
+    Membership memberOp = Membership(group.name, !isAdmin);
+    if (!_groups.contains(member) || !_groups.contains(memberOp))
+      _groups.add(member);
   }
 
   void leaveGroup(Group group) {
-    if (_groups.contains(group.id)) _groups.remove(group.id);
+    Membership member = Membership(group.name, false);
+    if (_groups.contains(member)) _groups.remove(member);
+    member = Membership(group.name, true);
+    if (_groups.contains(member)) _groups.remove(member);
   }
 
   String get uid => _uid;
   String? get email => _email;
   String? get name => _name;
-  String? get profilePicture => _profilePicture;
   List<String> get freinds => _freinds;
-  List<dynamic> get groups => _groups;
+  List<Membership> get groups => _groups;
+  String? get profilePicture => _profilePicture;
+  List<Tuple> get picturesUrls => _pictures;
   List<String> get freindRequests => _freindRequests;
   set profilePicture(String? url) => _profilePicture = url;
 
@@ -71,10 +83,11 @@ class User {
       'name': _name,
       'freinds': _freinds,
       'freindRequests': _freindRequests,
-      'groups': _groups,
+      'groups': _groups.map((e) => e.toJson()).toList(),
       'lowercaseName': _lowercaseName,
       'profilePicture': _profilePicture ??
           "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg",
+      'pictures': _pictures.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -94,10 +107,14 @@ class User {
                 .toList() ??
             [],
         _groups = (json['groups'] as List<dynamic>?)
-                ?.map((e) => e as String)
+                ?.map((e) => Membership.fromJson(e as Map<String, Object?>))
                 .toList() ??
             [],
-        _profilePicture = json['profilePicture'] as String?;
+        _profilePicture = json['profilePicture'] as String,
+        _pictures = (json['pictures'] as List<dynamic>?)
+                ?.map((e) => Tuple.fromJson(e as Map<String, Object?>))
+                .toList() ??
+            [];
 
   @override
   String toString() {
@@ -119,16 +136,43 @@ class User {
     _profilePicture = url;
   }
 
-  // TODO : add user functionality to get groups
+  void addPicture(String url) {
+    _pictures.add(Tuple(url, DateTime.now()));
+  }
 
-  // Future<List<Group?>> getGroups() async {
-  //   DatabaseService db = DatabaseService();
+  void removePicture(String url) {
+    _pictures.removeWhere((element) => element.string == url);
+  }
+}
 
-  //   List<Group?> groups = [];
-  //   for (String group in _groups) {
-  //     groups.add(await db.getGroup(group));
-  //   }
+class Membership implements Comparable<Membership> {
+  final String groupName;
+  final bool isAdmin;
 
-  //   return groups;
-  // }
+  Membership(this.groupName, this.isAdmin);
+
+  String get _groupName => groupName;
+  bool get _isAdmin => isAdmin;
+
+  @override
+  String toString() {
+    return 'Membership: $groupName, $isAdmin';
+  }
+
+  Membership.fromJson(Map<String, Object?> json)
+      : groupName = json['groupName'] as String,
+        isAdmin = json['isAdmin'] as bool;
+
+  Map<String, Object?> toJson() {
+    return {
+      'groupName': groupName,
+      'isAdmin': isAdmin,
+    };
+  }
+
+  @override
+  int compareTo(Membership other) {
+    // TODO: implement compareTo
+    return groupName.compareTo(other.groupName);
+  }
 }

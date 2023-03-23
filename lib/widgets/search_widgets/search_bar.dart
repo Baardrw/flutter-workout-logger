@@ -84,7 +84,7 @@ class _SearchBarState extends State<SearchBar> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 5),
+                const SizedBox(width: 10),
                 Expanded(
                   flex: 1,
                   child: ElevatedButton(

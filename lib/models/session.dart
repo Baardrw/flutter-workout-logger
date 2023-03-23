@@ -1,4 +1,8 @@
+import 'dart:ffi';
+
+import 'package:intl/intl.dart';
 import 'package:pu_frontend/screens/log_workout.dart';
+import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 import 'excercise.dart';
@@ -27,7 +31,7 @@ class Session {
             .toList(),
         date = DateTime.parse(json['date'] as String);
 
-  Map<String, Object?> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'name': name,
       'description': description,
@@ -61,15 +65,16 @@ class SessionInstance {
   List<String>? excercises;
   List<Repetition>? reps;
   late String sessionId;
-  final DateTime sessionInstanceId;
+  late DateTime sessionInstanceId;
   bool completed = false;
+  String? picture;
   String? completedBy = "";
-
 
   SessionInstance({
     required this.sessionId,
     required this.sessionInstanceId,
-    this.excercises, this.completedBy,
+    this.excercises,
+    this.completedBy,
   });
 
   //Get date
@@ -77,12 +82,24 @@ class SessionInstance {
     return sessionInstanceId.toIso8601String().substring(0, 10);
   }
 
-  SessionInstance.fromJson(Map<String, Object?> json)
-      : sessionId = json['sessionId'] as String,
-        excercises = (json['excercises'] as List<dynamic>?)?.map((e) => e as String).toList(),
-        sessionInstanceId = DateTime.fromMicrosecondsSinceEpoch(int.parse('${json['sessionInstanceId'] as String}000')),
-        completed = json['completed'] as bool,
-        completedBy = json['completedBy'] as String;
+  String get FormattedDate {
+    return DateFormat('dd/MM/yyyy').format(sessionInstanceId);
+  }
+
+  SessionInstance.fromJson(Map<String, Object?> json) {
+    AuthService auth = AuthService();
+
+    sessionId = json['sessionId'] as String;
+    excercises = (json['excercises'] as List<dynamic>?)
+        ?.map((e) => e as String)
+        .toList();
+    sessionInstanceId = DateTime.fromMicrosecondsSinceEpoch(
+        int.parse(('${json['sessionInstanceId'] as String}000')));
+    completed = json['completed'] as bool;
+    picture = json['picture'] as String?;
+    completedBy =
+        json['completedBy'] != null ? json['completedBy'] as String? : auth.uid;
+  }
 
   Map<String, Object?> toJson() {
     return {
@@ -90,6 +107,7 @@ class SessionInstance {
       'excercises': excercises,
       'sessionInstanceId': id,
       'completed': completed,
+      'picture': picture,
       'completedBy': completedBy,
     };
   }
@@ -109,4 +127,3 @@ class SessionInstance {
     return excerciseList;
   }
 }
-

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:go_router/go_router.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/models/session.dart';
+import 'package:pu_frontend/models/tuple.dart';
+import 'package:pu_frontend/screens/signup.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 import 'package:pu_frontend/services/storage_service.dart';
@@ -9,6 +15,7 @@ import 'package:pu_frontend/widgets/progress_card.dart';
 
 import '../common/bottom_bar.dart';
 import '../models/excercise.dart';
+import '../models/group.dart';
 import '../models/user.dart';
 
 /// Inspired by this template https://www.fluttertemplates.dev/widgets/must_haves/profile_page
@@ -16,6 +23,7 @@ import '../models/user.dart';
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key, this.userUid}) : super(key: key);
   String? userUid;
+  int page = 0;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -23,9 +31,11 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   BottomBar bottomBar = BottomBar(4);
+  int currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
+    final AuthService _authService = Provider.of<AuthService>(context);
     final myUid = Provider.of<AuthService>(context).uid;
     if (widget.userUid != myUid && widget.userUid != null) {
       bottomBar = BottomBar(3);
@@ -50,12 +60,26 @@ class _ProfilePageState extends State<ProfilePage> {
           }
 
           User user = snapshot.data as User;
+          print(user.uid);
 
           bool areFreinds = user.freinds.contains(myUid);
-          print(areFreinds);
+          print(user.name);
 
           return Scaffold(
-            appBar: GlobalAppBar(title: user.name ?? 'No name'),
+            appBar: GlobalAppBar(
+              title: user.name ?? 'No name',
+              myUser: widget.userUid == null,
+              additionalActions: [
+                IconButton(
+                    onPressed: () {
+                      context.go("/");
+                      Future.delayed(Duration(milliseconds: 10), () async {
+                        await _authService.signOut();
+                      });
+                    },
+                    icon: Icon(Icons.exit_to_app))
+              ],
+            ),
             body: ListView(
               children: [
                 const SizedBox(height: 16),
@@ -104,9 +128,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ],
                             ),
-                      const SizedBox(height: 16),
                       _ProfileInfoRow(user),
-                      _ProfileExcerciseProgressionColumn(user),
+                      const SizedBox(height: 16),
+                      _ProfileUploads(user),
                     ],
                   ),
                 ),
@@ -139,6 +163,73 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
+class _ProfileUploads extends StatefulWidget {
+  const _ProfileUploads(this.user, {super.key});
+  final User user;
+  @override
+  State<_ProfileUploads> createState() => __ProfileUploadsState();
+}
+
+class __ProfileUploadsState extends State<_ProfileUploads> {
+  int currentPage = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onTap: () {
+                if (currentPage == 1) {
+                  setState(() {
+                    currentPage = 0;
+                  });
+                }
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.4,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.auto_graph,
+                  size: 40,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                if (currentPage == 0) {
+                  setState(() {
+                    currentPage = 1;
+                  });
+                }
+              },
+              child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: const Icon(
+                    Icons.image,
+                    size: 40,
+                  )),
+            ),
+          ],
+        ),
+        currentPage == 0
+            ? _ProfileExcerciseProgressionColumn(widget.user)
+            : _UserImages(widget.user),
+      ],
+    );
+  }
+}
+
 class _ProfileInfoRow extends StatelessWidget {
   _ProfileInfoRow(this.user, {Key? key}) : super(key: key);
   final User user;
@@ -154,8 +245,10 @@ class _ProfileInfoRow extends StatelessWidget {
             );
           }
 
+          List<Session> sessions = snapshot.data as List<Session>;
+
           List<ProfileInfoItem> items = [
-            ProfileInfoItem("Workouts", snapshot.data!),
+            ProfileInfoItem("Programs", sessions.length),
             ProfileInfoItem("Friends", user.freinds.length),
             ProfileInfoItem("Groups", user.groups.length),
           ];
@@ -169,7 +262,9 @@ class _ProfileInfoRow extends StatelessWidget {
                   .map((item) => GestureDetector(
                         onTap: items.indexOf(item) == 1
                             ? () => _showFreinds(context)
-                            : () {},
+                            : items.indexOf(item) == 0
+                                ? () => _showPrograms(context)
+                                : () => _showGroups(context),
                         child: Container(
                             decoration: BoxDecoration(
                               color: Theme.of(context).cardColor,
@@ -192,8 +287,7 @@ class _ProfileInfoRow extends StatelessWidget {
             ),
           );
         }),
-        future:
-            Provider.of<DatabaseService>(context).getSessionCount(user.uid));
+        future: Provider.of<DatabaseService>(context).getSessions(user.uid));
   }
 
   Widget _singleItem(BuildContext context, ProfileInfoItem item) => Column(
@@ -231,7 +325,7 @@ class _ProfileInfoRow extends StatelessWidget {
             elevation: 100,
             title: const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Notifications'),
+              child: Text('Friends'),
             ),
             contentPadding: const EdgeInsets.all(0),
             content: SizedBox(
@@ -258,6 +352,10 @@ class _ProfileInfoRow extends StatelessWidget {
       }),
     );
   }
+
+  void _showGroups(BuildContext context) {}
+
+  void _showPrograms(BuildContext context) {}
 }
 
 class ProfileInfoItem {
@@ -288,7 +386,8 @@ class _TopPortionState extends State<_TopPortion> {
     bool userIsMe = widget.user.uid == Provider.of<AuthService>(context).uid;
     widget.user.profilePicture != null
         ? profilePic = NetworkImage(widget.user.profilePicture!)
-        : '';
+        : profilePic = NetworkImage(
+            "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg");
 
     return Stack(
       children: [
@@ -419,13 +518,70 @@ class _ProfileExcerciseProgressionColumn extends StatelessWidget {
 
             return ProgressCard(excercise, logs);
           }),
-          future: Provider.of<DatabaseService>(context, listen: false).getLogs(
-              excercise.name,
-              Provider.of<AuthService>(context, listen: false).uid),
+          future: Provider.of<DatabaseService>(context, listen: false)
+              .getLogs(excercise.name, user.uid),
         ),
       );
     }
 
     return tiles;
+  }
+}
+
+class _UserImages extends StatelessWidget {
+  const _UserImages(this.user, {super.key});
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    print("URLS: ${user.picturesUrls}");
+
+    List<Widget> pictures = [];
+
+    user.picturesUrls.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    if (user.picturesUrls != null) {
+      for (Tuple tup in user.picturesUrls!) {
+        print("URL: $url");
+        pictures.add(_ImageCard(tup));
+      }
+    }
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 16,
+        ),
+        ...pictures,
+      ],
+    );
+  }
+}
+
+class _ImageCard extends StatelessWidget {
+  const _ImageCard(this.tup, {super.key});
+  final Tuple tup;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        elevation: 8,
+        child: Column(children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.4,
+            width: MediaQuery.of(context).size.width * 0.8,
+            margin: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(0),
+              image: DecorationImage(
+                image: NetworkImage(tup.string),
+              ),
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            DateFormat('dd/MM/yyyy').format(tup.dateTime),
+            style: Theme.of(context).textTheme.headlineLarge,
+          ),
+        ]));
   }
 }
