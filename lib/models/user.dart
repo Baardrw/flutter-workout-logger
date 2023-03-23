@@ -9,6 +9,8 @@ class User {
   final String _uid;
   final String? _email;
   final String? _name;
+  String? admin;
+  String? advertiser;
   String? _lowercaseName;
   String? _profilePicture;
 
@@ -22,7 +24,8 @@ class User {
 
   late List<String> _freindRequests;
 
-  User(this._uid, this._email, this._name) {
+  User(this._uid, this._email, this._name,
+      [this.admin = 'false', this.advertiser = 'false']) {
     if (name == null) {
       _lowercaseName = "";
     } else {
@@ -66,6 +69,40 @@ class User {
     if (_groups.contains(member)) _groups.remove(member);
   }
 
+  bool isAdmin() {
+    if (admin == 'true') {
+      return true;
+    }
+    return false;
+  }
+
+  bool isAdvertiser() {
+    if (advertiser == 'true') {
+      return true;
+    }
+    return false;
+  }
+
+  void setAdmin() {
+    DatabaseService db = DatabaseService();
+    if (isAdvertiser()) {
+      print('A user cannot be both an admin and an advertiser.');
+    } else {
+      admin = 'true';
+      db.updateUser(this);
+    }
+  }
+
+  void setAdvertiser() {
+    DatabaseService db = DatabaseService();
+    if (isAdmin()) {
+      print('A user cannot be both an advertiser and an admin.');
+    } else {
+      advertiser = 'true';
+      db.updateUser(this);
+    }
+  }
+
   String get uid => _uid;
   String? get email => _email;
   String? get name => _name;
@@ -81,6 +118,8 @@ class User {
       'uid': _uid,
       'email': _email,
       'name': _name,
+      'admin': admin,
+      'advertiser': advertiser,
       'freinds': _freinds,
       'freindRequests': _freindRequests,
       'groups': _groups.map((e) => e.toJson()).toList(),
@@ -94,7 +133,9 @@ class User {
   User.fromJson(Map<String, Object?> json)
       : _uid = json['uid'] as String,
         _email = json['email'] as String?,
-        _name = json['name'] as String,
+        _name = json['name'] as String?,
+        admin = json['admin'] as String?,
+        advertiser = json['advertiser'] as String?,
         _lowercaseName = json['lowercaseName'] == null
             ? json['name'].toString().toLowerCase()
             : json['lowercaseName'] as String,
