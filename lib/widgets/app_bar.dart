@@ -2,12 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 import 'package:pu_frontend/services/storage_service.dart';
+import 'package:pu_frontend/widgets/test/test_homepage.dart';
 
 import '../models/user.dart';
+import '../models/session.dart';
 
 class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
   const GlobalAppBar({
@@ -23,6 +26,9 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final myUid = Provider.of<AuthService>(context).uid;
+    final dateFormatter = DateFormat.yMd();
+
     final List<Widget> actions = [
       IconButton(
         icon: const Icon(Icons.notifications),
@@ -34,13 +40,43 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
               icon: const Icon(Icons.add_a_photo_sharp))
           : Container()
     ];
+    DatabaseService db = Provider.of<DatabaseService>(context);
 
-    actions.addAll(additionalActions);
+    return FutureBuilder(
+        builder: ((context, snapshot) {
+          if (!snapshot.hasData ||
+              snapshot.connectionState != ConnectionState.done) {
+            print("nodata");
+            return AppBar(
+              title: Row(
+                children: [
+                  Text(title),
+                ],
+              ),
+              actions: actions,
+            );
+          }
 
-    return AppBar(
-      title: Text(title),
-      actions: actions,
-    );
+          int streak = snapshot.data as int;
+          print("Days since last workout: $streak");
+
+          actions.addAll(additionalActions);
+          final List<Widget> fireIcons = [
+            Icon(Icons.whatshot, color: Colors.orange),
+            Text("x $streak")
+          ];
+
+          return AppBar(
+            title: Row(
+              children: [
+                Text(title),
+                ...fireIcons,
+              ],
+            ),
+            actions: actions,
+          );
+        }),
+        future: db.getWorkoutDaysInRow(myUid));
   }
 
   void refresh(BuildContext context) async {

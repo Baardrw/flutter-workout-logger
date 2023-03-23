@@ -407,6 +407,45 @@ class DatabaseService {
     return profileCount;
   }
 
+  Future<int> getWorkoutDaysInRow(String uid) async {
+    List<DateTime> workoutDates = [];
+    var sessions = await _userRef.doc(uid).collection('sessions').get();
+    DateTime currentDate = DateTime.now();
+    int count = 0;
+
+    List<DateTime> dates = [];
+
+    for (var session in sessions.docs) {
+      var instances = await _userRef
+          .doc(uid)
+          .collection('sessions')
+          .doc(session.id)
+          .collection('instances')
+          .get();
+
+      dates.addAll(instances.docs
+          .map((e) => DateTime.fromMicrosecondsSinceEpoch(
+              int.parse(e.data()['sessionInstanceId'] + "000")))
+          .toList()
+          .reversed
+          .toList());
+    }
+
+    dates.sort((a, b) => b.compareTo(a));
+
+    if (dates[0].difference(currentDate).inDays > 1) return 0;
+
+    for (int i = 0; i < dates.length; i++) {
+      if (dates[i].difference(currentDate).inDays == 0) {
+        if (dates[i].day != dates[i + 1].day) count++;
+      } else {
+        break;
+      }
+    }
+
+    return count;
+  }
+
   Future<int> countSessions(String uid, String sid) async {
     return await FirebaseFirestore.instance
         .collection('users')
