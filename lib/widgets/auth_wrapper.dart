@@ -58,7 +58,7 @@ class AuthWrapper extends StatelessWidget {
                 ),
               );
             },
-            future: db.getUser(user!.uid),
+            future: db.getUser(user.uid),
           );
         });
   }

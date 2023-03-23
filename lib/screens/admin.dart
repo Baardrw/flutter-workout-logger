@@ -57,9 +57,14 @@ class _Admin extends State<Admin> {
         child: Center(
             child: Column(
           children: [
-            Text('Add new user'),
+            Center(
+              child: Text(
+                'Add new user',
+                style: Theme.of(context).textTheme.displayLarge,
+              ),
+            ),
             SizedBox(
-              height: 15,
+              height: 20,
             ),
             TextField(
               controller: _nameController,
@@ -139,32 +144,42 @@ class _Admin extends State<Admin> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: IconButton(
-                  onPressed: () async {
-                    User? user = await _authService
-                        .signUp(_emailController.text, _passwordController.text,
-                            _nameController.text)
-                        .onError((error, stackTrace) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Sorry, invalid email or password.'),
-                        duration: Duration(seconds: 3),
-                      ));
-                    });
-                    if (isCheckedAdmin) {
-                      user?.setAdmin();
-                    }
-                    if (isCheckedAdvertiser) {
-                      user?.setAdvertiser();
-                    }
-                    _emailController.clear();
-                    _passwordController.clear();
-                    _nameController.clear();
-                    isCheckedAdmin = false;
-                    isCheckedAdvertiser = false;
-                    print('user: $user');
-                  },
-                  icon: Icon(Icons.check)),
+              padding: const EdgeInsets.all(4.0),
+              child: Card(
+                color: Color.fromARGB(255, 223, 228, 231),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0)),
+                child: IconButton(
+                    onPressed: () async {
+                      User? user = await _authService
+                          .signUp(_emailController.text,
+                              _passwordController.text, _nameController.text)
+                          .onError((error, stackTrace) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text('Sorry, invalid email or password.'),
+                          duration: Duration(seconds: 3),
+                        ));
+                      });
+                      if (isCheckedAdmin) {
+                        user?.setAdmin();
+                      }
+                      if (isCheckedAdvertiser) {
+                        user?.setAdvertiser();
+                      }
+                      _emailController.clear();
+                      _passwordController.clear();
+                      _nameController.clear();
+                      isCheckedAdmin = false;
+                      isCheckedAdvertiser = false;
+                      print('user: $user');
+                    },
+                    icon: Icon(
+                      Icons.check,
+                      size: 30,
+                      color: Colors.green,
+                    )),
+              ),
             ),
             // Expanded(child: UsersList()) // Must be merged to work
           ],
