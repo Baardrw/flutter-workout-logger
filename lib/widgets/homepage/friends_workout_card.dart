@@ -4,13 +4,14 @@ import 'package:pu_frontend/models/session.dart';
 class FriendsWorkoutCard extends StatelessWidget {
   const FriendsWorkoutCard(
     this.session,
-    this.string, {
+    this.string,
+    this.sessionInstance, {
     Key? key,
   }) : super(key: key);
 
-
   final Session session;
   final String string;
+  final SessionInstance sessionInstance;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +76,6 @@ class FriendsWorkoutCard extends StatelessWidget {
               bottom: 10,
               right: 10,
               child: Text(
-
                 string,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,

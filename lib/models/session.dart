@@ -1,4 +1,7 @@
+import 'dart:ffi';
+
 import 'package:pu_frontend/screens/log_workout.dart';
+import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 import 'excercise.dart';
@@ -61,7 +64,7 @@ class SessionInstance {
   List<String>? excercises;
   List<Repetition>? reps;
   late String sessionId;
-  final DateTime sessionInstanceId;
+  late DateTime sessionInstanceId;
   bool completed = false;
   String? picture;
   String? completedBy = "";
@@ -78,17 +81,20 @@ class SessionInstance {
     return sessionInstanceId.toIso8601String().substring(0, 10);
   }
 
-  SessionInstance.fromJson(Map<String, Object?> json)
-      : sessionId = json['sessionId'] as String,
-        excercises = (json['excercises'] as List<dynamic>?)
-            ?.map((e) => e as String)
-            .toList(),
-        sessionInstanceId = DateTime.fromMicrosecondsSinceEpoch(
-            int.parse(('${json['sessionInstanceId'] as String}000'))),
-        completed = json['completed'] as bool,
-        picture = json['picture'] as String?,
-        completedBy =
-            json['completedBy'] == null ? "0" : json['completedBy'] as String?;
+  SessionInstance.fromJson(Map<String, Object?> json) {
+    AuthService auth = AuthService();
+
+    sessionId = json['sessionId'] as String;
+    excercises = (json['excercises'] as List<dynamic>?)
+        ?.map((e) => e as String)
+        .toList();
+    sessionInstanceId = DateTime.fromMicrosecondsSinceEpoch(
+        int.parse(('${json['sessionInstanceId'] as String}000')));
+    completed = json['completed'] as bool;
+    picture = json['picture'] as String?;
+    completedBy =
+        json['completedBy'] != null ? json['completedBy'] as String? : auth.uid;
+  }
 
   Map<String, Object?> toJson() {
     return {

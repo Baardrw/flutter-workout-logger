@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/common/bottom_bar.dart';
 import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
@@ -35,23 +36,14 @@ class _TestHomeState extends State<TestHome> {
         description: 'beskrivelse');
 
     return Container(
-
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           //Container that fills the screen
           Container(
             //Width of screen
-            height: 600,
+            height: MediaQuery.of(context).size.height * 0.8,
             child: FriendsWorkout(),
-          ),
-
-          ElevatedButton(
-            onPressed: () async {
-              await _authService.signOut();
-              context.go("/");
-            },
-            child: Text('logout'),
           ),
         ],
       ),

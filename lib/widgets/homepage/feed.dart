@@ -60,7 +60,8 @@ class FriendsWorkout extends StatelessWidget {
                       }
                       String username = snapshot.data!;
                       return ShowWorkoutButtonFriend(
-                        card: FriendsWorkoutCard(session, username),
+                        card: FriendsWorkoutCard(
+                            session, username, sessionInstance),
                         string: session.id,
                       );
                     },

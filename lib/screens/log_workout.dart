@@ -125,6 +125,7 @@ class _GetSessionInfoState extends State<GetSessionInfo> {
   Widget build(BuildContext context) {
     DatabaseService db = Provider.of<DatabaseService>(context, listen: false);
     AuthService authService = Provider.of<AuthService>(context, listen: false);
+    String uid = authService.uid;
 
     String ID = '';
     Session session = Session(
@@ -141,7 +142,7 @@ class _GetSessionInfoState extends State<GetSessionInfo> {
             while (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-
+            print("session id: ${widget.sessionInstance.completedBy}");
             session = snapshot.data as Session;
             ID = session.id;
             return Container(
@@ -164,17 +165,25 @@ class _GetSessionInfoState extends State<GetSessionInfo> {
                   const SizedBox(height: 12),
                   Text(session.description),
                   const SizedBox(height: 12),
-                  widget.url != null
-                      ? Image.network(widget.url!)
-                      : IconButton(
-                          icon: Icon(Icons.add_a_photo),
-                          onPressed: () async => await _addImage(context)),
+                  widget.sessionInstance.completedBy! == uid ||
+                          widget.sessionInstance.completedBy! == "0"
+                      ? widget.url != null
+                          ? Image.network(widget.url!)
+                          : IconButton(
+                              icon: Icon(Icons.add_a_photo),
+                              onPressed: () async => await _addImage(context))
+                      : widget.url != null
+                          ? Image.network(widget.url!)
+                          : Container(),
                 ],
               ),
             );
           },
-          future: db.getSession(widget.sessionInstance.sessionId,
-              Provider.of<AuthService>(context, listen: false).uid)),
+          future: (widget.sessionInstance.completedBy! == uid ||
+                  widget.sessionInstance.completedBy! == "0")
+              ? db.getSession(widget.sessionInstance.sessionId, uid)
+              : db.getSession(widget.sessionInstance.sessionId,
+                  widget.sessionInstance.completedBy!)),
     );
   }
 
@@ -279,8 +288,13 @@ class GetSessionList extends StatelessWidget {
               }),
               future: session.getExcerciseObjects());
         },
-        future: db.getSession(sessionInstance.sessionId,
-            Provider.of<AuthService>(context, listen: false).uid),
+        future: (sessionInstance.completedBy! ==
+                    Provider.of<AuthService>(context, listen: false).uid ||
+                sessionInstance.completedBy! == "0")
+            ? db.getSession(sessionInstance.sessionId,
+                Provider.of<AuthService>(context, listen: false).uid)
+            : db.getSession(
+                sessionInstance.sessionId, sessionInstance.completedBy!),
       ),
     );
   }
@@ -690,7 +704,12 @@ class History extends StatelessWidget {
             children: cards,
           );
         }),
-        future: db.getLogsBySessionAndExcercise(
-            excercise.name, uid, sessionInstance.id));
+        future: (sessionInstance.completedBy! ==
+                    Provider.of<AuthService>(context, listen: false).uid ||
+                sessionInstance.completedBy! == "0")
+            ? db.getLogsBySessionAndExcercise(
+                excercise.name, uid, sessionInstance.id)
+            : db.getLogsBySessionAndExcercise(excercise.name,
+                sessionInstance.completedBy!, sessionInstance.id));
   }
 }
