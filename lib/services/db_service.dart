@@ -53,6 +53,31 @@ class DatabaseService {
         .then((value) => value.docs.map((e) => e.data()).toList());
   }
 
+  Future<List<User>> getUsers() async {
+    try {
+      List<User> u = await FirebaseFirestore.instance
+          .collection('users')
+          .get()
+          .then((value) =>
+              value.docs.map((e) => User.fromJson(e.data())).toList());
+      print(u);
+      return u;
+    } catch (e) {
+      print(e);
+      return await FirebaseFirestore.instance.collection('users').get().then(
+          (value) => value.docs.map((e) => User.fromJson(e.data())).toList());
+    }
+  }
+
+  Stream<List<User>> getUsersStream() {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .snapshots()
+        .map((event) {
+      return event.docs.map((e) => User.fromJson(e.data())).toList();
+    });
+  }
+
   Future<List<User>> getUsersByUsername(String username) async {
     return await _userRef
         .where("lowercaseName", isGreaterThanOrEqualTo: username)

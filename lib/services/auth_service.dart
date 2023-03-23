@@ -43,8 +43,11 @@ class AuthService {
       email: email,
       password: password,
     );
-
-    _dbService.addUser(User(credential.user!.uid, email, name));
+    User u = User(credential.user!.uid, email, name);
+    print('\n');
+    print(u);
+    print('\n');
+    _dbService.addUser(u);
 
     return _getUserFromFirebase(credential.user);
   }
