@@ -672,11 +672,6 @@ class DatabaseService {
         .then((value) => Session.fromJson(value.data() ?? {}));
   }
 
-  Future<List<User>> getUsers() async {
-    return await FirebaseFirestore.instance.collection('users').get().then(
-        (value) => value.docs.map((e) => User.fromJson(e.data())).toList());
-  }
-
   Future<String?> getUsernameByUid(String uid) async {
     return await _userRef.doc(uid).get().then((value) => value.data()?.name);
   }

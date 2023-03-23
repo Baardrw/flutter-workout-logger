@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/screens/blank.dart';
 import 'package:pu_frontend/screens/login.dart';
 import 'package:pu_frontend/screens/workouts.dart';
 
@@ -32,17 +33,23 @@ class AuthWrapper extends StatelessWidget {
             );
           }
 
-          final User? user = snap.data;
-          if (user == null) {
+          if (snap.connectionState == ConnectionState.active &&
+              snap.data == null) {
             return const LoginPage();
           }
+
+          final User? user = snap.data;
 
           return FutureBuilder(
             builder: (context, snapshot) {
               if (snap.connectionState == ConnectionState.active) {
                 User? user = snapshot.data;
                 if (user == null) {
-                  return const LoginPage();
+                  return Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
                 } else if (user.isAdmin()) {
                   // user.isAdmin()
                   return Admin();
@@ -58,7 +65,7 @@ class AuthWrapper extends StatelessWidget {
                 ),
               );
             },
-            future: db.getUser(user.uid),
+            future: db.getUser(user!.uid),
           );
         });
   }
