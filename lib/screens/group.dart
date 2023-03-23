@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/screens/profile.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 import '../common/bottom_bar.dart';
@@ -97,6 +98,7 @@ class _GroupPageState extends State<GroupPage> {
                               ],
                             ),
                       const SizedBox(height: 16),
+                      _ProfileInfoRow(group)
                     ],
                   ),
                 ),
@@ -188,8 +190,7 @@ class _TopPortionState extends State<_TopPortion> {
                   child: CircleAvatar(
                     radius: 20,
                     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    child: true
-                        ? GestureDetector(
+                    child: GestureDetector(
                             onTap: () async {
                               StorageService storageService = StorageService();
                               String? url =
@@ -216,11 +217,6 @@ class _TopPortionState extends State<_TopPortion> {
                                   shape: BoxShape.circle),
                             ),
                           )
-                        : Container(
-                            margin: const EdgeInsets.all(8.0),
-                            decoration: const BoxDecoration(
-                                color: Colors.green, shape: BoxShape.circle),
-                          ),
                   ),
                 ),
               ],
@@ -228,6 +224,130 @@ class _TopPortionState extends State<_TopPortion> {
           ),
         )
       ],
+    );
+  }
+}
+
+class ProfileInfoItem {
+  final String title;
+  final int value;
+  const ProfileInfoItem(this.title, this.value);
+}
+
+class _ProfileInfoRow extends StatelessWidget {
+  _ProfileInfoRow(this.group, {Key? key}) : super(key: key);
+  final Group group;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        builder: ((context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              !snapshot.hasData) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          List<ProfileInfoItem> items = [
+            ProfileInfoItem("Members", group.groupMembers.length),
+          ];
+
+          return Container(
+            height: 80,
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: items
+                  .map((item) => GestureDetector(
+                        onTap: items.indexOf(item) == 0
+                            ? () => _showMembers(context)
+                            : () {},
+                        child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                    child: _singleItem(
+                                  context,
+                                  item,
+                                )),
+                              ],
+                            )),
+                      ))
+                  .toList(),
+            ),
+          );
+        }),
+        future: DatabaseService().getGroup(group.name));
+  }
+
+  Widget _singleItem(BuildContext context, ProfileInfoItem item) => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Text(
+              item.value.toString(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          Text(
+            item.title,
+            style: Theme.of(context).textTheme.caption,
+          )
+        ],
+      );
+
+  void _showMembers(BuildContext context) async {
+    List<User?> members = [];
+
+    for (String memberUid in group.groupMembers) {
+      members.add(await Provider.of<DatabaseService>(context, listen: false)
+          .getUser(memberUid));
+    }
+
+    showDialog(
+      context: context,
+      builder: ((context) {
+        return AlertDialog(
+            elevation: 100,
+            title: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text('Members'),
+            ),
+            contentPadding: const EdgeInsets.all(0),
+            content: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.9,
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: ListView(
+                children: members
+                    .map((freind) => ListTile(
+                          title: Text(freind!.name ?? 'No name'),
+                          leading: CircleAvatar(
+                            backgroundImage:
+                                NetworkImage(freind.profilePicture!),
+                          ),
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfilePage(
+                                        userUid: freind.uid,
+                                      ))),
+                        ))
+                    .toList(),
+              ),
+            ));
+      }),
     );
   }
 }

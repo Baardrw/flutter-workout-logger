@@ -231,7 +231,7 @@ class _ProfileInfoRow extends StatelessWidget {
             elevation: 100,
             title: const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Notifications'),
+              child: Text('Friends'),
             ),
             contentPadding: const EdgeInsets.all(0),
             content: SizedBox(
