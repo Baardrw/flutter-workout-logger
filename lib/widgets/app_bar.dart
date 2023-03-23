@@ -43,6 +43,7 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
           : Container()
     ];
     DatabaseService db = Provider.of<DatabaseService>(context);
+    actions.addAll(additionalActions);
 
     return FutureBuilder(
         builder: ((context, snapshot) {
@@ -62,7 +63,6 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
           int streak = snapshot.data as int;
           print("Days since last workout: $streak");
 
-          actions.addAll(additionalActions);
           List<Widget> fireIcons = [
             Icon(Icons.whatshot, color: Colors.orange),
             Text("x $streak")

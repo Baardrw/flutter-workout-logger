@@ -21,47 +21,46 @@ class SearchScroller extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     //Iterates through each user/group and makes a ListTile-widget representing the search result
     for (var searchObject in searchObjects) {
       String id = "";
       String name = "";
       MaterialPageRoute materialPageRoute = MaterialPageRoute(
-                    builder: (context) =>
-                        ProfilePage(userUid: searchObject.uid));
+          builder: (context) => ProfilePage(userUid: searchObject.uid));
 
       if (searchObject is User) {
         id = searchObject.uid;
         name = searchObject.name ?? "";
-      } else if (searchObject is Group){
+      } else if (searchObject is Group) {
         id = searchObject.id;
         name = id;
         materialPageRoute = MaterialPageRoute(
-                    builder: (context) =>
-                        GroupPage(groupName: searchObject.name));
+            builder: (context) => GroupPage(groupName: searchObject.name));
       }
 
-
       if (id != Provider.of<AuthService>(context).uid) {
-
-        widgets.add(
-          GestureDetector(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: ListTile(
-                title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                leading: CircleAvatar(backgroundImage: NetworkImage(searchObject.profilePicture)),
-                tileColor: const Color.fromARGB(255, 51, 100, 140),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        Widget g = GestureDetector(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: ListTile(
+              title: Text(
+                name,
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
               ),
-
+              leading: CircleAvatar(
+                  backgroundImage: NetworkImage(searchObject.profilePicture)),
+              tileColor: const Color.fromARGB(255, 51, 100, 140),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
+          ),
           onTap: () {
-            Navigator.push(
-                context,
-                materialPageRoute);
+            Navigator.push(context, materialPageRoute);
           },
-        ));
+        );
+
+        widgets.add(g);
       }
     }
 

@@ -18,6 +18,7 @@ class DemoHome extends StatelessWidget {
     return Scaffold(
       appBar: GlobalAppBar(
         title: 'Hjem',
+        myUser: true,
         additionalActions: [
           IconButton(
             icon: const Icon(Icons.group_add),
