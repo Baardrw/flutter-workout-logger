@@ -45,6 +45,7 @@ class _LogWorkoutScreenState extends State<LogWorkoutScreen> {
         sessionId: widget.sessionID!,
         excercises: [],
         sessionInstanceId: DateTime.now(),
+        completedBy: Provider.of<AuthService>(context, listen: false).uid,
       );
     }
 

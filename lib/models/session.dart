@@ -27,7 +27,7 @@ class Session {
             .toList(),
         date = DateTime.parse(json['date'] as String);
 
-  Map<String, Object?> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'name': name,
       'description': description,
@@ -59,20 +59,24 @@ class Session {
 /// this will allow the database to find them, and show them, despite them not being in a session
 class SessionInstance {
   List<String>? excercises;
-
-  /// This list is never pushed to the db, as it leads to redundancy, this is only locally constructed
-  /// for ease of use in the app
   List<Repetition>? reps;
   late String sessionId;
   final DateTime sessionInstanceId;
   bool completed = false;
   String? picture;
+  String? completedBy = "";
 
   SessionInstance({
     required this.sessionId,
     required this.sessionInstanceId,
     this.excercises,
+    this.completedBy,
   });
+
+  //Get date
+  String get date {
+    return sessionInstanceId.toIso8601String().substring(0, 10);
+  }
 
   SessionInstance.fromJson(Map<String, Object?> json)
       : sessionId = json['sessionId'] as String,
@@ -82,7 +86,9 @@ class SessionInstance {
         sessionInstanceId = DateTime.fromMicrosecondsSinceEpoch(
             int.parse(('${json['sessionInstanceId'] as String}000'))),
         completed = json['completed'] as bool,
-        picture = json['picture'] as String?;
+        picture = json['picture'] as String?,
+        completedBy =
+            json['completedBy'] == null ? "0" : json['completedBy'] as String?;
 
   Map<String, Object?> toJson() {
     return {
@@ -91,11 +97,11 @@ class SessionInstance {
       'sessionInstanceId': id,
       'completed': completed,
       'picture': picture,
+      'completedBy': completedBy,
     };
   }
 
   String get id {
-    // Flutter encodes dates differently than firebase, flutter looses the last 3 digits
     return sessionInstanceId.microsecondsSinceEpoch.toString().substring(0, 13);
   }
 

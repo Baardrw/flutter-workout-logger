@@ -57,6 +57,7 @@ class _ProfilePageState extends State<ProfilePage> {
           }
 
           User user = snapshot.data as User;
+          print(user.uid);
 
           bool areFreinds = user.freinds.contains(myUid);
           print(user.name);
