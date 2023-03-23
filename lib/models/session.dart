@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:intl/intl.dart';
 import 'package:pu_frontend/screens/log_workout.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
@@ -79,6 +80,10 @@ class SessionInstance {
   //Get date
   String get date {
     return sessionInstanceId.toIso8601String().substring(0, 10);
+  }
+
+  String get FormattedDate {
+    return DateFormat('dd/MM/yyyy').format(sessionInstanceId);
   }
 
   SessionInstance.fromJson(Map<String, Object?> json) {
