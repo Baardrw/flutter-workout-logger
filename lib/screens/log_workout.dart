@@ -6,13 +6,15 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/common/appstate.dart';
 import 'package:pu_frontend/services/db_service.dart';
+import 'package:pu_frontend/services/storage_service.dart';
 
+import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../models/excercise.dart';
 import '../models/session.dart';
 import '../widgets/app_bar.dart';
 
-class LogWorkoutScreen extends StatelessWidget {
+class LogWorkoutScreen extends StatefulWidget {
   LogWorkoutScreen({
     super.key,
     required this.sessionID,
@@ -22,56 +24,68 @@ class LogWorkoutScreen extends StatelessWidget {
 
   final String? sessionID;
   SessionInstance? sessionInstance;
-  bool oldSession = true;
   bool completed;
+
+  @override
+  State<LogWorkoutScreen> createState() => _LogWorkoutScreenState();
+}
+
+class _LogWorkoutScreenState extends State<LogWorkoutScreen> {
+  bool oldSession = true;
+  String? url;
 
   @override
   Widget build(BuildContext context) {
     // Cant access siessionId over, so must be done here
 
-    if (sessionInstance == null) {
+    if (widget.sessionInstance == null) {
       oldSession = false;
 
-      sessionInstance = SessionInstance(
-        sessionId: sessionID!,
+      widget.sessionInstance = SessionInstance(
+        sessionId: widget.sessionID!,
         excercises: [],
         sessionInstanceId: DateTime.now(),
       );
     }
 
+    url = widget.sessionInstance!.picture;
+
     Provider.of<AppState>(context, listen: false).isOldSession = oldSession;
-    print("completed: $completed");
+    print("completed: ${widget.completed}");
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 225, 225, 225),
         appBar: GlobalAppBar(
-          title: completed
+          uploadImage: false,
+          title: widget.completed
               ? DateFormat('dd.MM.yyyy')
-                  .format(sessionInstance!.sessionInstanceId)
+                  .format(widget.sessionInstance!.sessionInstanceId)
               : 'Loggfør økt',
           additionalActions: [
-            IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: () {
-                // Sets the apps state to inform the app that this session is no longer in progress
-                Provider.of<AppState>(context, listen: false).sessionInstance =
-                    null;
+            !oldSession
+                ? IconButton(
+                    icon: const Icon(Icons.check),
+                    onPressed: () {
+                      // Sets the apps state to inform the app that this session is no longer in progress
+                      Provider.of<AppState>(context, listen: false)
+                          .sessionInstance = null;
 
-                sessionInstance!.completed = true;
-                Provider.of<DatabaseService>(context, listen: false)
-                    .updateSessionInstance(
-                  sessionInstance!,
-                  Provider.of<AuthService>(context, listen: false).uid,
-                );
+                      widget.sessionInstance!.completed = true;
+                      Provider.of<DatabaseService>(context, listen: false)
+                          .updateSessionInstance(
+                        widget.sessionInstance!,
+                        Provider.of<AuthService>(context, listen: false).uid,
+                      );
 
-                // Go back to the previous page
-                Navigator.pop(context);
-              },
-            )
+                      // Go back to the previous page
+                      Navigator.pop(context);
+                    },
+                  )
+                : Container(),
           ],
         ),
         body: Center(
             child: ListView(padding: const EdgeInsets.all(12), children: [
-          GetSessionInfo(sessionInstance: sessionInstance!),
+          GetSessionInfo(sessionInstance: widget.sessionInstance!, url: url),
           const SizedBox(height: 20),
           const Text(
             'Exercises',
@@ -83,21 +97,29 @@ class LogWorkoutScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           GetSessionList(
-              sessionInstance: sessionInstance!, completed: completed),
+              sessionInstance: widget.sessionInstance!,
+              completed: widget.completed),
           const SizedBox(height: 15),
         ])));
   }
 }
 
 /// Session information card displayed on the top of the listveiw
-class GetSessionInfo extends StatelessWidget {
+class GetSessionInfo extends StatefulWidget {
   final SessionInstance sessionInstance;
+  String? url;
 
-  const GetSessionInfo({
+  GetSessionInfo({
     super.key,
     required this.sessionInstance,
+    required this.url,
   });
 
+  @override
+  State<GetSessionInfo> createState() => _GetSessionInfoState();
+}
+
+class _GetSessionInfoState extends State<GetSessionInfo> {
   @override
   Widget build(BuildContext context) {
     DatabaseService db = Provider.of<DatabaseService>(context, listen: false);
@@ -110,7 +132,7 @@ class GetSessionInfo extends StatelessWidget {
         description: 'Default',
         timeEstimate: 'Default');
 
-    print("sessionInstance id ${sessionInstance.sessionId}");
+    print("sessionInstance id ${widget.sessionInstance.sessionId}");
 
     return Container(
       child: FutureBuilder(
@@ -140,12 +162,45 @@ class GetSessionInfo extends StatelessWidget {
                   Text(session.timeEstimate),
                   const SizedBox(height: 12),
                   Text(session.description),
+                  const SizedBox(height: 12),
+                  widget.url != null
+                      ? Image.network(widget.url!)
+                      : IconButton(
+                          icon: Icon(Icons.add_a_photo),
+                          onPressed: () async => await _addImage(context)),
                 ],
               ),
             );
           },
-          future: db.getSession(sessionInstance.sessionId,
+          future: db.getSession(widget.sessionInstance.sessionId,
               Provider.of<AuthService>(context, listen: false).uid)),
+    );
+  }
+
+  _addImage(BuildContext context) async {
+    StorageService ss = StorageService();
+    String? url = await ss.showPicker(context);
+    if (url != null) {
+      setState(() {
+        widget.url = url;
+      });
+    } else {
+      SnackBar snackBar = SnackBar(content: Text("No image selected"));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    User? user = await Provider.of<DatabaseService>(context, listen: false)
+        .getUser(Provider.of<AuthService>(context, listen: false).uid);
+
+    user!.addPicture(url);
+
+    Provider.of<DatabaseService>(context, listen: false).updateUser(user);
+
+    widget.sessionInstance.picture = url;
+    Provider.of<DatabaseService>(context, listen: false).updateSessionInstance(
+      widget.sessionInstance,
+      Provider.of<AuthService>(context, listen: false).uid,
     );
   }
 }

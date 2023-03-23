@@ -66,6 +66,7 @@ class SessionInstance {
   late String sessionId;
   final DateTime sessionInstanceId;
   bool completed = false;
+  String? picture;
 
   SessionInstance({
     required this.sessionId,
@@ -80,7 +81,8 @@ class SessionInstance {
             .toList(),
         sessionInstanceId = DateTime.fromMicrosecondsSinceEpoch(
             int.parse(('${json['sessionInstanceId'] as String}000'))),
-        completed = json['completed'] as bool;
+        completed = json['completed'] as bool,
+        picture = json['picture'] as String?;
 
   Map<String, Object?> toJson() {
     return {
@@ -88,6 +90,7 @@ class SessionInstance {
       'excercises': excercises,
       'sessionInstanceId': id,
       'completed': completed,
+      'picture': picture,
     };
   }
 

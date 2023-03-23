@@ -13,9 +13,11 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
   const GlobalAppBar({
     required this.title,
     this.additionalActions = const [],
+    this.uploadImage = true,
     super.key,
   });
 
+  final bool uploadImage;
   final String title;
   final List<Widget> additionalActions;
 
@@ -26,9 +28,11 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
         icon: const Icon(Icons.notifications),
         onPressed: () async => await _showNotificationDialog(context),
       ),
-      IconButton(
-          onPressed: () async => await _addImage(context),
-          icon: const Icon(Icons.add_a_photo_sharp))
+      uploadImage
+          ? IconButton(
+              onPressed: () async => await _addImage(context),
+              icon: const Icon(Icons.add_a_photo_sharp))
+          : Container()
     ];
 
     actions.addAll(additionalActions);
