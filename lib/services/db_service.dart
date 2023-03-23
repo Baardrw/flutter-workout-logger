@@ -475,48 +475,94 @@ class DatabaseService {
     return s;
   }
 
-  Stream<List<SessionInstance>> getSessionFriends(String userId) {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .get()
-        .asStream()
-        .asyncMap((userDoc) async {
-      List<String> friendIds = List<String>.from(userDoc.get('freinds') ?? []);
-      List<SessionInstance> sessions = [];
-      for (String friendId in friendIds) {
-        print(friendId);
-        QuerySnapshot sessionsQuery = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(friendId)
-            .collection('sessions')
-            .get();
-
-        for (QueryDocumentSnapshot sessionDoc in sessionsQuery.docs) {
-          QuerySnapshot instancesQuery = await FirebaseFirestore.instance
+  Stream<List<SessionInstance>> getSessionFriends(
+      String userId, List<String>? members) {
+    if (members == null) {
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get()
+          .asStream()
+          .asyncMap((userDoc) async {
+        List<String> friendIds =
+            List<String>.from(userDoc.get('freinds') ?? []);
+        List<SessionInstance> sessions = [];
+        for (String friendId in friendIds) {
+          print(friendId);
+          QuerySnapshot sessionsQuery = await FirebaseFirestore.instance
               .collection('users')
               .doc(friendId)
               .collection('sessions')
-              .doc(sessionDoc.id)
-              .collection('instances')
-              .where('completed', isEqualTo: true)
               .get();
-          List<SessionInstance> completedInstances = instancesQuery.docs
-              .map((doc) => SessionInstance.fromJson({
-                    'sessionId': sessionDoc.id,
-                    'sessionInstanceId': doc.id,
-                    'excercises': sessionDoc.get('excercises'),
-                    'completed': doc.get('completed'),
-                    'completedBy': doc.get('completedBy'),
-                  }))
-              .toList();
-          if (completedInstances.isNotEmpty) {
-            sessions.addAll(completedInstances);
+
+          for (QueryDocumentSnapshot sessionDoc in sessionsQuery.docs) {
+            QuerySnapshot instancesQuery = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(friendId)
+                .collection('sessions')
+                .doc(sessionDoc.id)
+                .collection('instances')
+                .where('completed', isEqualTo: true)
+                .get();
+            List<SessionInstance> completedInstances = instancesQuery.docs
+                .map((doc) => SessionInstance.fromJson({
+                      'sessionId': sessionDoc.id,
+                      'sessionInstanceId': doc.id,
+                      'excercises': sessionDoc.get('excercises'),
+                      'completed': doc.get('completed'),
+                      'completedBy': doc.get('completedBy'),
+                    }))
+                .toList();
+            if (completedInstances.isNotEmpty) {
+              sessions.addAll(completedInstances);
+            }
           }
         }
-      }
-      return sessions;
-    });
+        return sessions;
+      });
+    } else {
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get()
+          .asStream()
+          .asyncMap((userDoc) async {
+        List<String> friendIds = members;
+        List<SessionInstance> sessions = [];
+        for (String friendId in friendIds) {
+          print(friendId);
+          QuerySnapshot sessionsQuery = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(friendId)
+              .collection('sessions')
+              .get();
+
+          for (QueryDocumentSnapshot sessionDoc in sessionsQuery.docs) {
+            QuerySnapshot instancesQuery = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(friendId)
+                .collection('sessions')
+                .doc(sessionDoc.id)
+                .collection('instances')
+                .where('completed', isEqualTo: true)
+                .get();
+            List<SessionInstance> completedInstances = instancesQuery.docs
+                .map((doc) => SessionInstance.fromJson({
+                      'sessionId': sessionDoc.id,
+                      'sessionInstanceId': doc.id,
+                      'excercises': sessionDoc.get('excercises'),
+                      'completed': doc.get('completed'),
+                      'completedBy': doc.get('completedBy'),
+                    }))
+                .toList();
+            if (completedInstances.isNotEmpty) {
+              sessions.addAll(completedInstances);
+            }
+          }
+        }
+        return sessions;
+      });
+    }
   }
 
   Future<Session?> getAllSessionsAndCheckSession(

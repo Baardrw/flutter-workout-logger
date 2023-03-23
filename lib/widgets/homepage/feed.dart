@@ -12,7 +12,8 @@ import '../../models/session.dart';
 import 'friends_workout_card.dart';
 
 class FriendsWorkout extends StatelessWidget {
-  const FriendsWorkout({Key? key});
+  FriendsWorkout({this.members, Key? key});
+  List<String>? members;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +72,7 @@ class FriendsWorkout extends StatelessWidget {
             },
           );
         },
-        stream: db.getSessionFriends(authService.uid),
+        stream: db.getSessionFriends(authService.uid, members),
       ),
     );
   }
