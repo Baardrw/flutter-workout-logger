@@ -10,6 +10,8 @@ class User {
   String? _lowercaseName;
   String? _profilePicture;
 
+  late List<String> _pictures;
+
   /// List of userIDs of freinds
   late List<String> _freinds;
 
@@ -29,6 +31,7 @@ class User {
     _freindRequests = [];
     _profilePicture =
         "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg";
+    _pictures = [];
   }
 
   void addFreind(User user) {
@@ -61,6 +64,7 @@ class User {
   String? get profilePicture => _profilePicture;
   List<String> get freinds => _freinds;
   List<dynamic> get groups => _groups;
+  List<String> get picturesUrls => _pictures;
   List<String> get freindRequests => _freindRequests;
   set profilePicture(String? url) => _profilePicture = url;
 
@@ -75,6 +79,7 @@ class User {
       'lowercaseName': _lowercaseName,
       'profilePicture': _profilePicture ??
           "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg",
+      'pictures': _pictures,
     };
   }
 
@@ -97,7 +102,11 @@ class User {
                 ?.map((e) => e as String)
                 .toList() ??
             [],
-        _profilePicture = json['profilePicture'] as String?;
+        _profilePicture = json['profilePicture'] as String,
+        _pictures = (json['pictures'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            [];
 
   @override
   String toString() {
@@ -119,16 +128,11 @@ class User {
     _profilePicture = url;
   }
 
-  // TODO : add user functionality to get groups
+  void addPicture(String url) {
+    _pictures.add(url);
+  }
 
-  // Future<List<Group?>> getGroups() async {
-  //   DatabaseService db = DatabaseService();
-
-  //   List<Group?> groups = [];
-  //   for (String group in _groups) {
-  //     groups.add(await db.getGroup(group));
-  //   }
-
-  //   return groups;
-  // }
+  void removePicture(String url) {
+    _pictures.remove(url);
+  }
 }
