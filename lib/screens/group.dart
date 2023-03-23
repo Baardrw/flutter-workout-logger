@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/screens/profile.dart';
 import 'package:pu_frontend/services/db_service.dart';
+import 'package:pu_frontend/widgets/homepage/feed.dart';
 
 import '../common/bottom_bar.dart';
 import '../models/group.dart';
@@ -15,11 +16,8 @@ import '../widgets/app_bar.dart';
 
 class GroupPage extends StatefulWidget {
   final String? groupName;
-  
-  const GroupPage({
-    super.key,
-    required this.groupName
-  });
+
+  const GroupPage({super.key, required this.groupName});
 
   @override
   State<GroupPage> createState() => _GroupPageState();
@@ -27,42 +25,40 @@ class GroupPage extends StatefulWidget {
 
 class _GroupPageState extends State<GroupPage> {
   BottomBar bottomBar = BottomBar(3);
-  
+
   @override
   Widget build(BuildContext context) {
-
-
     return FutureBuilder(
       builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (!snapshot.hasData) {
+          print("data");
+          return const Scaffold(
+            body: Center(
+              child: Text("No data"),
+            ),
+          );
+        }
+
+        bool isAdmin = false;
+
+        User currentUser = snapshot.data as User;
+        List<Membership> groups = currentUser.groups;
+
+        for (var group in groups) {
+          if (group.groupName == widget.groupName && group.isAdmin == true) {
+            isAdmin = true;
           }
+        }
 
-          if (!snapshot.hasData) {
-            print("data");
-            return const Scaffold(
-              body: Center(
-                child: Text("No data"),
-              ),
-            );
-          }
-
-          bool isAdmin = false;
-
-          User currentUser = snapshot.data as User;
-          List<Membership> groups = currentUser.groups;
-
-          for (var group in groups) {
-            if (group.groupName == widget.groupName && group.isAdmin == true) {
-              isAdmin = true;
-            }
-          }
-
-          return FutureBuilder(
+        return FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Scaffold(
@@ -82,7 +78,8 @@ class _GroupPageState extends State<GroupPage> {
               }
 
               Group group = snapshot.data as Group;
-              bool isMember = group.groupMembers.contains(Provider.of<AuthService>(context).uid);
+              bool isMember = group.groupMembers
+                  .contains(Provider.of<AuthService>(context).uid);
 
               return Scaffold(
                 appBar: GlobalAppBar(title: group.name),
@@ -102,9 +99,8 @@ class _GroupPageState extends State<GroupPage> {
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(group.groupGoal)
-                          ),
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(group.groupGoal)),
                           widget.groupName == null
                               ? const SizedBox()
                               : Row(
@@ -130,13 +126,19 @@ class _GroupPageState extends State<GroupPage> {
                                           ? const Text('Leave Group')
                                           : const Text("Join Group"),
                                       icon: isMember
-                                          ? const Icon(Icons.person_remove_alt_1)
+                                          ? const Icon(
+                                              Icons.person_remove_alt_1)
                                           : const Icon(Icons.person_add_alt_1),
                                     ),
                                   ],
                                 ),
                           const SizedBox(height: 16),
-                          _GroupInfoRow(group, isAdmin)
+                          _GroupInfoRow(group, isAdmin),
+                          const SizedBox(height: 16),
+                          FriendsWorkout(
+                              members: group.groupMembers
+                                  .map((e) => e as String)
+                                  .toList()),
                         ],
                       ),
                     ),
@@ -146,28 +148,30 @@ class _GroupPageState extends State<GroupPage> {
               );
             },
             future: DatabaseService().getGroup(widget.groupName!));
-          },
-          future: DatabaseService().getUser(Provider.of<AuthService>(context).uid),
-        );
+      },
+      future: DatabaseService().getUser(Provider.of<AuthService>(context).uid),
+    );
   }
 
-_leaveGroup(BuildContext context, Group group) async {
-  DatabaseService dbservice = DatabaseService();
-  User user = await dbservice.getUser(Provider.of<AuthService>(context, listen: false).uid) as User;
-  user.leaveGroup(group);
-  group.removeMember(user.uid);
-  dbservice.updateGroup(group);
-  dbservice.updateUser(user);
-}
+  _leaveGroup(BuildContext context, Group group) async {
+    DatabaseService dbservice = DatabaseService();
+    User user = await dbservice
+        .getUser(Provider.of<AuthService>(context, listen: false).uid) as User;
+    user.leaveGroup(group);
+    group.removeMember(user.uid);
+    dbservice.updateGroup(group);
+    dbservice.updateUser(user);
+  }
 
-_joinGroup(BuildContext context, Group group) async {
-  DatabaseService dbservice = DatabaseService();
-  User user = await dbservice.getUser(Provider.of<AuthService>(context, listen: false).uid) as User;
-  user.joinGroup(group, false);
-  group.addMember(user.uid);
-  dbservice.updateGroup(group);
-  dbservice.updateUser(user);
-}
+  _joinGroup(BuildContext context, Group group) async {
+    DatabaseService dbservice = DatabaseService();
+    User user = await dbservice
+        .getUser(Provider.of<AuthService>(context, listen: false).uid) as User;
+    user.joinGroup(group, false);
+    group.addMember(user.uid);
+    dbservice.updateGroup(group);
+    dbservice.updateUser(user);
+  }
 }
 
 class _TopPortion extends StatefulWidget {
@@ -189,7 +193,6 @@ class _TopPortionState extends State<_TopPortion> {
 
   @override
   Widget build(BuildContext context) {
-
     widget.group.profilePicture != null
         ? profilePic = NetworkImage(widget.group.profilePicture!)
         : '';
@@ -229,36 +232,35 @@ class _TopPortionState extends State<_TopPortion> {
                   bottom: 0,
                   right: 0,
                   child: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    child: GestureDetector(
-                            onTap: () async {
-                              StorageService storageService = StorageService();
-                              String? url =
-                                  await storageService.showPicker(context);
+                      radius: 20,
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                      child: GestureDetector(
+                        onTap: () async {
+                          StorageService storageService = StorageService();
+                          String? url =
+                              await storageService.showPicker(context);
 
-                              if (url != null) {
-                                setState(() {
-                                  profilePic = NetworkImage(url);
-                                });
+                          if (url != null) {
+                            setState(() {
+                              profilePic = NetworkImage(url);
+                            });
 
-                                widget.group.profilePicture = url;
+                            widget.group.profilePicture = url;
 
-                                // ignore: use_build_context_synchronously
-                                await Provider.of<DatabaseService>(context,
-                                        listen: false)
-                                    .updateGroup(widget.group);
-                              }
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image:
-                                          NetworkImage(_TopPortion.cameraIcon)),
-                                  shape: BoxShape.circle),
-                            ),
-                          )
-                  ),
+                            // ignore: use_build_context_synchronously
+                            await Provider.of<DatabaseService>(context,
+                                    listen: false)
+                                .updateGroup(widget.group);
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: NetworkImage(_TopPortion.cameraIcon)),
+                              shape: BoxShape.circle),
+                        ),
+                      )),
                 ),
               ],
             ),
@@ -276,9 +278,9 @@ class GroupInfoItem {
 }
 
 class _GroupInfoRow extends StatefulWidget {
-  _GroupInfoRow(this.group, this.isAdmin, {Key? key}) 
-  : gm = group.groupMembers.length, 
-   super(key: key);
+  _GroupInfoRow(this.group, this.isAdmin, {Key? key})
+      : gm = group.groupMembers.length,
+        super(key: key);
 
   final Group group;
   final bool isAdmin;
@@ -293,7 +295,6 @@ class _GroupInfoRow extends StatefulWidget {
 }
 
 class _GroupInfoRowState extends State<_GroupInfoRow> {
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -362,7 +363,7 @@ class _GroupInfoRowState extends State<_GroupInfoRow> {
             style: Theme.of(context).textTheme.caption,
           )
         ],
-  );
+      );
 
   void _showMembers(BuildContext context, _GroupInfoRow gir) async {
     List<User?> members = [];
@@ -384,17 +385,18 @@ class _GroupInfoRowState extends State<_GroupInfoRow> {
             ),
             contentPadding: const EdgeInsets.all(0),
             content: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.9,
-              width: MediaQuery.of(context).size.width * 0.6,
-              child: membersList(members, widget.isAdmin, widget.group, gir)
-            ));
+                height: MediaQuery.of(context).size.height * 0.9,
+                width: MediaQuery.of(context).size.width * 0.6,
+                child:
+                    membersList(members, widget.isAdmin, widget.group, gir)));
       }),
     );
   }
 }
 
 class membersList extends StatefulWidget {
-  const membersList(this. members, this.isAdmin, this.group, this.gir, {super.key});
+  const membersList(this.members, this.isAdmin, this.group, this.gir,
+      {super.key});
   final List<User?> members;
   final bool isAdmin;
   final Group group;
@@ -412,37 +414,36 @@ class _membersListState extends State<membersList> {
     dbservice.updateGroup(group);
     dbservice.updateUser(member);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return ListView(
-                children: widget.members
-                    .map((member) => ListTile(
-                          title: Text(member!.name ?? 'No name'),
-                          leading: CircleAvatar(
-                            backgroundImage:
-                                NetworkImage(member.profilePicture!),
-                          ),
-                          trailing: widget.isAdmin
-                              ? ElevatedButton.icon(
-                                onPressed: () async {
-                                  await _leaveGroup(context, widget.group, member);
-                                  setState(() {
-                                    widget.members.remove(member);
-                                    widget.gir.decrementGm();
-                                  });
-                                },
-                                icon: Icon(Icons.delete_outline),
-                                label: Text(""))
-                              : const SizedBox(),
-                          onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ProfilePage(
-                                        userUid: member.uid,
-                                      ))),
-                        ))
-                    .toList(),
-              );
+      children: widget.members
+          .map((member) => ListTile(
+                title: Text(member!.name ?? 'No name'),
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(member.profilePicture!),
+                ),
+                trailing: widget.isAdmin
+                    ? ElevatedButton.icon(
+                        onPressed: () async {
+                          await _leaveGroup(context, widget.group, member);
+                          setState(() {
+                            widget.members.remove(member);
+                            widget.gir.decrementGm();
+                          });
+                        },
+                        icon: Icon(Icons.delete_outline),
+                        label: Text(""))
+                    : const SizedBox(),
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ProfilePage(
+                              userUid: member.uid,
+                            ))),
+              ))
+          .toList(),
+    );
   }
 }

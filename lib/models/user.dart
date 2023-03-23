@@ -1,4 +1,5 @@
 import 'package:flutter/rendering.dart';
+import 'package:pu_frontend/models/tuple.dart';
 import 'package:pu_frontend/services/db_service.dart';
 
 import 'group.dart';
@@ -10,6 +11,8 @@ class User {
   final String? _name;
   String? _lowercaseName;
   String? _profilePicture;
+
+  late List<Tuple> _pictures;
 
   /// List of userIDs of freinds
   late List<String> _freinds;
@@ -30,6 +33,7 @@ class User {
     _freindRequests = [];
     _profilePicture =
         "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg";
+    _pictures = [];
   }
 
   void addFreind(User user) {
@@ -68,6 +72,7 @@ class User {
   List<String> get freinds => _freinds;
   List<Membership> get groups => _groups;
   String? get profilePicture => _profilePicture;
+  List<Tuple> get picturesUrls => _pictures;
   List<String> get freindRequests => _freindRequests;
   set profilePicture(String? url) => _profilePicture = url;
 
@@ -82,6 +87,7 @@ class User {
       'lowercaseName': _lowercaseName,
       'profilePicture': _profilePicture ??
           "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg",
+      'pictures': _pictures.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -104,7 +110,11 @@ class User {
                 ?.map((e) => Membership.fromJson(e as Map<String, Object?>))
                 .toList() ??
             [],
-        _profilePicture = json['profilePicture'] as String?;
+        _profilePicture = json['profilePicture'] as String,
+        _pictures = (json['pictures'] as List<dynamic>?)
+                ?.map((e) => Tuple.fromJson(e as Map<String, Object?>))
+                .toList() ??
+            [];
 
   @override
   String toString() {
@@ -126,18 +136,13 @@ class User {
     _profilePicture = url;
   }
 
-  // TODO : add user functionality to get groups
+  void addPicture(String url) {
+    _pictures.add(Tuple(url, DateTime.now()));
+  }
 
-  // Future<List<Group?>> getGroups() async {
-  //   DatabaseService db = DatabaseService();
-
-  //   List<Group?> groups = [];
-  //   for (String group in _groups) {
-  //     groups.add(await db.getGroup(group));
-  //   }
-
-  //   return groups;
-  // }
+  void removePicture(String url) {
+    _pictures.removeWhere((element) => element.string == url);
+  }
 }
 
 class Membership implements Comparable<Membership> {

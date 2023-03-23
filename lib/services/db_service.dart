@@ -79,7 +79,7 @@ class DatabaseService {
   Future<void> addGroup(Group group) async {
     return await _groupRef.doc(group.id).set(group);
   }
-  
+
   Future<void> updateGroup(Group group) async {
     return await _groupRef.doc(group.name).set(group);
   }
@@ -288,6 +288,44 @@ class DatabaseService {
             .toList());
   }
 
+  Future<List<Session>> getSessionsFriend(String uid) async {
+    var friends = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get()
+        .then((doc) => doc.get('freinds'));
+
+    List<Session> allSessions = [];
+
+    for (var friendId in friends) {
+      var sessions = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(friendId)
+          .collection('sessions')
+          .orderBy('date', descending: true)
+          .get();
+      for (var sessionDoc in sessions.docs) {
+        var sessionData = sessionDoc.data();
+        // Get the completed instances for the session
+        var instancesQuery = await sessionDoc.reference
+            .collection('instances')
+            .where('completed', isEqualTo: true)
+            .get();
+        var completedInstances = instancesQuery.docs
+            .map((doc) => SessionInstance.fromJson(doc.data()))
+            .toList();
+
+        // Only include the session if it has at least one completed instance
+        if (completedInstances.isNotEmpty) {
+          var session = Session.fromJson(sessionData);
+          allSessions.add(session);
+        }
+      }
+    }
+
+    return allSessions.reversed.toList();
+  }
+
   Stream<Session> getSessionStream(String uid) {
     return FirebaseFirestore.instance
         .collection('users')
@@ -443,6 +481,140 @@ class DatabaseService {
             .reversed
             .toList());
     return s;
+  }
+
+  Stream<List<SessionInstance>> getSessionFriends(
+      String userId, List<String>? members) {
+    if (members == null) {
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get()
+          .asStream()
+          .asyncMap((userDoc) async {
+        List<String> friendIds =
+            List<String>.from(userDoc.get('freinds') ?? []);
+        List<SessionInstance> sessions = [];
+        for (String friendId in friendIds) {
+          print(friendId);
+          QuerySnapshot sessionsQuery = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(friendId)
+              .collection('sessions')
+              .get();
+
+          for (QueryDocumentSnapshot sessionDoc in sessionsQuery.docs) {
+            QuerySnapshot instancesQuery = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(friendId)
+                .collection('sessions')
+                .doc(sessionDoc.id)
+                .collection('instances')
+                .where('completed', isEqualTo: true)
+                .get();
+            List<SessionInstance> completedInstances =
+                instancesQuery.docs.map((doc) {
+              try {
+                return SessionInstance.fromJson({
+                  'sessionId': sessionDoc.id,
+                  'sessionInstanceId': doc.id,
+                  'excercises': sessionDoc.get('excercises'),
+                  'completed': doc.get('completed'),
+                  'completedBy': friendId,
+                  'picture': doc.get('picture')
+                });
+              } catch (e) {
+                return SessionInstance.fromJson({
+                  'sessionId': sessionDoc.id,
+                  'sessionInstanceId': doc.id,
+                  'excercises': sessionDoc.get('excercises'),
+                  'completed': doc.get('completed'),
+                  'completedBy': friendId,
+                });
+              }
+            }).toList();
+            if (completedInstances.isNotEmpty) {
+              sessions.addAll(completedInstances);
+            }
+          }
+        }
+        return sessions;
+      });
+    } else {
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get()
+          .asStream()
+          .asyncMap((userDoc) async {
+        List<String> friendIds = members;
+        List<SessionInstance> sessions = [];
+        for (String friendId in friendIds) {
+          print(friendId);
+          QuerySnapshot sessionsQuery = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(friendId)
+              .collection('sessions')
+              .get();
+
+          for (QueryDocumentSnapshot sessionDoc in sessionsQuery.docs) {
+            QuerySnapshot instancesQuery = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(friendId)
+                .collection('sessions')
+                .doc(sessionDoc.id)
+                .collection('instances')
+                .where('completed', isEqualTo: true)
+                .get();
+            List<SessionInstance> completedInstances =
+                instancesQuery.docs.map((doc) {
+              try {
+                return SessionInstance.fromJson({
+                  'sessionId': sessionDoc.id,
+                  'sessionInstanceId': doc.id,
+                  'excercises': sessionDoc.get('excercises'),
+                  'completed': doc.get('completed'),
+                  'completedBy': friendId,
+                  'picture': doc.get('picture')
+                });
+              } catch (e) {
+                return SessionInstance.fromJson({
+                  'sessionId': sessionDoc.id,
+                  'sessionInstanceId': doc.id,
+                  'excercises': sessionDoc.get('excercises'),
+                  'completed': doc.get('completed'),
+                  'completedBy': friendId,
+                });
+              }
+            }).toList();
+            if (completedInstances.isNotEmpty) {
+              sessions.addAll(completedInstances);
+            }
+          }
+        }
+        return sessions;
+      });
+    }
+  }
+
+  Future<Session?> getAllSessionsAndCheckSession(
+      String sessionID, String uid) async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sessions')
+        .doc(sessionID)
+        .get()
+        .then((value) => Session.fromJson(value.data() ?? {}));
+  }
+
+  Future<List<User>> getUsers() async {
+    return await FirebaseFirestore.instance.collection('users').get().then(
+        (value) => value.docs.map((e) => User.fromJson(e.data())).toList());
+  }
+
+  Future<String?> getUsernameByUid(String uid) async {
+    return await _userRef.doc(uid).get().then((value) => value.data()?.name);
   }
 
   Stream<Program> getProgramStrean(String uid) {

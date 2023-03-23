@@ -6,10 +6,14 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:pu_frontend/common/bottom_bar.dart';
 import 'package:pu_frontend/models/excercise.dart';
 import 'package:pu_frontend/services/auth_service.dart';
 import 'package:pu_frontend/services/db_service.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pu_frontend/widgets/homepage/friends_workout_card.dart';
+
+import '../homepage/feed.dart';
 
 import '../../models/user.dart';
 
@@ -32,25 +36,14 @@ class _TestHomeState extends State<TestHome> {
         description: 'beskrivelse');
 
     return Container(
-      padding: const EdgeInsets.all(80.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          ElevatedButton(
-              onPressed: () async {
-                User user = User("12345", "test", "bårds test user");
-                await _dbService.addUser(user);
-                User? myUser = await _dbService.getUser(_authService.uid);
-                myUser?.addFreindRequest("12345");
-                await _dbService.updateUser(myUser!);
-              },
-              child: Text('Add bench log')),
-          ElevatedButton(
-            onPressed: () async {
-              await _authService.signOut();
-              context.go("/");
-            },
-            child: Text('logout'),
+          //Container that fills the screen
+          Container(
+            //Width of screen
+            height: MediaQuery.of(context).size.height * 0.8,
+            child: FriendsWorkout(),
           ),
         ],
       ),
