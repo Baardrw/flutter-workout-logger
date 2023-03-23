@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:go_router/go_router.dart';
 import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:pu_frontend/models/session.dart';
@@ -33,6 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final AuthService _authService = Provider.of<AuthService>(context);
     final myUid = Provider.of<AuthService>(context).uid;
     if (widget.userUid != myUid && widget.userUid != null) {
       bottomBar = BottomBar(3);
@@ -63,7 +66,20 @@ class _ProfilePageState extends State<ProfilePage> {
           print(user.name);
 
           return Scaffold(
-            appBar: GlobalAppBar(title: user.name ?? 'No name'),
+            appBar: GlobalAppBar(
+              title: user.name ?? 'No name',
+              myUser: widget.userUid == null,
+              additionalActions: [
+                IconButton(
+                    onPressed: () {
+                      context.go("/");
+                      Future.delayed(Duration(milliseconds: 10), () async {
+                        await _authService.signOut();
+                      });
+                    },
+                    icon: Icon(Icons.exit_to_app))
+              ],
+            ),
             body: ListView(
               children: [
                 const SizedBox(height: 16),
@@ -370,7 +386,8 @@ class _TopPortionState extends State<_TopPortion> {
     bool userIsMe = widget.user.uid == Provider.of<AuthService>(context).uid;
     widget.user.profilePicture != null
         ? profilePic = NetworkImage(widget.user.profilePicture!)
-        : '';
+        : profilePic = NetworkImage(
+            "https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg");
 
     return Stack(
       children: [

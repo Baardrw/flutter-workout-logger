@@ -17,10 +17,12 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     this.additionalActions = const [],
     this.uploadImage = true,
+    this.myUser = true,
     super.key,
   });
 
   final bool uploadImage;
+  final bool myUser;
   final String title;
   final List<Widget> additionalActions;
 
@@ -61,15 +63,21 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
           print("Days since last workout: $streak");
 
           actions.addAll(additionalActions);
-          final List<Widget> fireIcons = [
+          List<Widget> fireIcons = [
             Icon(Icons.whatshot, color: Colors.orange),
             Text("x $streak")
           ];
 
+          if (!myUser) {
+            fireIcons = [];
+          }
+
           return AppBar(
             title: Row(
               children: [
-                Text(title),
+                FittedBox(
+                  child: Text(title),
+                ),
                 ...fireIcons,
               ],
             ),

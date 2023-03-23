@@ -82,7 +82,7 @@ class _GroupPageState extends State<GroupPage> {
                   .contains(Provider.of<AuthService>(context).uid);
 
               return Scaffold(
-                appBar: GlobalAppBar(title: group.name),
+                appBar: GlobalAppBar(title: group.name, myUser: false),
                 body: ListView(
                   children: [
                     const SizedBox(height: 16),
