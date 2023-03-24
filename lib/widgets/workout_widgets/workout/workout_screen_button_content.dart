@@ -61,7 +61,7 @@ class WorkoutCard extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               const Icon(
-                Icons.directions_run_rounded,
+                Icons.fitness_center_rounded,
                 size: 35,
               )
             ],

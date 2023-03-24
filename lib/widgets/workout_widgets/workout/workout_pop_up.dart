@@ -88,13 +88,14 @@ class WorkoutContent extends StatelessWidget {
             child: Column(
               children: [
                 const Text(
-                  'Beskrivelse',
+                  'Description',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20,
                   ),
                 ),
                 const SizedBox(height: 12),
+                Text('Time estimate: ${session.timeEstimate} min'),
                 Text(
                   session.description,
                 ),
@@ -139,9 +140,9 @@ class WorkoutContent extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('Du har allerede en økt i gang'),
+                    title: const Text('You have an ongoing session'),
                     content: const Text(
-                        'Du må fullføre, fortsette eller avbryte den økten før du kan starte en ny.'),
+                        'You have to complete, continue or cancel the session before you can start a new one.'),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -155,7 +156,7 @@ class WorkoutContent extends StatelessWidget {
                             extra: sessionInstance,
                           );
                         },
-                        child: const Text('Fortsett'),
+                        child: const Text('Continue'),
                       ),
                       TextButton(
                         onPressed: () {
@@ -179,7 +180,7 @@ class WorkoutContent extends StatelessWidget {
                             params: {'param1': session.id, 'completed': 'f'},
                           );
                         },
-                        child: const Text('Fullfør'),
+                        child: const Text('Complete'),
                       ),
                       TextButton(
                         onPressed: () {
@@ -201,7 +202,7 @@ class WorkoutContent extends StatelessWidget {
                             params: {'param1': session.id, 'completed': 'f'},
                           );
                         },
-                        child: const Text('Avbryt'),
+                        child: const Text('Cancel'),
                       ),
                     ],
                   ),
@@ -213,7 +214,7 @@ class WorkoutContent extends StatelessWidget {
                 );
               }
             },
-            child: const Text('Registrer ny økt'),
+            child: const Text('Register new session'),
           ),
           const SizedBox(height: 30),
           const Divider(
@@ -223,7 +224,7 @@ class WorkoutContent extends StatelessWidget {
           const SizedBox(height: 30),
           const Center(
             child: Text(
-              'Tidligere logger',
+              'Completed sessions',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,

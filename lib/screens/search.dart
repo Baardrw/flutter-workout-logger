@@ -33,7 +33,7 @@ class _SearchPageState extends State<SearchPage> {
             length: 2,
             child: Scaffold(
               appBar: AppBar(
-                bottom: const TabBar(tabs: [
+                bottom: const TabBar(indicator: UnderlineTabIndicator(), tabs: [
                   Tab(icon: Icon(Icons.person)),
                   Tab(icon: Icon(IconData(0xe9e9, fontFamily: 'MaterialIcons')))
                 ]),

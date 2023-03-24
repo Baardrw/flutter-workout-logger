@@ -60,7 +60,7 @@ class _LogWorkoutScreenState extends State<LogWorkoutScreen> {
           title: widget.completed
               ? DateFormat('dd.MM.yyyy')
                   .format(widget.sessionInstance!.sessionInstanceId)
-              : 'Loggfør økt',
+              : 'Log session',
           additionalActions: [
             !oldSession
                 ? IconButton(
