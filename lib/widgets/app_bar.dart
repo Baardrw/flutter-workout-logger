@@ -54,6 +54,8 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
               title: Row(
                 children: [
                   Text(title),
+                  Icon(Icons.whatshot, color: Colors.orange),
+                  Text("x2"),
                 ],
               ),
               actions: actions,
@@ -78,7 +80,8 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
                 FittedBox(
                   child: Text(title),
                 ),
-                ...fireIcons,
+                Icon(Icons.whatshot, color: Colors.orange),
+                Text("x2"),
               ],
             ),
             actions: actions,
